@@ -17,3 +17,10 @@ Supporting evidence, screenshots, and test cases are stored in the [/docs](/docs
 - Screenshots:  
   - ![Input/Output Testing]  
   - ![User Interaction Test]
+  - ## Future Features
+We envision Harvest Q evolving beyond its MVP. Planned features include:
+- **Trade Mode** – Allowing users to swap goods and services (not just sell).
+- **Community Philosophy** – Building trust and cooperation over pure transactions.
+
+👉 For details, see [/docs/future_features.md]
+
