@@ -1,4 +1,5 @@
 # Harvest-Q
+Harvest Q – Connecting Farmers to People
 ## Description
 Harvest Q – An AI-powered marketplace connecting farmers directly with people. Includes interactive demo
 
