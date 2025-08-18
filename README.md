@@ -20,12 +20,6 @@ Thank you for your time, consideration, and for supporting innovation that can m
 Respectfully,  
 **The Harvest Q Team**  
 
-
-**Quick Note for Judges:**  
-We’ve included an interactive demo  to showcase how Harvest Q works.  
-
-Please scroll down to the interactive demo. 
-
 ## Documentation & Testing
 Supporting evidence, screenshots, and test cases are stored in the [/docs](/docs) folder:
 - **HarvestQ_Input_Output.PNG** – Watsonx model input/output examples
