@@ -6,8 +6,6 @@ Harvest Q is a farm-to-table marketplace platform.
 We’ve included an interactive demo  to showcase how Harvest Q works.  
 
 Please scroll down to the interactive demo. 
-## Demo Mockup
-![Harvest Q Demo](demo/harvestq_mockup.png)
 
 ## Documentation & Testing
 Supporting evidence, screenshots, and test cases are stored in the [/docs](/docs) folder:
