@@ -1,7 +1,6 @@
 # Harvest-Q
 ## Description
 Harvest Q is a farm-to-table marketplace platform.
-🌱 Harvest Q
 
 **Quick Note for Judges:**  
 We’ve included an interactive demo  to showcase how Harvest Q works.  
