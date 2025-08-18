@@ -30,7 +30,7 @@ We envision Harvest Q evolving beyond its MVP. Planned features include:
 
 ## Letter to the Judges
 We’ve included a letter describing how Harvest Q began with a viral TikTok post. 
-[Read the full Letter to the Judges »](letter_to_judges.md)
+
 
 
 
