@@ -11,7 +11,7 @@ This project began with a viral TikTok post that sparked a movement. Farmers and
 Our mission is rooted in real voices. Farmers asked for a tool to sell directly. Citizens asked for clarity on what is legal to buy. Policymakers raised questions about compliance. Harvest Q brings those needs together in one solution — combining technology, community, and trust.  
 
 We are honored to present this demo to you. Inside this repository, you will find:  
-- An **interactive demo** (`/demo/harvestq_demo.html`) showing the marketplace experience.  
+- An **interactive demo** (/demo/harvestq_demo.html ) showing the marketplace experience.  
 - Mockups and design visuals that illustrate the user journey.  
 - Documentation on how Harvest Q addresses farmer–citizen needs while respecting laws and contracts.  
 
