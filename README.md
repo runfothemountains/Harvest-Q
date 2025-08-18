@@ -28,5 +28,9 @@ We envision Harvest Q evolving beyond its MVP. Planned features include:
 - **Trade Mode** – Allowing users to swap goods and services (not just sell).
 - **Community Philosophy** – Building trust and cooperation over pure transactions.
 
-👉 For details, see [/docs/future_features.md]
+## Letter to the Judges
+We’ve included a letter describing how Harvest Q began with a viral TikTok post. 
+[Read the full Letter to the Judges »](letter_to_judges.md)
+
+
 
