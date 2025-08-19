@@ -26,6 +26,15 @@ We’ve included a working demo that simulates marketplace interactions and show
 This post sparked the movement that inspired
 
 ![Viral Post Screenshot](https://raw.githubusercontent.com/runfothemountains/Harvest-Q/main/Screenshot_20250818-070644.png)
+
+## ✉️ Letter to the Judges
+
+Dear Judges,  
+
+This project began in an unexpected but powerful way. Earlier this year, one of my posts on TikTok went viral, sparking a wave of conversation about farming, food access, and community resilience. In the days that followed, I was contacted by associates of both a state governor and a congresswoman, who encouraged me to explore a software solution that could empower farmers and citizens alike. Their suggestion became the seed for what we are now building.  
+
+What started as a simple concept—connecting people directly with farmers so they could buy fresh food—has since grown into something more comprehensive. As I engaged with experts and community voices, I discovered the layers of legal, logistical, and health considerations that shape how food moves from farms to tables. With these insights, we have evolved the model into **Harvest Q**, a platform designed to integrate agriculture, health, logistics, and technology while staying aligned with federal and state laws.  
+
 - Documentation on how Harvest Q addresses farmer–citizen needs while respecting laws and contracts.
 
 Thank you for your time, consideration, and for supporting innovation that can make a real difference for farmers and families alike.  
