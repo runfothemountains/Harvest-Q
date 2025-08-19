@@ -23,9 +23,7 @@ We’ve included a working demo that simulates marketplace interactions and show
 
 ### Viral Post Screenshots  
 These posts sparked the movement that inspired Harvest Q:  
-![Viral Post 1](https://runfothemountains.github.io/Harvest-Q/Screenshot_20250818-070644.png)  
-
-![Viral Post 2](https://runfothemountains.github.io/Harvest-Q/Screenshot_20250818-070700.png)  
+![Viral Post 1](https://runfothemountains.github.io/Harvest-Q/Screenshot_20250818-070700.png)  
 
 
 ## Letter to the Judges
@@ -38,6 +36,7 @@ Our mission is rooted in real voices. Farmers asked for a tool to sell directly.
  showing the marketplace experience.  
 - Mockups and design visuals that illustrate the user journey.
 - https://github.com/runfothemountains/Harvest-Q/blob/main/harvestq_mockup.png
+- 
 - ## Origin: Viral TikTok Post  
 
 This project began after one of my TikTok posts went viral, sparking a conversation about farming, food access, and community resilience.  
