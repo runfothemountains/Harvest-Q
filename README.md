@@ -50,5 +50,3 @@ We envision Harvest Q evolving beyond its MVP. Planned features include:
 
 
 
-https://github.com/<USER>/<REPO>/blob/main/docs/index.html
-
