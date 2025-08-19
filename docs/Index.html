@@ -1,1 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Harvest Q Demo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f7f7f7;
+    }
+    header {
+      background: #2e7d32;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      background: #4caf50;
+    }
+    nav button {
+      flex: 1;
+      padding: 1rem;
+      border: none;
+      background: #4caf50;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    nav button:hover {
+      background: #388e3c;
+    }
+    section {
+      padding: 2rem;
+      display: none;
+    }
+    section.active {
+      display: block;
+    }
+    .card {
+      background: white;
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🌱 Harvest Q Demo</h1>
+    <p>Connecting Farmers and Consumers Directly</p>
+  </header>
+  <nav>
+    <button onclick="showTab('farmers')">Farmers</button>
+    <button onclick="showTab('consumers')">Consumers</button>
+    <button onclick="showTab('laws')">Laws</button>
+    <button onclick="showTab('trade')">Trade Mode</button>
+    <button onclick="showTab('health')">Health</button>
+  </nav>
 
+  <section id="farmers" class="active">
+    <h2>Farmers</h2>
+    <div class="card">
+      <h3>Alabama - Billy</h3>
+      <p>🌽 Corn, 🍅 Tomatoes. Pick up at farm stand on Hwy 21.</p>
+    </div>
+    <div class="card">
+      <h3>India - Priya</h3>
+      <p>🥭 Mangoes, 🍚 Rice. Pickup at village market.</p>
+    </div>
+    <div class="card">
+      <h3>Nigeria - Adewale</h3>
+      <p>🐓 Chickens, 🍌 Plantains. Pickup at roadside kiosk.</p>
+    </div>
+  </section>
+
+  <section id="consumers">
+    <h2>Consumers</h2>
+    <div class="card">
+      <h3>John (Georgia, USA)</h3>
+      <p>Looking for fresh soybeans and honey.</p>
+    </div>
+    <div class="card">
+      <h3>Meera (India)</h3>
+      <p>Needs vegetables for family meals.</p>
+    </div>
+    <div class="card">
+      <h3>Chinedu (Nigeria)</h3>
+      <p>Searching for affordable yams and fish.</p>
+    </div>
+  </section>
+
+  <section id="laws">
+    <h2>Farmers’ Laws & Compliance</h2>
+    <div class="card">
+      <p>🇺🇸 USA: Farmers can sell direct but must follow state food safety rules.</p>
+    </div>
+    <div class="card">
+      <p>🇮🇳 India: FSSAI regulates direct sale of milk, fruits, vegetables.</p>
+    </div>
+    <div class="card">
+      <p>🇳🇬 Nigeria: NAFDAC oversees packaged food; local produce often exempt at markets.</p>
+    </div>
+  </section>
+
+  <section id="trade">
+    <h2>Trade Mode</h2>
+    <div class="card">
+      <p>“10 lbs cucumbers — open to trading for eggs, honey, or compost.”</p>
+    </div>
+    <blockquote>We believe in value beyond currency: real value creates real value.</blockquote>
+  </section>
+
+  <section id="health">
+    <h2>Farmer Health & Safety</h2>
+    <div class="card">
+      <p>💡 Tip: Farmers should wear gloves and masks when handling chemicals.</p>
+      <p>💡 Hydration is critical during long harvest days in hot climates.</p>
+    </div>
+  </section>
+
+  <script>
+    function showTab(tabId) {
+      document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
+      document.getElementById(tabId).classList.add("active");
+    }
+  </script>
+</body>
+</html>
