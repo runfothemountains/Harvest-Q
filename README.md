@@ -14,6 +14,20 @@ Harvest Q is a community-driven platform connecting **farmers directly with peop
 We’ve included a working demo that simulates marketplace interactions and shows how Harvest Q could function in practice.  
 
 
+---
+
+## 📸 Visuals  
+
+### Mockup  
+![Harvest Q Mockup](https://runfothemountains.github.io/Harvest-Q/mockup.png)
+
+### Viral Post Screenshots  
+These posts sparked the movement that inspired Harvest Q:  
+![Viral Post 1](https://runfothemountains.github.io/Harvest-Q/Screenshot_20250818-070644.png)  
+
+![Viral Post 2](https://runfothemountains.github.io/Harvest-Q/Screenshot_20250818-070700.png)  
+
+
 ## Letter to the Judges
 
 Dear Judges,  
