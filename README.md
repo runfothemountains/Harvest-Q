@@ -58,10 +58,20 @@ Supporting evidence, screenshots, and test cases are stored in the [/docs](/docs
 - Screenshots:  
   - ![Input/Output Testing]  
   - ![User Interaction Test]
-  - ## Future Features
-We envision Harvest Q evolving beyond its MVP. Planned features include:
-- **Trade Mode** – Allowing users to swap goods and services (not just sell).
-- **Community Philosophy** – Building trust and cooperation over pure transactions.
+
+    ---
+
+🔮 Future Features
+
+We envision Harvest Q evolving with:
+
+Trade Mode → Allowing farmers and citizens to barter goods fairly
+
+Health Mode → Nutrition insights powered by AI and public health data
+
+Community Mode → Local hubs, cooperative logistics, and government integration
+
+AI Market Analysis → Smart pricing, alternative channels, and sustainability tracking
 
 
 
