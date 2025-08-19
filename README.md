@@ -23,7 +23,7 @@ We’ve included a working demo that simulates marketplace interactions and show
 - 
 - ## Origin: Viral TikTok Post  
 
-This project began after one of my TikTok posts went viral, sparking a conversation about farming, food access, and community resilience.  
+This post sparked the movement that inspired
 
 ![Viral Post Screenshot](https://raw.githubusercontent.com/runfothemountains/Harvest-Q/main/Screenshot_20250818-070644.png)
 - Documentation on how Harvest Q addresses farmer–citizen needs while respecting laws and contracts.
