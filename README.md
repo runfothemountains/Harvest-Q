@@ -6,6 +6,14 @@
 
 Harvest Q is a community-driven platform connecting **farmers directly with people** to make food access easier, fairer, and healthier. Born from a viral TikTok conversation, Harvest Q blends **AI, logistics, and health** to create a smarter food ecosystem.  
 
+
+## 🚀 Interactive Demo
+
+👉 [**Click here to try the demo**](https://runfothemountains.github.io/Harvest-Q/)
+
+We’ve included a working demo that simulates marketplace interactions and shows how Harvest Q could function in practice.  
+
+
 ## Letter to the Judges
 
 Dear Judges,  
