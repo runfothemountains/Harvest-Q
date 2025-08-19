@@ -16,6 +16,12 @@ We are honored to present this demo to you. Inside this repository, you will fin
 - Mockups and design visuals that illustrate the user journey.
 - https://github.com/runfothemountains/Harvest-Q/blob/main/harvestq_mockup.png
 - Documentation on how Harvest Q addresses farmer–citizen needs while respecting laws and contracts.
+- ## Origin: Viral TikTok Post
+
+This project began after one of my TikTok posts went viral, sparking a conversation about farming and community resilience.
+
+![Viral Post Screenshot 1](https://raw.githubusercontent.com/runfothemountains/Harvest-Q/main/viral1.png)  
+![Viral Post Screenshot 2](https://raw.githubusercontent.com/runfothemountains/Harvest-Q/main/viral2.png)
 
 Thank you for your time, consideration, and for supporting innovation that can make a real difference for farmers and families alike.  
 
