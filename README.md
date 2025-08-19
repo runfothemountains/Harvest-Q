@@ -7,14 +7,15 @@ Harvest Q – An AI-powered marketplace connecting farmers directly with people.
 Dear Judges,  
 
 This project began with a viral TikTok post that sparked a movement. Farmers and citizens across the U.S. engaged with the idea of creating a direct link between growers and communities — bypassing waste and barriers. What started as a conversation online quickly grew into a vision for **Harvest Q**, a platform designed to connect people with farmers in a simple, transparent, and legal way.  
-
+[View the Harvest Q Mockup](https://runfothemountains.github.io/Harvest-Q/mockup.png)
 Our mission is rooted in real voices. Farmers asked for a tool to sell directly. Citizens asked for clarity on what is legal to buy. Policymakers raised questions about compliance. Harvest Q brings those needs together in one solution — combining technology, community, and trust.  
 
 We are honored to present this demo to you. Inside this repository, you will find:  
 - An **interactive demo**
   [Interactive Demo](https://runfothemountains.github.io/Harvest-Q/)
  showing the marketplace experience.  
-- Mockups and design visuals that illustrate the user journey.  
+- Mockups and design visuals that illustrate the user journey.
+- 
 - Documentation on how Harvest Q addresses farmer–citizen needs while respecting laws and contracts.  
 
 Thank you for your time, consideration, and for supporting innovation that can make a real difference for farmers and families alike.  
