@@ -19,13 +19,6 @@ We’ve included a working demo that simulates marketplace interactions and show
 ## 📸 Visuals  
 
 ### Mockup  
-![Harvest Q
-(https://runfothemountains.github.io/Harvest-Q/mockup.png)
-
-### Viral Post Screenshots  
-
- showing the marketplace experience.  
-- Mocku
 - https://github.com/runfothemountains/Harvest-Q/blob/main/harvestq_mockup.png
 - 
 - ## Origin: Viral TikTok Post  
