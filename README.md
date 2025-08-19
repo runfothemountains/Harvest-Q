@@ -1,9 +1,11 @@
 # Harvest-Q
 ![Made with ❤️ for IBM Hackathon](https://img.shields.io/badge/Made%20with%20%E2%9D%A4-IBM%20Hackathon-blue)
 ![Status](https://img.shields.io/badge/Status-Demo%20Ready-brightgreen)
-Harvest Q – Connecting Farmers to People
+
 ## Description
-Harvest Q – An AI-powered marketplace connecting farmers directly with people. Includes interactive demo
+
+Harvest Q is a community-driven platform connecting **farmers directly with people** to make food access easier, fairer, and healthier. Born from a viral TikTok conversation, Harvest Q blends **AI, logistics, and health** to create a smarter food ecosystem.  
+
 ## Letter to the Judges
 
 Dear Judges,  
