@@ -15,8 +15,6 @@ We are honored to present this demo to you. Inside this repository, you will fin
  showing the marketplace experience.  
 - Mockups and design visuals that illustrate the user journey.
 - https://github.com/runfothemountains/Harvest-Q/blob/main/harvestq_mockup.png
-- Viral post Screenshots
-- https://raw.githubusercontent.com/runfothemountains/Harvest-Q/main/viral1.png
 - Documentation on how Harvest Q addresses farmer–citizen needs while respecting laws and contracts.
 
 Thank you for your time, consideration, and for supporting innovation that can make a real difference for farmers and families alike.  
