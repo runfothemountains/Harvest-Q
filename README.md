@@ -1,4 +1,6 @@
 # Harvest-Q
+![Made with ❤️ for IBM Hackathon](https://img.shields.io/badge/Made%20with%20%E2%9D%A4-IBM%20Hackathon-blue)
+![Status](https://img.shields.io/badge/Status-Demo%20Ready-brightgreen)
 Harvest Q – Connecting Farmers to People
 ## Description
 Harvest Q – An AI-powered marketplace connecting farmers directly with people. Includes interactive demo
