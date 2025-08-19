@@ -11,10 +11,10 @@ Our mission is rooted in real voices. Farmers asked for a tool to sell directly.
 
 We are honored to present this demo to you. Inside this repository, you will find:  
 - An **interactive demo**
-  [Interactive Demo](https://runfothemountains.github.io/Harvest-Q/)
+  [Interactive Demo](https://runfothemountains.github.io/Harvest-Q/harvestq_mockup.png). 
  showing the marketplace experience.  
 - Mockups and design visuals that illustrate the user journey.
-- [View the Harvest Q Mockup](https://runfothemountains.github.io/Harvest-Q/mockup.png)
+- [View the Harvest Q Mockup](https://runfothemountains.github.io/Harvest-Q/)
 - Documentation on how Harvest Q addresses farmer–citizen needs while respecting laws and contracts.  
 
 Thank you for your time, consideration, and for supporting innovation that can make a real difference for farmers and families alike.  
