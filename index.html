@@ -3,26 +3,25 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Harvest Q - Fresh Local Produce & Trade Platform</title>
+  <title>Harvest Q - Fresh Local Produce & Trade Platform (Beta)</title>
   <meta name="description" content="Harvest Q connects farmers and buyers with fresh, local produce for sale or trade. Explore listings, get AI-powered price suggestions, and support sustainable communities." />
   <link rel="manifest" href="manifest.webmanifest" />
   <meta name="theme-color" content="#0f766e" />
   <style>
-    :root {
-      --teal:#0f766e; --teal-d:#0b5b55; --green:#22c55e; --ink:#0f172a; --muted:#6b7280; --bg:#f4f9f6; --card:#ffffff;
-      --ring: 0 0 0 3px rgba(34,197,94,.35);
-    }
+    :root { --teal:#0f766e; --teal-d:#0b5b55; --green:#22c55e; --ink:#0f172a; --muted:#6b7280; --bg:#f4f9f6; --card:#ffffff; --ring: 0 0 0 3px rgba(34,197,94,.35); }
     *{box-sizing:border-box}
-    html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial}
+    @media (prefers-color-scheme: dark){ :root{--bg:#0b1020; --card:#0e162d; --ink:#e5e7eb; --muted:#9ca3af} header{background:linear-gradient(90deg,#0b5b55,#043f35)} .tab{background:#0f172a;color:#e5e7eb;border-color:#223254} .btn.secondary{background:#0f172a;color:#e5e7eb} .card{border-color:#1f2a44} }
     header{background:linear-gradient(90deg,var(--teal),#065f46);color:#fff;padding:20px}
-    header h1{margin:0;font-size:24px}
+    header h1{margin:0;font-size:24px;display:flex;align-items:center;gap:10px}
     header p{margin:.25rem 0 0;color:#e2e8f0}
+    .beta{font-size:12px;background:#22c55e;color:#063;padding:.15rem .5rem;border-radius:999px}
     .container{max-width:1100px;margin:0 auto;padding:16px}
     nav.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 8px}
     .tab{background:#fff;border:1px solid #d1d5db;color:#111827;padding:.55rem .8rem;border-radius:999px;cursor:pointer}
     .tab.active{background:var(--teal);color:#fff;border-color:transparent;box-shadow:var(--ring)}
     .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
-    .card{background:var(--card);border:1px solid #e5e7eb;border-radius:14px;padding:12px;box-shadow:0 1px 1px rgba(0,0,0,.02)}
+    .card{background:var(--card);border:1px solid #e5e7eb;border-radius:14px;padding:12px;box-shadow:0 1px 1px rgba(0,0,0,.05)}
     .card h3{margin:6px 0 4px;font-size:16px}
     .card p{margin:.25rem 0;color:#334155}
     .pill{display:inline-block;padding:.15rem .5rem;border-radius:999px;background:#ecfeff;color:#0e7490;border:1px solid #a5f3fc;font-size:12px;margin-left:6px}
@@ -36,17 +35,21 @@
     .flex{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
     .btn{background:var(--teal);color:#fff;border:none;border-radius:10px;padding:.55rem .8rem;cursor:pointer}
     .btn.secondary{background:#fff;color:#0f172a;border:1px solid #d1d5db}
+    .btn[disabled]{opacity:.6;cursor:not-allowed}
     .muted{color:#6b7280}
     .row{display:flex;gap:16px;flex-wrap:wrap}
     .half{flex:1 1 420px}
     .warning{background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:10px;padding:.6rem .8rem}
+    .skeleton{border-radius:14px;background:linear-gradient(90deg,#e5e7eb,#f3f4f6,#e5e7eb);background-size:200% 100%;animation:shimmer 1.2s infinite}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
   </style>
   <script>
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').then(registration => {
-        console.log('Service Worker registered with scope:', registration.scope);
-      }).catch(error => {
-        console.error('Service Worker registration failed:', error);
+      navigator.serviceWorker.register('/sw.js').then(reg => {
+        console.log('Service Worker scope:', reg.scope);
+      }).catch(err => {
+        console.warn('Service Worker registration failed (ok in beta if /sw.js missing):', err);
       });
     }
   </script>
@@ -54,28 +57,27 @@
 <body>
   <header>
     <div class="container">
-      <h1>Harvest Q — <span id="header-slogan"></span></h1>
+      <h1>
+        Harvest Q — <span id="header-slogan"></span>
+        <span class="beta" aria-label="Beta badge">BETA</span>
+      </h1>
       <p id="header-subtitle"></p>
     </div>
   </header>
 
   <div class="container">
-    <!-- Language Switcher -->
-    <div class="toolbar" style="margin-bottom: 12px;">
-      <label class="muted">Language:
-        <select id="langSelect">
-          <option value="en">English</option>
-          <option value="hi">हिन्दी (Hindi)</option>
-          <option value="ha">Hausa</option>
-        </select>
-      </label>
+    <div class="toolbar" style="margin-bottom: 12px; align-items:center">
+      <label class="muted" id="langLabel" for="langSelect">Language:</label>
+      <select id="langSelect" aria-labelledby="langLabel">
+        <option value="en">English</option>
+        <option value="hi">हिन्दी (Hindi)</option>
+        <option value="ha">Hausa</option>
+      </select>
     </div>
 
-    <!-- TABS -->
-    <nav class="tabs" id="tabs"></nav>
+    <nav class="tabs" id="tabs" role="tablist" aria-label="Main sections"></nav>
 
-    <!-- PANELS -->
-    <section id="panel-home" hidden>
+    <section id="panel-home" role="tabpanel" aria-labelledby="tab-home" hidden>
       <div class="row">
         <div class="half">
           <div class="card">
@@ -92,12 +94,10 @@
           <div class="card">
             <h3 id="home-switch-title"></h3>
             <div class="flex toolbar">
-              <label class="muted" id="home-country-label">Country
-                <select id="countrySelect"></select>
-              </label>
-              <label class="muted" id="home-state-label">State/Region
-                <select id="stateSelect"></select>
-              </label>
+              <label class="muted" id="home-country-label" for="countrySelect">Country</label>
+              <select id="countrySelect" aria-labelledby="home-country-label"></select>
+              <label class="muted" id="home-state-label" for="stateSelect">State/Region</label>
+              <select id="stateSelect" aria-labelledby="home-state-label"></select>
               <button class="btn" id="refreshBtn"><span id="refresh-btn-text"></span></button>
             </div>
             <div class="footer-note" id="home-switch-note"></div>
@@ -107,500 +107,204 @@
       </div>
     </section>
 
-    <section id="panel-farmers" hidden>
+    <section id="panel-farmers" role="tabpanel" aria-labelledby="tab-farmers" hidden>
       <div class="toolbar">
-        <input id="farmerSearch" placeholder="" />
-        <select id="modeFilter">
+        <input id="farmerSearch" placeholder="" aria-label="Search farmers" />
+        <select id="modeFilter" aria-label="Filter by mode">
           <option value="all"></option>
           <option value="sale"></option>
           <option value="trade"></option>
           <option value="both"></option>
         </select>
-        <select id="sortBy">
+        <select id="sortBy" aria-label="Sort by">
           <option value="name"></option>
           <option value="priceAsc"></option>
         </select>
       </div>
-      <div class="grid" id="farmerGrid"></div>
+      <div class="grid" id="farmerGrid" aria-live="polite"></div>
     </section>
 
-    <section id="panel-laws" hidden>
-      <div class="grid" id="lawGrid"></div>
+    <section id="panel-laws" role="tabpanel" aria-labelledby="tab-laws" hidden>
+      <div class="grid" id="lawGrid" aria-live="polite"></div>
       <p class="muted" id="laws-disclaimer"></p>
     </section>
 
-    <section id="panel-medical" hidden>
-      <div class="grid" id="medGrid"></div>
+    <section id="panel-medical" role="tabpanel" aria-labelledby="tab-medical" hidden>
+      <div class="grid" id="medGrid" aria-live="polite"></div>
     </section>
 
-    <section id="panel-trade" hidden>
+    <section id="panel-trade" role="tabpanel" aria-labelledby="tab-trade" hidden>
       <p class="muted" id="trade-disclaimer"></p>
     </section>
 
-    <section id="panel-ai" hidden>
+    <section id="panel-ai" role="tabpanel" aria-labelledby="tab-ai" hidden>
       <div class="card">
         <h3 id="ai-price-title"></h3>
         <div class="flex toolbar">
-          <label class="muted" id="ai-crop-label">Crop
-            <input id="aiCrop" placeholder="" />
-          </label>
-          <label class="muted" id="ai-qty-label">Quantity
-            <input id="aiQty" placeholder="" />
-          </label>
+          <label class="muted" id="ai-crop-label" for="aiCrop">Crop</label>
+          <input id="aiCrop" list="cropList" placeholder="" />
+          <datalist id="cropList"></datalist>
+          <label class="muted" id="ai-qty-label" for="aiQty">Quantity</label>
+          <input id="aiQty" placeholder="" />
           <button class="btn" id="aiPriceBtn"><span id="ai-price-btn-text"></span></button>
         </div>
-        <pre id="aiPriceOut"></pre>
+        <pre id="aiPriceOut" aria-live="polite"></pre>
       </div>
       <div class="card">
         <h3 id="ai-match-title"></h3>
         <div class="flex toolbar">
-          <label class="muted" id="ai-want-label">Want
-            <input id="aiWant" placeholder="" />
-          </label>
+          <label class="muted" id="ai-want-label" for="aiWant">Want</label>
+          <input id="aiWant" placeholder="" />
           <button class="btn" id="aiMatchBtn"><span id="ai-match-btn-text"></span></button>
         </div>
-        <pre id="aiMatchOut"></pre>
+        <pre id="aiMatchOut" aria-live="polite"></pre>
       </div>
     </section>
 
-    <section id="panel-consumers" hidden>
+    <section id="panel-consumers" role="tabpanel" aria-labelledby="tab-consumers" hidden>
       <div class="toolbar">
-        <input id="consumerSearch" placeholder="" />
+        <input id="consumerSearch" placeholder="" aria-label="Search buyers" />
       </div>
-      <div class="grid" id="consumerGrid"></div>
+      <div class="grid" id="consumerGrid" aria-live="polite"></div>
     </section>
 
     <footer class="container footer-note" id="footer-text"></footer>
   </div>
 
   <script>
-    // ---------------------------
-    // Configuration
-    // ---------------------------
-    const CONFIG = { DEMO: true }; // flip false when wiring watsonx.ai
+    const CONFIG = { DEMO: true };
 
-    // ---------------------------
-    // Utility functions
-    // ---------------------------
-    function pseudoKm(city) { return Math.floor(Math.random() * 25) + 3; }
+    const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+    const debounce = (fn, ms=250) => { let t; return (...args) => { clearTimeout(t); t=setTimeout(()=>fn(...args), ms); } };
+    const toNumber = (str='') => Number(String(str).replace(/[^0-9.\-]/g,'')||0);
+    const kgToLb = kg => kg * 2.20462;
+    const lbToKg = lb => lb / 2.20462;
+    const pseudoKm = city => Math.floor(Math.random() * 25) + 3;
 
-    // ---------------------------
-    // i18n Dictionary
-    // ---------------------------
-    const LANG = {
-      en: {
-        "header-slogan": "Fresh • Local • Trusted",
-        "header-subtitle": "Bridge farmers and conscious buyers. Sale or Trade. Cross-border ready.",
-        "home-what-title": "What this demo shows",
-        "home-what-content": "• Country/state switching (US, India, Nigeria) • Farmer & Consumer cards with images • “Trade Mode” support • Quick Laws & Medical tips\n• AI hooks (price, legal, seasonal, match) stubbed for IBM watsonx.ai • PWA-ready scaffold (manifest + service worker)",
-        "home-phil-title": "Community Philosophy",
-        "home-phil-content": "We believe in value that goes beyond currency — where real relationships and resources are exchanged, not just dollars.",
-        "home-phil-quote": "“Real value creates real value.” — @Dude",
-        "home-switch-title": "Try a quick state switch",
-        "home-country-label": "Country",
-        "home-state-label": "State/Region",
-        "refresh-btn-text": "Refresh",
-        "home-switch-note": "Switching filters updates Farmers, Consumers, Laws, and Medical tips below.",
-        "home-warning": "<strong>Note:</strong> This is demo data for judging. Compliance cards are non-legal summaries; pair with your legal counsel.",
-        "laws-disclaimer": "Not legal advice—see local rules.",
-        "trade-disclaimer": "Barter may be taxable in some jurisdictions.",
-        "ai-price-title": "Price Suggestion",
-        "ai-crop-label": "Crop",
-        "ai-qty-label": "Quantity",
-        "ai-price-btn-text": "Ask AI",
-        "ai-match-title": "Match Farmer",
-        "ai-want-label": "Want",
-        "ai-match-btn-text": "Find Match",
-        "footer-text": "© Harvest Q — Demo for IBM TechXchange watsonx.ai",
-        "farmer-search-placeholder": "Search product or farm…",
-        "mode-filter-all": "All modes",
-        "mode-filter-sale": "For Sale",
-        "mode-filter-trade": "Willing to Trade",
-        "mode-filter-both": "Both",
-        "sort-by-name": "Name",
-        "sort-by-price-asc": "Price (low→high)",
-        "consumer-search-placeholder": "Search buyer or want…",
-        "ai-crop-placeholder": "e.g., Tomatoes",
-        "ai-qty-placeholder": "e.g., 40 lb",
-        "ai-want-placeholder": "e.g., Peaches 20 lb"
-      },
-      hi: {
-        "header-slogan": "ताजा • स्थानीय • विश्वसनीय",
-        "header-subtitle": "किसानों और जागरूक खरीदारों को जोड़ें। बिक्री या व्यापार। क्रॉस-बॉर्डर तैयार।",
-        "home-what-title": "यह डेमो क्या दिखाता है",
-        "home-what-content": "• देश/राज्य स्विचिंग (US, भारत, नाइजीरिया) • किसान और उपभोक्ता कार्ड छवियों के साथ • “ट्रेड मोड” समर्थन • त्वरित कानून और चिकित्सा सुझाव\n• AI हुक (कीमत, कानूनी, मौसमी, मिलान) IBM watsonx.ai के लिए स्टब्ड • PWA-रेडी स्कैफोल्ड (मैनिफेस्ट + सेवा वर्कर)",
-        "home-phil-title": "समुदाय दर्शन",
-        "home-phil-content": "हम मानते हैं कि मूल्य मुद्रा से परे है — जहां वास्तविक संबंध और संसाधन विनिमय होते हैं, केवल डॉलर नहीं।",
-        "home-phil-quote": "“वास्तविक मूल्य वास्तविक मूल्य बनाता है।” — @Dude",
-        "home-switch-title": "तेजी से राज्य स्विच करें",
-        "home-country-label": "देश",
-        "home-state-label": "राज्य/क्षेत्र",
-        "refresh-btn-text": "ताज़ा करें",
-        "home-switch-note": "फिल्टर स्विच करने से किसान, उपभोक्ता, कानून और चिकित्सा सुझाव नीचे अपडेट होते हैं।",
-        "home-warning": "<strong>नोट:</strong> यह जजिंग के लिए डेमो डेटा है। अनुपालन कार्ड गैर-कानूनी सारांश हैं; अपने कानूनी सलाहकार के साथ जोड़ी बनाएं।",
-        "laws-disclaimer": "कानूनी सलाह नहीं—स्थानीय नियम देखें।",
-        "trade-disclaimer": "कुछ क्षेत्रों में बार्टर कर योग्य हो सकता है।",
-        "ai-price-title": "मूल्य सुझाव",
-        "ai-crop-label": "फसल",
-        "ai-qty-label": "मात्रा",
-        "ai-price-btn-text": "AI से पूछें",
-        "ai-match-title": "किसान मिलान",
-        "ai-want-label": "चाहिए",
-        "ai-match-btn-text": "मिलान खोजें",
-        "footer-text": "© हार्वेस्ट Q — IBM टेकएक्सचेंज watsonx.ai के लिए डेमो",
-        "farmer-search-placeholder": "उत्पाद या खेत खोजें…",
-        "mode-filter-all": "सभी मोड",
-        "mode-filter-sale": "बिक्री के लिए",
-        "mode-filter-trade": "व्यापार के लिए तैयार",
-        "mode-filter-both": "दोनों",
-        "sort-by-name": "नाम",
-        "sort-by-price-asc": "कीमत (कम से उच्च)",
-        "consumer-search-placeholder": "खरीदार या चाहने वाले खोजें…",
-        "ai-crop-placeholder": "उदा., टमाटर",
-        "ai-qty-placeholder": "उदा., 40 पाउंड",
-        "ai-want-placeholder": "उदा., पीच 20 पाउंड"
-      },
-      ha: {
-        "header-slogan": "Sabo • Naɗa • A Tattarafa",
-        "header-subtitle": "Haɗa manoma da masu siye masu hankali. Siya ko Ciniki. Shiri don ƙetare iyaka.",
-        "home-what-title": "Abin da wannan demo ke nuna",
-        "home-what-content": "• Canjin ƙasa/jiha (US, Indiya, Najeriya) • Katunan Manoma & Masu Siye tare da hotuna • Tallafin “Yanayin Ciniki” • Shawarwari na Dokoki & Likita cikin sauri\n• Ƙugiyoyin AI (farashi, doka, yanayi, daidaitawa) waɗanda aka sanya wa IBM watsonx.ai • Tsarin PWA-shiri (bayani + ma'aikacin sabis)",
-        "home-phil-title": "Falsafar Al'umma",
-        "home-phil-content": "Mun yi imani da cewa daraja ta wuce kuɗin — inda ake musanya alaƙar gaskiya da albashi, ba kawai daloli ba.",
-        "home-phil-quote": "“Darajar gaskiya tana haifar da darajar gaskiya.” — @Dude",
-        "home-switch-title": "Gwada canjin jiha cikin sauri",
-        "home-country-label": "Ƙasa",
-        "home-state-label": "Jiha/Yanki",
-        "refresh-btn-text": "Sabunta",
-        "home-switch-note": "Canja filayen yana sabunta Manoma, Masu Siye, Dokoki, da Shawarwarin Likita a ƙasa.",
-        "home-warning": "<strong>Lura:</strong> Wannan bayanan demo ne don yin hukunci. Katunan yarda ba taƙaitaccen bayani ne na doka ba; haɗa da lauyarka.",
-        "laws-disclaimer": "Ba shawarar doka ba—duba dokokin gida.",
-        "trade-disclaimer": "Ciniki na iya zama haraji a wasu yankuna.",
-        "ai-price-title": "Shawarin Farashi",
-        "ai-crop-label": "Amfanin Gona",
-        "ai-qty-label": "Adadin",
-        "ai-price-btn-text": "Tambayi AI",
-        "ai-match-title": "Daidaita Manomi",
-        "ai-want-label": "Ana So",
-        "ai-match-btn-text": "Nemo Daidaitawa",
-        "footer-text": "© Harvest Q — Demo don IBM TechXchange watsonx.ai",
-        "farmer-search-placeholder": "Nemo samfur ko gona…",
-        "mode-filter-all": "Dukkanin yanayin",
-        "mode-filter-sale": "Don Siya",
-        "mode-filter-trade": "A Shiri don Ciniki",
-        "mode-filter-both": "Duka Biyu",
-        "sort-by-name": "Suna",
-        "sort-by-price-asc": "Farashi (ƙasa zuwa sama)",
-        "consumer-search-placeholder": "Nemo mai siye ko abin da ake so…",
-        "ai-crop-placeholder": "Misali, Tumatur",
-        "ai-qty-placeholder": "Misali, 40 kilo",
-        "ai-want-placeholder": "Misali, Peach 20 kilo"
-      }
+    const CURRENCY = {
+      US: { symbol: '$', unit: 'lb', code: 'USD' },
+      India: { symbol: '₹', unit: 'kg', code: 'INR' },
+      Nigeria: { symbol: '₦', unit: 'kg', code: 'NGN' }
     };
 
-    // ---------------------------
-    // Demo datasets (lean Option-2) subset per country/state
-    // ---------------------------
+    const LANG = {
+      en: { 'tab-home':'Home','tab-farmers':'Farmers (Sellers)','tab-consumers':'Consumers (Buyers)','tab-laws':'Farming Laws','tab-medical':'Medical Advice','tab-trade':'Trade Mode','tab-ai':'AI Hooks','header-slogan':'Fresh • Local • Trusted','header-subtitle':'Bridge farmers and conscious buyers. Sale or Trade. Cross-border ready.','home-what-title':'What this beta shows','home-what-content':'• Country/state switching (US, India, Nigeria) • Farmer & Consumer cards with images • “Trade Mode” support • Quick Laws & Medical tips\n• AI hooks (price, seasonal, match) stubbed for IBM watsonx.ai • PWA-ready scaffold (manifest + service worker)','home-phil-title':'Community Philosophy','home-phil-content':'We believe in value that goes beyond currency — where real relationships and resources are exchanged, not just dollars.','home-phil-quote':'“Real value creates real value.” — @Dude','home-switch-title':'Try a quick state switch','home-country-label':'Country','home-state-label':'State/Region','refresh-btn-text':'Refresh','home-switch-note':'Switching filters updates Farmers, Consumers, Laws, and Medical tips below.','home-warning':'<strong>Note:</strong> Demo data for judging. Compliance cards are non-legal summaries; pair with legal counsel.','laws-disclaimer':'Not legal advice—see local rules.','trade-disclaimer':'Barter may be taxable in some jurisdictions.','ai-price-title':'Price Suggestion','ai-crop-label':'Crop','ai-qty-label':'Quantity','ai-price-btn-text':'Ask AI','ai-match-title':'Match Farmer','ai-want-label':'Want','ai-match-btn-text':'Find Match','footer-text':'© Harvest Q — Demo for IBM TechXchange watsonx.ai','farmer-search-placeholder':'Search product or farm…','mode-filter-all':'All modes','mode-filter-sale':'For Sale','mode-filter-trade':'Willing to Trade','mode-filter-both':'Both','sort-by-name':'Name','sort-by-price-asc':'Price (low→high)','consumer-search-placeholder':'Search buyer or want…','ai-crop-placeholder':'e.g., Tomatoes','ai-qty-placeholder':'e.g., 40 lb','ai-want-placeholder':'e.g., Peaches 20 lb','empty-farmers':'No farmer listings match your filters yet.','empty-consumers':'No consumer listings match your filters yet.','empty-laws':'No laws available for this region.','empty-med':'No medical tips for this region.' },
+      hi: { 'tab-home':'होम','tab-farmers':'किसान (विक्रेता)','tab-consumers':'उपभोक्ता (खरीदार)','tab-laws':'खेती के नियम','tab-medical':'चिकित्सा सलाह','tab-trade':'विनिमय मोड','tab-ai':'एआई हुक','header-slogan':'ताज़ा • स्थानीय • विश्वसनीय','header-subtitle':'किसानों और जागरूक खरीदारों को जोड़ें। बिक्री या विनिमय। क्रॉस-बॉर्डर तैयार।','home-what-title':'यह बीटा क्या दिखाता है','home-what-content':'• देश/राज्य स्विचिंग (US, भारत, नाइजीरिया) • किसान/उपभोक्ता कार्ड • “ट्रेड मोड” • त्वरित कानून/चिकित्सा\n• IBM watsonx.ai के लिए एआई हुक • PWA-रेडी (मैनिफेस्ट + सर्विस वर्कर)','home-phil-title':'समुदाय दर्शन','home-phil-content':'हम मानते हैं कि मूल्य मुद्रा से परे है — जहां वास्तविक संबंध और संसाधन विनिमय होते हैं, केवल डॉलर नहीं।','home-phil-quote':'“वास्तविक मूल्य वास्तविक मूल्य बनाता है।” — @Dude','home-switch-title':'तेजी से राज्य स्विच करें','home-country-label':'देश','home-state-label':'राज्य/क्षेत्र','refresh-btn-text':'ताज़ा करें','home-switch-note':'फिल्टर स्विच करने से नीचे की सूचियाँ अपडेट होती हैं।','home-warning':'<strong>नोट:</strong> यह जजिंग हेतु डेमो डेटा है। कानूनी सारांश केवल संदर्भ हेतु।','laws-disclaimer':'कानूनी सलाह नहीं—स्थानीय नियम देखें।','trade-disclaimer':'कुछ क्षेत्रों में बार्टर कर योग्य हो सकता है।','ai-price-title':'मूल्य सुझाव','ai-crop-label':'फसल','ai-qty-label':'मात्रा','ai-price-btn-text':'एआई से पूछें','ai-match-title':'किसान मिलान','ai-want-label':'चाहिए','ai-match-btn-text':'मिलान खोजें','footer-text':'© हार्वेस्ट Q — IBM TechXchange watsonx.ai डेमो','farmer-search-placeholder':'उत्पाद या खेत खोजें…','mode-filter-all':'सभी मोड','mode-filter-sale':'बिक्री के लिए','mode-filter-trade':'विनिमय के लिए तैयार','mode-filter-both':'दोनों','sort-by-name':'नाम','sort-by-price-asc':'कीमत (कम→अधिक)','consumer-search-placeholder':'खरीदार या जरूरत खोजें…','ai-crop-placeholder':'उदा., टमाटर','ai-qty-placeholder':'उदा., 40 पाउंड','ai-want-placeholder':'उदा., पीच 20 पाउंड','empty-farmers':'कोई किसान सूची मेल नहीं खाई।','empty-consumers':'कोई उपभोक्ता सूची मेल नहीं खाई।','empty-laws':'इस क्षेत्र के लिए नियम उपलब्ध नहीं।','empty-med':'इस क्षेत्र के लिए चिकित्सा सुझाव नहीं।' },
+      ha: { 'tab-home':'Gida','tab-farmers':'Manoma (Masu sayarwa)','tab-consumers':'Masu Siya (Masu saya)','tab-laws':'Dokokin Noma','tab-medical':'Shawarwarin Likita','tab-trade':'Yanayin Ciniki','tab-ai':'Kugiyoyin AI','header-slogan':'Sabo • Naɗa • A Tattarafa','header-subtitle':'Haɗa manoma da masu siye. Siya ko Ciniki. Shiri don ƙetare iyaka.','home-what-title':'Abin da wannan beta ke nuna','home-what-content':'• Canjin ƙasa/jiha (US, Indiya, Najeriya) • Katunan manoma/masu siya • “Yanayin ciniki” • Dokoki/likita\n• Ƙugiyoyin AI don watsonx.ai • PWA-shiri (manifest + service worker)','home-phil-title':'Falsafar Al’umma','home-phil-content':'Muna ganin daraja ta zarce kuɗi — inda ake musayar alaƙa da albarkatu, ba daloli kaɗai ba.','home-phil-quote':'“Darajar gaskiya tana haifar da darajar gaskiya.” — @Dude','home-switch-title':'Gwada sauya jiha cikin sauri','home-country-label':'Ƙasa','home-state-label':'Jiha/Yanki','refresh-btn-text':'Sabunta','home-switch-note':'Sauya tacewa yana sabunta jerin a ƙasa.','home-warning':'<strong>Lura:</strong> Bayanai na demo ne. Ba shawarwarin doka ba.','laws-disclaimer':'Ba shawarar doka ba—duba dokokin gida.','trade-disclaimer':'Ciniki na iya zama abin haraji a wasu yankuna.','ai-price-title':'Shawarar Farashi','ai-crop-label':'Amfanin Gona','ai-qty-label':'Adadi','ai-price-btn-text':'Tambayi AI','ai-match-title':'Nemo Manomi','ai-want-label':'Ana so','ai-match-btn-text':'Nemo Daidaitawa','footer-text':'© Harvest Q — Demo don IBM TechXchange watsonx.ai','farmer-search-placeholder':'Nemo samfur ko gona…','mode-filter-all':'Dukkanin yanayi','mode-filter-sale':'Don Siya','mode-filter-trade':'A shirye don Ciniki','mode-filter-both':'Duka','sort-by-name':'Suna','sort-by-price-asc':'Farashi (ƙasa→sama)','consumer-search-placeholder':'Nemo mai siye ko bukata…','ai-crop-placeholder':'Misali, Tumatur','ai-qty-placeholder':'Misali, 40 kilo','ai-want-placeholder':'Misali, Peach kilo 20','empty-farmers':'Babu jerin manoma da suka dace.','empty-consumers':'Babu jerin masu siya da suka dace.','empty-laws':'Babu dokoki don wannan yanki.','empty-med':'Babu shawarwarin likita don wannan yanki.' }
+    };
+  </script>
+  <script>
     const IMAGES = {
-      Tomatoes:"https://images.unsplash.com/photo-1606788075761-6f2f98a9f9c5",
-      Mangoes:"https://images.unsplash.com/photo-1602526219049-bf07f3fadcfa",
-      Corn:"https://images.unsplash.com/photo-1576186726112-29f5f62d5065",
-      Cassava:"https://images.unsplash.com/photo-1568605114967-8130f3a36994",
-      Peaches:"https://images.unsplash.com/photo-1560807707-8cc77767d783",
-      "Mixed salad greens":"https://images.unsplash.com/photo-1536510344057-2362a46a76d8",
-      Cucumbers:"https://images.unsplash.com/photo-1587049352847-4c4b2a5a0cbc",
-      Okra:"https://images.unsplash.com/photo-1627689621904-4cbed0f1bc05",
-      "Bell peppers":"https://images.unsplash.com/photo-1604908177340-5cfbf86de1c7",
-      Watermelon:"https://images.unsplash.com/photo-1560807707-8cc77767d783",
-      Peppers:"https://images.unsplash.com/photo-1543338308-43f2fc028e6d",
-      Honey:"https://images.unsplash.com/photo-1517686469429-8bdb88b9f907",
-      Soybeans:"https://images.unsplash.com/photo-1551754655-cd27e38d2076",
-      "Palm oil":"https://images.unsplash.com/photo-1604908177340-5cfbf86de1c7",
-      "Basmati rice":"https://images.unsplash.com/photo-1604908554020-5953cd5fdf58?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=60",
-      "Mustard greens":"https://images.unsplash.com/photo-1607305387299-9c1a1e35283d",
-      "Sugarcane":"https://images.unsplash.com/photo-1558222217-31f8f3d6f9b0",
+      Tomatoes:"https://images.unsplash.com/photo-1606788075761-6f2f98a9f9c5", Mangoes:"https://images.unsplash.com/photo-1602526219049-bf07f3fadcfa", Corn:"https://images.unsplash.com/photo-1576186726112-29f5f62d5065", Cassava:"https://images.unsplash.com/photo-1604908554020-5953cd5fdf58", 'Yam tubers':"https://images.unsplash.com/photo-1623065422908-0f7f0f8424e7", Millet:"https://images.unsplash.com/photo-1615486364092-39d12c2775e2", Groundnuts:"https://images.unsplash.com/photo-1615486364152-8c6b4b52b9c1", Peaches:"https://images.unsplash.com/photo-1560807707-8cc77767d783", 'Mixed salad greens':"https://images.unsplash.com/photo-1536510344057-2362a46a76d8", Cucumbers:"https://images.unsplash.com/photo-1587049352847-4c4b2a5a0cbc", Okra:"https://images.unsplash.com/photo-1627689621904-4cbed0f1bc05", 'Bell peppers':"https://images.unsplash.com/photo-1604908177340-5cfbf86de1c7", Watermelon:"https://images.unsplash.com/photo-1528821154947-1aa3d9bd0d8b", Peppers:"https://images.unsplash.com/photo-1543338308-43f2fc028e6d", Honey:"https://images.unsplash.com/photo-1517686469429-8bdb88b9f907", Soybeans:"https://images.unsplash.com/photo-1551754655-cd27e38d2076", 'Palm oil':"https://images.unsplash.com/photo-1589887767051-5f0d8c52f6fd", 'Basmati rice':"https://images.unsplash.com/photo-1604908554020-5953cd5fdf58", 'Mustard greens':"https://images.unsplash.com/photo-1607305387299-9c1a1e35283d", Sugarcane:"https://images.unsplash.com/photo-1558222217-31f8f3d6f9b0"
     };
 
     const SAMPLE_FARMERS = [
-      {country:"US",state:"Alabama",city:"Auburn",farmer:"Aaliyah Moore",farm:"Tall Pines Market Garden",
-       products:[{name:"Cucumbers",qty:"45 lb",price:"$1.90/lb"},{name:"Tomatoes",qty:"40 lb",price:"$2.50/lb"}],
-       pickup:"Curbside Sat 2–4p", mode:"both", trade_preferences:["eggs","honey","compost"], trade_notes:"Open to fair swaps",
-       certifications: ["Non-GMO", "No Contract"], ownership: "Veteran-owned"},
-      {country:"India",state:"Punjab",city:"Ludhiana",farmer:"Anil Mehta",farm:"Green Valley Organics",
-       products:[{name:"Basmati rice",qty:"300 kg",price:"₹90/kg"},{name:"Mustard greens",qty:"80 kg",price:"₹40/kg"}],
-       pickup:"Farm gate 8a–4p", mode:"trade", trade_preferences:["transport-10km","compost"], trade_notes:"Can swap for short-haul transport",
-       certifications: ["Non-GMO"], ownership: null},
-      {country:"Nigeria",state:"Benue",city:"Makurdi",farmer:"Aondohemba Tersoo",farm:"Food Basket Fields",
-       products:[{name:"Cassava",qty:"200 kg",price:"₦150/kg"},{name:"Yam tubers",qty:"80",price:"₦500/each"}],
-       pickup:"Makurdi market", mode:"sale", trade_preferences:[], trade_notes:"",
-       certifications: [], ownership: null},
-      {country:"Nigeria",state:"Kano",city:"Kano",farmer:"Aminu Bello",farm:"Savanna Harvest",
-       products:[{name:"Millet",qty:"150 kg",price:"₦120/kg"},{name:"Groundnuts",qty:"100 kg",price:"₦200/kg"}],
-       pickup:"Kano market", mode:"both", trade_preferences:["shea butter","livestock feed"], trade_notes:"Flexible trades welcome",
-       certifications: ["Organic"], ownership: null},
+      {country:"US",state:"Alabama",city:"Auburn",farmer:"Aaliyah Moore",farm:"Tall Pines Market Garden", products:[{name:"Cucumbers",qty:"45 lb",price:"$1.90/lb"},{name:"Tomatoes",qty:"40 lb",price:"$2.50/lb"}], pickup:"Curbside Sat 2–4p", mode:"both", trade_preferences:["eggs","honey","compost"], trade_notes:"Open to fair swaps", certifications: ["Non-GMO", "No Contract"], ownership: "Veteran-owned"},
+      {country:"India",state:"Punjab",city:"Ludhiana",farmer:"Anil Mehta",farm:"Green Valley Organics", products:[{name:"Basmati rice",qty:"300 kg",price:"₹90/kg"},{name:"Mustard greens",qty:"80 kg",price:"₹40/kg"}], pickup:"Farm gate 8a–4p", mode:"trade", trade_preferences:["transport-10km","compost"], trade_notes:"Can swap for short-haul transport", certifications: ["Non-GMO"], ownership: null},
+      {country:"Nigeria",state:"Benue",city:"Makurdi",farmer:"Aondohemba Tersoo",farm:"Food Basket Fields", products:[{name:"Cassava",qty:"200 kg",price:"₦150/kg"},{name:"Yam tubers",qty:"80",price:"₦500/each"}], pickup:"Makurdi market", mode:"sale", trade_preferences:[], trade_notes:"", certifications: [], ownership: null},
+      {country:"Nigeria",state:"Kano",city:"Kano",farmer:"Aminu Bello",farm:"Savanna Harvest", products:[{name:"Millet",qty:"150 kg",price:"₦120/kg"},{name:"Groundnuts",qty:"100 kg",price:"₦200/kg"}], pickup:"Kano market", mode:"both", trade_preferences:["shea butter","livestock feed"], trade_notes:"Flexible trades welcome", certifications: ["Organic"], ownership: null},
     ];
 
+    const SAMPLE_CONSUMERS = [
+      {country:'US',state:'Alabama',city:'Opelika', name:'Local Co-op', want:'Tomatoes 20 lb; Peppers 10 lb', notes:'Pickup Sundays'},
+      {country:'India',state:'Punjab',city:'Amritsar', name:'Community Kitchen', want:'Mustard greens 30 kg', notes:'Pays cash or rice credit'},
+      {country:'Nigeria',state:'Benue',city:'Gboko', name:'Food Pantry', want:'Cassava 100 kg', notes:'Swap for water drums'},
+      {country:'Nigeria',state:'Kano',city:'Wudil', name:'School Canteen', want:'Groundnuts 50 kg; Millet 80 kg', notes:'Prefers weekly delivery'}
+    ];
+
+    // FULL ADMIN LISTS
     const COUNTRIES = {
-      "US": ["Alabama", "California", "Texas"],
-      "India": ["Punjab", "Maharashtra", "Tamil Nadu"],
-      "Nigeria": ["Abia", "Adamawa", "Akwa Ibom", "Anambra", "Bauchi", "Bayelsa", "Benue", "Borno", "Cross River", "Delta", "Ebonyi", "Edo", "Ekiti", "Enugu", "Federal Capital Territory", "Gombe", "Imo", "Jigawa", "Kaduna", "Kano", "Katsina", "Kebbi", "Kogi", "Kwara", "Lagos", "Nasarawa", "Niger", "Ogun", "Ondo", "Osun", "Oyo", "Plateau", "Rivers", "Sokoto", "Taraba", "Yobe", "Zamfara"]
+      'US': [
+        'Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut','Delaware','Florida','Georgia','Hawaii','Idaho','Illinois','Indiana','Iowa','Kansas','Kentucky','Louisiana','Maine','Maryland','Massachusetts','Michigan','Minnesota','Mississippi','Missouri','Montana','Nebraska','Nevada','New Hampshire','New Jersey','New Mexico','New York','North Carolina','North Dakota','Ohio','Oklahoma','Oregon','Pennsylvania','Rhode Island','South Carolina','South Dakota','Tennessee','Texas','Utah','Vermont','Virginia','Washington','West Virginia','Wisconsin','Wyoming','District of Columbia','Puerto Rico','US Virgin Islands','Guam','American Samoa','Northern Mariana Islands'
+      ],
+      'India': [
+        'Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat','Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh','Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab','Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand','West Bengal','Andaman and Nicobar Islands','Chandigarh','Dadra and Nagar Haveli and Daman and Diu','Delhi','Jammu and Kashmir','Ladakh','Lakshadweep','Puducherry'
+      ],
+      'Nigeria': [
+        'Abia','Adamawa','Akwa Ibom','Anambra','Bauchi','Bayelsa','Benue','Borno','Cross River','Delta','Ebonyi','Edo','Ekiti','Enugu','Federal Capital Territory','Gombe','Imo','Jigawa','Kaduna','Kano','Katsina','Kebbi','Kogi','Kwara','Lagos','Nasarawa','Niger','Ogun','Ondo','Osun','Oyo','Plateau','Rivers','Sokoto','Taraba','Yobe','Zamfara'
+      ]
     };
 
-    // ---------------------------
-    // Simple state & rendering
-    // ---------------------------
-    const TABS = [
-      {id:"home",label:"Home"},
-      {id:"farmers",label:"Farmers (Sellers)"},
-      {id:"consumers",label:"Consumers (Buyers)"},
-      {id:"laws",label:"Farming Laws"},
-      {id:"medical",label:"Medical Advice"},
-      {id:"trade",label:"Trade Mode"},
-      {id:"ai",label:"AI Hooks"}
-    ];
+    let DATA_FARMERS = [...SAMPLE_FARMERS];
+    let DATA_CONSUMERS = [...SAMPLE_CONSUMERS];
+
+    async function loadData(){
+      async function getJSON(path, fallback){
+        try{ const res = await fetch(path, {cache:'no-store'}); if(!res.ok) throw new Error('HTTP '+res.status); return await res.json(); }
+        catch(e){ console.warn('Using fallback for', path, e.message); return fallback; }
+      }
+      const [f,c] = await Promise.all([
+        getJSON('./data/farmers.json', SAMPLE_FARMERS),
+        getJSON('./data/consumers.json', SAMPLE_CONSUMERS)
+      ]);
+      DATA_FARMERS = Array.isArray(f)? f : SAMPLE_FARMERS;
+      DATA_CONSUMERS = Array.isArray(c)? c : SAMPLE_CONSUMERS;
+    }
+  </script>
+  <script>
+    const TABS = [{id:'home'},{id:'farmers'},{id:'consumers'},{id:'laws'},{id:'medical'},{id:'trade'},{id:'ai'}];
 
     const els = {
-      tabs: document.getElementById("tabs"),
-      panels: {},
-      country: document.getElementById("countrySelect"),
-      state: document.getElementById("stateSelect"),
-      refresh: document.getElementById("refreshBtn"),
-      farmerGrid: document.getElementById("farmerGrid"),
-      consumerGrid: document.getElementById("consumerGrid"),
-      farmerSearch: document.getElementById("farmerSearch"),
-      consumerSearch: document.getElementById("consumerSearch"),
-      modeFilter: document.getElementById("modeFilter"),
-      sortBy: document.getElementById("sortBy"),
-      tradeOnly: document.getElementById("tradeOnly"),
-      lawGrid: document.getElementById("lawGrid"),
-      medGrid: document.getElementById("medGrid"),
-      aiPriceBtn: document.getElementById("aiPriceBtn"),
-      aiPriceOut: document.getElementById("aiPriceOut"),
-      aiCrop: document.getElementById("aiCrop"),
-      aiQty: document.getElementById("aiQty"),
-      aiMatchBtn: document.getElementById("aiMatchBtn"),
-      aiMatchOut: document.getElementById("aiMatchOut"),
-      aiWant: document.getElementById("aiWant"),
-      langSelect: document.getElementById("langSelect"),
-      headerSlogan: document.getElementById("header-slogan"),
-      headerSubtitle: document.getElementById("header-subtitle"),
-      homeWhatTitle: document.getElementById("home-what-title"),
-      homeWhatContent: document.getElementById("home-what-content"),
-      homePhilTitle: document.getElementById("home-phil-title"),
-      homePhilContent: document.getElementById("home-phil-content"),
-      homePhilQuote: document.getElementById("home-phil-quote"),
-      homeSwitchTitle: document.getElementById("home-switch-title"),
-      homeCountryLabel: document.getElementById("home-country-label"),
-      homeStateLabel: document.getElementById("home-state-label"),
-      refreshBtnText: document.getElementById("refresh-btn-text"),
-      homeSwitchNote: document.getElementById("home-switch-note"),
-      homeWarning: document.getElementById("home-warning"),
-      lawsDisclaimer: document.getElementById("laws-disclaimer"),
-      tradeDisclaimer: document.getElementById("trade-disclaimer"),
-      aiPriceTitle: document.getElementById("ai-price-title"),
-      aiCropLabel: document.getElementById("ai-crop-label"),
-      aiQtyLabel: document.getElementById("ai-qty-label"),
-      aiPriceBtnText: document.getElementById("ai-price-btn-text"),
-      aiMatchTitle: document.getElementById("ai-match-title"),
-      aiWantLabel: document.getElementById("ai-want-label"),
-      aiMatchBtnText: document.getElementById("ai-match-btn-text"),
-      footerText: document.getElementById("footer-text"),
+      tabs: document.getElementById('tabs'), panels: {}, country: document.getElementById('countrySelect'), state: document.getElementById('stateSelect'), refresh: document.getElementById('refreshBtn'), farmerGrid: document.getElementById('farmerGrid'), consumerGrid: document.getElementById('consumerGrid'), farmerSearch: document.getElementById('farmerSearch'), consumerSearch: document.getElementById('consumerSearch'), modeFilter: document.getElementById('modeFilter'), sortBy: document.getElementById('sortBy'), lawGrid: document.getElementById('lawGrid'), medGrid: document.getElementById('medGrid'), aiPriceBtn: document.getElementById('aiPriceBtn'), aiPriceOut: document.getElementById('aiPriceOut'), aiCrop: document.getElementById('aiCrop'), aiQty: document.getElementById('aiQty'), aiMatchBtn: document.getElementById('aiMatchBtn'), aiMatchOut: document.getElementById('aiMatchOut'), aiWant: document.getElementById('aiWant'), langSelect: document.getElementById('langSelect'), headerSlogan: document.getElementById('header-slogan'), headerSubtitle: document.getElementById('header-subtitle'), homeWhatTitle: document.getElementById('home-what-title'), homeWhatContent: document.getElementById('home-what-content'), homePhilTitle: document.getElementById('home-phil-title'), homePhilContent: document.getElementById('home-phil-content'), homePhilQuote: document.getElementById('home-phil-quote'), homeSwitchTitle: document.getElementById('home-switch-title'), homeCountryLabel: document.getElementById('home-country-label'), homeStateLabel: document.getElementById('home-state-label'), refreshBtnText: document.getElementById('refresh-btn-text'), homeSwitchNote: document.getElementById('home-switch-note'), homeWarning: document.getElementById('home-warning'), lawsDisclaimer: document.getElementById('laws-disclaimer'), tradeDisclaimer: document.getElementById('trade-disclaimer'), aiPriceTitle: document.getElementById('ai-price-title'), aiCropLabel: document.getElementById('ai-crop-label'), aiQtyLabel: document.getElementById('ai-qty-label'), aiPriceBtnText: document.getElementById('ai-price-btn-text'), aiMatchTitle: document.getElementById('ai-match-title'), aiWantLabel: document.getElementById('ai-want-label'), aiMatchBtnText: document.getElementById('ai-match-btn-text'), footerText: document.getElementById('footer-text'),
     };
     TABS.forEach(t => els.panels[t.id] = document.getElementById(`panel-${t.id}`));
 
-    // Initialize language
-    let currentLang = "en";
-    function setLanguage(lang) {
-      currentLang = lang;
-      els.headerSlogan.textContent = LANG[lang]["header-slogan"];
-      els.headerSubtitle.textContent = LANG[lang]["header-subtitle"];
-      els.homeWhatTitle.textContent = LANG[lang]["home-what-title"];
-      els.homeWhatContent.textContent = LANG[lang]["home-what-content"];
-      els.homePhilTitle.textContent = LANG[lang]["home-phil-title"];
-      els.homePhilContent.textContent = LANG[lang]["home-phil-content"];
-      els.homePhilQuote.innerHTML = LANG[lang]["home-phil-quote"];
-      els.homeSwitchTitle.textContent = LANG[lang]["home-switch-title"];
-      els.homeCountryLabel.textContent = LANG[lang]["home-country-label"] + " ";
-      els.homeStateLabel.textContent = LANG[lang]["home-state-label"] + " ";
-      els.refreshBtnText.textContent = LANG[lang]["refresh-btn-text"];
-      els.homeSwitchNote.textContent = LANG[lang]["home-switch-note"];
-      els.homeWarning.innerHTML = LANG[lang]["home-warning"];
-      els.lawsDisclaimer.textContent = LANG[lang]["laws-disclaimer"];
-      els.tradeDisclaimer.textContent = LANG[lang]["trade-disclaimer"];
-      els.aiPriceTitle.textContent = LANG[lang]["ai-price-title"];
-      els.aiCropLabel.textContent = LANG[lang]["ai-crop-label"] + " ";
-      els.aiQtyLabel.textContent = LANG[lang]["ai-qty-label"] + " ";
-      els.aiPriceBtnText.textContent = LANG[lang]["ai-price-btn-text"];
-      els.aiMatchTitle.textContent = LANG[lang]["ai-match-title"];
-      els.aiWantLabel.textContent = LANG[lang]["ai-want-label"] + " ";
-      els.aiMatchBtnText.textContent = LANG[lang]["ai-match-btn-text"];
-      els.footerText.textContent = LANG[lang]["footer-text"];
-      els.farmerSearch.placeholder = LANG[lang]["farmer-search-placeholder"];
-      document.querySelectorAll('#modeFilter option')[0].textContent = LANG[lang]["mode-filter-all"];
-      document.querySelectorAll('#modeFilter option')[1].textContent = LANG[lang]["mode-filter-sale"];
-      document.querySelectorAll('#modeFilter option')[2].textContent = LANG[lang]["mode-filter-trade"];
-      document.querySelectorAll('#modeFilter option')[3].textContent = LANG[lang]["mode-filter-both"];
-      document.querySelectorAll('#sortBy option')[0].textContent = LANG[lang]["sort-by-name"];
-      document.querySelectorAll('#sortBy option')[1].textContent = LANG[lang]["sort-by-price-asc"];
-      els.consumerSearch.placeholder = LANG[lang]["consumer-search-placeholder"];
-      els.aiCrop.placeholder = LANG[lang]["ai-crop-placeholder"];
-      els.aiQty.placeholder = LANG[lang]["ai-qty-placeholder"];
-      els.aiWant.placeholder = LANG[lang]["ai-want-placeholder"];
-      document.documentElement.lang = lang; // Update HTML lang attribute
-    }
+    const savedLang = localStorage.getItem('hq:lang') || 'en'; els.langSelect.value = savedLang; let currentLang = savedLang; function t(key){return (LANG[currentLang] && LANG[currentLang][key]) || key;}
 
-    // Language switch event
+    function setLanguage(lang){ currentLang=lang; localStorage.setItem('hq:lang', lang); document.documentElement.lang = lang; els.headerSlogan.textContent = t('header-slogan'); els.headerSubtitle.textContent = t('header-subtitle'); els.homeWhatTitle.textContent = t('home-what-title'); els.homeWhatContent.textContent = t('home-what-content'); els.homePhilTitle.textContent = t('home-phil-title'); els.homePhilContent.textContent = t('home-phil-content'); els.homePhilQuote.innerHTML = t('home-phil-quote'); els.homeSwitchTitle.textContent = t('home-switch-title'); els.homeCountryLabel.textContent = t('home-country-label') + ' '; els.homeStateLabel.textContent = t('home-state-label') + ' '; els.refreshBtnText.textContent = t('refresh-btn-text'); els.homeSwitchNote.textContent = t('home-switch-note'); els.homeWarning.innerHTML = t('home-warning'); els.lawsDisclaimer.textContent = t('laws-disclaimer'); els.tradeDisclaimer.textContent = t('trade-disclaimer'); els.aiPriceTitle.textContent = t('ai-price-title'); els.aiCropLabel.textContent = t('ai-crop-label') + ' '; els.aiQtyLabel.textContent = t('ai-qty-label') + ' '; els.aiPriceBtnText.textContent = t('ai-price-btn-text'); els.aiMatchTitle.textContent = t('ai-match-title'); els.aiWantLabel.textContent = t('ai-want-label') + ' '; els.aiMatchBtnText.textContent = t('ai-match-btn-text'); els.footerText.textContent = t('footer-text'); els.farmerSearch.placeholder = t('farmer-search-placeholder'); document.querySelectorAll('#modeFilter option')[0].textContent = t('mode-filter-all'); document.querySelectorAll('#modeFilter option')[1].textContent = t('mode-filter-sale'); document.querySelectorAll('#modeFilter option')[2].textContent = t('mode-filter-trade'); document.querySelectorAll('#modeFilter option')[3].textContent = t('mode-filter-both'); document.querySelectorAll('#sortBy option')[0].textContent = t('sort-by-name'); document.querySelectorAll('#sortBy option')[1].textContent = t('sort-by-price-asc'); els.consumerSearch.placeholder = t('consumer-search-placeholder'); els.aiCrop.placeholder = t('ai-crop-placeholder'); els.aiQty.placeholder = t('ai-qty-placeholder'); els.aiWant.placeholder = t('ai-want-placeholder'); document.querySelectorAll('.tab').forEach(btn => { const id = btn.getAttribute('data-id'); btn.textContent = t(`tab-${id}`); }); }
+
     els.langSelect.addEventListener('change', (e) => setLanguage(e.target.value));
-    setLanguage(currentLang); // Initial load
 
-    // country/state controls
-    function initFilters() {
-      const saved = JSON.parse(localStorage.getItem('hq:filters') || '{}');
-      els.country.value = saved.country || "US";
-      updateStateOptions();
-      els.state.value = saved.state || COUNTRIES[els.country.value][0];
-      els.country.onchange = () => { updateStateOptions(); saveFilters(); };
-      els.state.onchange = saveFilters;
-      els.refresh.onclick = refreshAll;
-    }
-    function saveFilters() { 
-      localStorage.setItem('hq:filters', JSON.stringify({country:els.country.value, state:els.state.value})); 
-    }
-    function updateStateOptions() {
-      els.state.innerHTML = "";
-      const list = COUNTRIES[els.country.value] || [];
-      list.forEach(s => { const o = document.createElement("option"); o.value = s; o.textContent = s; els.state.appendChild(o); });
-    }
+    function updateCountryOptions(){ els.country.innerHTML=''; Object.keys(COUNTRIES).forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; els.country.appendChild(o); }); }
+    function updateStateOptions(){ els.state.innerHTML=''; (COUNTRIES[els.country.value]||[]).forEach(s=>{ const o=document.createElement('option'); o.value=s; o.textContent=s; els.state.appendChild(o); }); }
+    function saveFilters(){ localStorage.setItem('hq:filters', JSON.stringify({country:els.country.value, state:els.state.value})); }
+    function loadFilters(){ const saved = JSON.parse(localStorage.getItem('hq:filters')||'{}'); els.country.value = saved.country || 'US'; updateStateOptions(); els.state.value = saved.state || (COUNTRIES[els.country.value]||[])[0] || ''; }
 
-    function refreshAll() {
-      renderFarmers();
-      renderConsumers();
-      renderLaws();
-      renderMedical();
-    }
+    function refreshAll(){ showSkeletons(); renderFarmers(); renderConsumers(); renderLaws(); renderMedical(); updateCropDatalist(); }
 
-    // empty state helper
-    function emptyState(el, text) {
-      el.innerHTML = `<div class="card" style="text-align:center;color:#6b7280">${text}</div>`;
-    }
+    function emptyState(el, text){ el.innerHTML = `<div class="card" style="text-align:center;color:#6b7280">${text}</div>`; }
+    function showSkeletons(){ [els.farmerGrid, els.consumerGrid, els.lawGrid, els.medGrid].forEach(g=>{ if(!g) return; g.innerHTML=''; for(let i=0;i<3;i++){ const s=document.createElement('div'); s.className='card skeleton'; s.style.height='140px'; g.appendChild(s);} }); }
 
-    // filtering helpers
-    const byCountryState = (arr) => arr.filter(x => x.country === els.country.value && x.state === els.state.value);
+    const byCountryState = arr => arr.filter(x => x.country === els.country.value && x.state === els.state.value);
 
-    function renderFarmers() {
-      const src = byCountryState(SAMPLE_FARMERS);
-      const q = (els.farmerSearch.value || "").toLowerCase();
-      const mode = els.modeFilter.value;
-      const sortBy = els.sortBy.value;
-      let list = src.filter(f => {
-        const hay = (f.farm + " " + f.farmer + " " + f.products.map(p => p.name).join(" ")).toLowerCase();
-        const passQ = !q || hay.includes(q);
-        const passM = mode === "all" || f.mode === mode || (mode === "both" && f.mode === "both");
-        return passQ && passM;
-      });
-      if (sortBy === "name") {
-        list = list.map(f => ({ ...f, products: f.products.sort((a, b) => a.name.localeCompare(b.name)) }));
-      } else if (sortBy === "priceAsc") {
-        list = list.map(f => ({ ...f, products: f.products.sort((a, b) => {
-          const priceA = parseFloat(a.price.replace(/[^\d.]/g, '')) || 0;
-          const priceB = parseFloat(b.price.replace(/[^\d.]/g, '')) || 0;
-          return priceA - priceB;
-        }) }));
-      }
-      if (!list.length) return emptyState(els.farmerGrid, "No farmer listings match your filters yet.");
-      els.farmerGrid.innerHTML = "";
-      list.forEach(f => {
-        f.products.forEach(p => {
-          const card = document.createElement("div");
-          card.className = "card";
-          const img = IMAGES[p.name] || IMAGES["Tomatoes"];
-          const q = encodeURIComponent(`${f.city}, ${f.state}`);
-          card.innerHTML = `
-            <img class="thumb" src="${img}" alt="${p.name}">
+    function renderFarmers(){ const src = byCountryState(DATA_FARMERS); const q=(els.farmerSearch.value||'').toLowerCase(); const mode=els.modeFilter.value; const sortBy=els.sortBy.value; let list = src.filter(f=>{ const hay=(f.farm+' '+f.farmer+' '+f.products.map(p=>p.name).join(' ')).toLowerCase(); const passQ=!q||hay.includes(q); const passM = mode==='all'||f.mode===mode||(mode==='both'&&f.mode==='both'); return passQ&&passM; }); if(sortBy==='name'){ list=list.map(f=>({...f, products:f.products.sort((a,b)=>a.name.localeCompare(b.name))})); } else if(sortBy==='priceAsc'){ list=list.map(f=>({...f, products:f.products.sort((a,b)=>toNumber(a.price)-toNumber(b.price))})); } if(!list.length) return emptyState(els.farmerGrid, t('empty-farmers')); els.farmerGrid.innerHTML=''; list.forEach(f=>{ f.products.forEach(p=>{ const card=document.createElement('div'); card.className='card'; const img=IMAGES[p.name]||IMAGES['Tomatoes']; const q=encodeURIComponent(`${f.city}, ${f.state}`); const wants=f.trade_preferences?.length?`<p class="muted"><strong>Wants:</strong> ${f.trade_preferences.join(', ')}</p>`:''; const certs=(f.certifications||[]).map(c=>`<span class=\"pill\">${c}</span>`).join(''); const owner=f.ownership?`<span class=\"pill\">${f.ownership}</span>`:''; card.innerHTML = `
+            <img class="thumb" src="${img}" alt="${p.name}" loading="lazy" onerror="this.style.display='none'">
             <h3>${p.name} — ${p.qty}</h3>
             <p><strong>Price:</strong> ${p.price}</p>
             <p><strong>Farm:</strong> ${f.farm} · <span class="muted">${f.city}, ${f.state}</span></p>
             <p><strong>Pickup:</strong> ${f.pickup}</p>
-            <p>${f.mode !== "sale" ? '<span class="pill trade">Trade</span>' : ''}</p>
-            ${f.trade_preferences?.length ? `<p class="muted"><strong>Wants:</strong> ${f.trade_preferences.join(', ')}</p>` : ''}
-            <p class="muted">
-              ${f.certifications?.map(c => `<span class="pill">${c}</span>`).join('') || ''}
-              ${f.ownership ? `<span class="pill">${f.ownership}</span>` : ''}
-            </p>
+            <p>${f.mode !== 'sale' ? '<span class="pill trade">Trade</span>' : ''}</p>
+            ${wants}
+            <p class="muted">${certs} ${owner}</p>
             <p class="muted">~${pseudoKm(f.city)} km away</p>
-            <p><a class="muted" href="mailto:team@harvestq.org?subject=Report Listing: ${encodeURIComponent(f.farm)}">Report issue</a></p>
-            <p><a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${q}">Open in Maps</a></p>
-          `;
-          els.farmerGrid.appendChild(card);
-        });
-      });
-    }
+            <div class="flex" style="gap:6px;flex-wrap:wrap">
+              <a class="btn secondary" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${q}">Open in Maps</a>
+              <button class="btn secondary" aria-label="Copy listing" onclick='navigator.clipboard.writeText(${JSON.stringify(JSON.stringify({farm:"${f.farm}",farmer:"${f.farmer}",product:"${p.name}",qty:"${p.qty}",price:"${p.price}",city:"${f.city}",state:"${f.state}"}))}).then(()=>this.textContent="Copied!").catch(()=>alert("Copy failed"))'>Copy</button>
+              <a class="muted" href="mailto:team@harvestq.org?subject=Report Listing: ${encodeURIComponent(f.farm)}">Report issue</a>
+            </div>`; els.farmerGrid.appendChild(card); }); }); }
 
-    function renderConsumers() {
-      const src = byCountryState(SAMPLE_FARMERS.map(f => ({...f, type: "consumer"})));
-      const q = (els.consumerSearch.value || "").toLowerCase();
-      if (!src.length) return emptyState(els.consumerGrid, "No consumer listings match your filters yet.");
-      els.consumerGrid.innerHTML = "";
-      src.forEach(f => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `<h3>${f.farmer} — ${f.farm}</h3><p>${f.city}, ${f.state}</p>`;
-        els.consumerGrid.appendChild(card);
-      });
-    }
+    function renderConsumers(){ const src = byCountryState(DATA_CONSUMERS); const q=(els.consumerSearch.value||'').toLowerCase(); const filtered = src.filter(c=>!q||(c.name+' '+c.want+' '+c.city).toLowerCase().includes(q)); if(!filtered.length) return emptyState(els.consumerGrid, t('empty-consumers')); els.consumerGrid.innerHTML=''; filtered.forEach(c=>{ const card=document.createElement('div'); card.className='card'; card.innerHTML=`<h3>${c.name}</h3><p>${c.city}, ${c.state}</p><p><strong>Wants:</strong> ${c.want}</p><p class="muted">${c.notes||''}</p>`; els.consumerGrid.appendChild(card); }); }
 
-    function renderLaws() {
-      const src = byCountryState([{country:"US",state:"Alabama",law:"Local farming permits required."},{country:"India",state:"Punjab",law:"Organic certification mandatory."},{country:"Nigeria",state:"Benue",law:"Market stall registration needed."},{country:"Nigeria",state:"Kano",law:"Crop export permits required."}]);
-      if (!src.length) return emptyState(els.lawGrid, "No laws available for this region.");
-      els.lawGrid.innerHTML = "";
-      src.forEach(l => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `<p>${l.law}</p>`;
-        els.lawGrid.appendChild(card);
-      });
-    }
+    function renderLaws(){ const src = byCountryState([{country:'US',state:'Alabama',law:'Local direct-sales permits may be required for farmers markets.'},{country:'India',state:'Punjab',law:'Organic claims should follow FSSAI guidelines; verify certification where applicable.'},{country:'Nigeria',state:'Benue',law:'Market stall registration may be required by local council.'},{country:'Nigeria',state:'Kano',law:'Check crop export documentation for inter-state or cross-border shipments.'}]); if(!src.length) return emptyState(els.lawGrid, t('empty-laws')); els.lawGrid.innerHTML=''; src.forEach(l=>{ const card=document.createElement('div'); card.className='card'; card.innerHTML=`<p>${l.law}</p>`; els.lawGrid.appendChild(card); }); }
 
-    function renderMedical() {
-      const src = byCountryState([{country:"US",state:"Alabama",tip:"Wash produce thoroughly."},{country:"India",state:"Punjab",tip:"Use gloves when handling crops."},{country:"Nigeria",state:"Benue",tip:"Boil water for irrigation safety."},{country:"Nigeria",state:"Kano",tip:"Wear protective gear in dry seasons."}]);
-      if (!src.length) return emptyState(els.medGrid, "No medical tips for this region.");
-      els.medGrid.innerHTML = "";
-      src.forEach(m => {
-        const card = document.createElement("div");
-        card.className = "card";
-        card.innerHTML = `<p>${m.tip}</p>`;
-        els.medGrid.appendChild(card);
-      });
-    }
+    function renderMedical(){ const src = byCountryState([{country:'US',state:'Alabama',tip:'Wash produce thoroughly; keep cold-chain for leafy greens.'},{country:'India',state:'Punjab',tip:'Use clean water for washing; avoid mixing raw and ready-to-eat.'},{country:'Nigeria',state:'Benue',tip:'Boil/treat irrigation water where uncertain; sanitize tools.'},{country:'Nigeria',state:'Kano',tip:'Wear masks in dust season; rinse grains to reduce particulates.'}]); if(!src.length) return emptyState(els.medGrid, t('empty-med')); els.medGrid.innerHTML=''; src.forEach(m=>{ const card=document.createElement('div'); card.className='card'; card.innerHTML=`<p>${m.tip}</p>`; els.medGrid.appendChild(card); }); }
 
-    // Initialize
-    function init() {
-      renderTabs();
-      switchPanel("home");
-      initFilters();
-      els.farmerSearch.oninput = renderFarmers;
-      els.consumerSearch.oninput = renderConsumers;
-      els.modeFilter.onchange = renderFarmers;
-      els.sortBy.onchange = renderFarmers;
-    }
-    document.addEventListener("DOMContentLoaded", init);
+    const BASE_RATES = { US:{Tomatoes:2.5,Cucumbers:1.8,Peaches:3.0,'Bell peppers':2.2,Corn:1.2}, India:{Tomatoes:30,'Mustard greens':40,'Basmati rice':90}, Nigeria:{Cassava:180,Millet:120,Groundnuts:220,'Yam tubers':450} };
+    function parseQty(qtyStr=''){ const n=toNumber(qtyStr); const unit = /kg/i.test(qtyStr)?'kg':(/lb|pound/i.test(qtyStr)?'lb':(/each|pcs|pc/i.test(qtyStr)?'each':'unit')); return { n, unit }; }
 
-    function renderTabs() {
-      els.tabs.innerHTML = "";
-      TABS.forEach(t => {
-        const btn = document.createElement("button");
-        btn.className = "tab";
-        btn.textContent = t.label;
-        btn.onclick = () => switchPanel(t.id);
-        els.tabs.appendChild(btn);
-      });
-    }
+    function aiSuggestPrice(){ const crop=(els.aiCrop.value||'').trim(); const qtyIn=(els.aiQty.value||'').trim(); const country=els.country.value; if(!crop||!qtyIn){ els.aiPriceOut.textContent='Enter crop and quantity (e.g., Tomatoes, 40 lb).'; return; } const base=BASE_RATES[country]&&BASE_RATES[country][crop]; const {symbol,unit}=CURRENCY[country]||{symbol:'$',unit:'lb'}; const {n,unit:inUnit}=parseQty(qtyIn); let qtyStd=n; if(unit==='kg'&&inUnit==='lb') qtyStd=lbToKg(n); if(unit==='lb'&&inUnit==='kg') qtyStd=kgToLb(n); const volDisc=clamp((qtyStd/100)*0.12,0,0.12); const fallback=1.8; const basePrice=base||fallback; const priceLo=basePrice*(1-volDisc)*0.92; const priceHi=basePrice*(1-volDisc)*1.08; let perUnit=unit; if(crop.toLowerCase().includes('rice')&&country!=='US') perUnit='kg'; if(/each|pcs|pc/.test(inUnit)) perUnit='each'; els.aiPriceOut.textContent=[`Country: ${country}  |  Currency: ${symbol}  |  Unit: ${perUnit}`, base?`Baseline for ${crop}: ${symbol}${basePrice.toFixed(2)} / ${perUnit}`:`No baseline for ${crop} — using generic benchmark`, `Suggested range: ${symbol}${priceLo.toFixed(2)} – ${symbol}${priceHi.toFixed(2)} per ${perUnit}`, qtyStd?`Volume effect (~${(volDisc*100).toFixed(1)}% discount) for ~${qtyStd.toFixed(0)} ${perUnit}.`:'', 'Note: Demo-only heuristic. Verify with local market data.' ].filter(Boolean).join('\n'); }
 
-    function switchPanel(id) {
-      TABS.forEach(t => els.panels[t.id].hidden = t.id !== id);
-      document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
-      document.querySelector(`.tab:nth-child(${TABS.findIndex(t => t.id === id) + 1})`).classList.add('active');
-    }
+    function aiFindMatch(){ const want=(els.aiWant.value||'').trim(); if(!want){ els.aiMatchOut.textContent='Describe what you want (e.g., Peaches 20 lb).'; return; } const parts=want.split(/[,;]| and /i).map(s=>s.trim()).filter(Boolean); const items=parts.map(s=>{ const qty=parseQty(s); const name=s.replace(/[0-9.,\s]*(kg|lb|each|pcs?|pc)?/ig,'').trim()||s.trim(); return {name, qty}; }); const country=els.country.value; const pool=DATA_FARMERS.filter(f=>f.country===country); const matches=[]; for(const f of pool){ for(const p of f.products){ const hit=items.find(it=>p.name.toLowerCase().includes(it.name.toLowerCase())); if(hit){ matches.push({farm:f.farm, farmer:f.farmer, city:f.city, state:f.state, product:p.name, qty:p.qty, price:p.price, mode:f.mode}); } } } if(!matches.length){ els.aiMatchOut.textContent='No matches found in current country. Try another crop or switch country.'; return; } const selState=els.state.value; matches.sort((a,b)=>{ const pa=toNumber(a.price), pb=toNumber(b.price); if(pa!==pb) return pa-pb; const sa=a.state===selState?-1:1; const sb=b.state===selState?-1:1; return sa-sb; }); els.aiMatchOut.textContent=matches.slice(0,5).map(m=>`${m.product} from ${m.farm} (${m.city}, ${m.state}) — ${m.qty} @ ${m.price} ${m.mode==='both'?'[Trade ok]':''}`).join('\n'); }
+
+    function renderTabs(){ els.tabs.innerHTML=''; TABS.forEach(t=>{ const btn=document.createElement('button'); btn.className='tab'; btn.setAttribute('role','tab'); btn.id=`tab-${t.id}`; btn.setAttribute('data-id',t.id); btn.setAttribute('aria-controls',`panel-${t.id}`); btn.textContent=t(`tab-${t.id}`); btn.onclick=()=>switchPanel(t.id,true); els.tabs.appendChild(btn); }); els.tabs.addEventListener('keydown',(e)=>{ const tabs=Array.from(els.tabs.querySelectorAll('.tab')); const idx=tabs.findIndex(x=>x.classList.contains('active')); if(['ArrowRight','ArrowLeft','Home','End'].includes(e.key)){ e.preventDefault(); let next=idx; if(e.key==='ArrowRight') next=(idx+1)%tabs.length; if(e.key==='ArrowLeft') next=(idx-1+tabs.length)%tabs.length; if(e.key==='Home') next=0; if(e.key==='End') next=tabs.length-1; tabs[next].focus(); tabs[next].click(); } }); }
+
+    function switchPanel(id,pushHash=false){ TABS.forEach(t=>els.panels[t.id].hidden=t.id!==id); document.querySelectorAll('.tab').forEach(b=>{ b.classList.toggle('active', b.getAttribute('data-id')===id); b.setAttribute('aria-selected', b.classList.contains('active')); b.tabIndex = b.classList.contains('active')?0:-1; }); if(pushHash) location.hash = `#${id}`; localStorage.setItem('hq:tab', id); }
+    function startOnTab(){ const fromHash=location.hash.replace('#',''); const saved=localStorage.getItem('hq:tab')||'home'; const target=TABS.find(t=>t.id===fromHash)?fromHash:saved; switchPanel(target); }
+    function updateCropDatalist(){ const dl=document.getElementById('cropList'); dl.innerHTML=''; const names=Array.from(new Set(Object.keys(IMAGES).concat(...SAMPLE_FARMERS.map(f=>f.products.map(p=>p.name))))).flat().filter(Boolean).sort(); names.forEach(n=>{ const o=document.createElement('option'); o.value=n; dl.appendChild(o); }); }
+
+    function init(){ setLanguage(currentLang); renderTabs(); startOnTab(); updateCountryOptions(); loadFilters(); els.country.onchange=()=>{ updateStateOptions(); saveFilters(); refreshAll(); }; els.state.onchange=()=>{ saveFilters(); refreshAll(); }; els.refresh.onclick=()=>{ els.refresh.disabled=true; setTimeout(()=>{ refreshAll(); els.refresh.disabled=false; }, 150); }; els.farmerSearch.addEventListener('input', debounce(renderFarmers,200)); els.consumerSearch.addEventListener('input', debounce(renderConsumers,200)); els.modeFilter.addEventListener('change', renderFarmers); els.sortBy.addEventListener('change', renderFarmers); els.aiPriceBtn.addEventListener('click', aiSuggestPrice); els.aiMatchBtn.addEventListener('click', aiFindMatch); loadData().then(()=>{ refreshAll(); }); }
+    document.addEventListener('DOMContentLoaded', init);
+    window.addEventListener('hashchange', ()=>{ const id=location.hash.replace('#',''); if(TABS.some(t=>t.id===id)) switchPanel(id); });
   </script>
 </body>
 </html>
