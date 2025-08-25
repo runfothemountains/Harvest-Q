@@ -239,6 +239,7 @@
       ]);
       DATA_FARMERS = Array.isArray(f)? f : SAMPLE_FARMERS;
       DATA_CONSUMERS = Array.isArray(c)? c : SAMPLE_CONSUMERS;
+      if (typeof validateData === 'function') validateData();
     }
   </script>
   <script>
@@ -279,7 +280,7 @@
             <p class="muted">~${pseudoKm(f.city)} km away</p>
             <div class="flex" style="gap:6px;flex-wrap:wrap">
               <a class="btn secondary" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${q}">Open in Maps</a>
-              <button class="btn secondary" aria-label="Copy listing" onclick='navigator.clipboard.writeText(${JSON.stringify(JSON.stringify({farm:"${f.farm}",farmer:"${f.farmer}",product:"${p.name}",qty:"${p.qty}",price:"${p.price}",city:"${f.city}",state:"${f.state}"}))}).then(()=>this.textContent="Copied!").catch(()=>alert("Copy failed"))'>Copy</button>
+              <button class="btn secondary" aria-label="Copy listing" onclick='navigator.clipboard.writeText(${JSON.stringify(JSON.stringify({farm:"${'${f.farm}'}",farmer:"${'${f.farmer}'}",product:"${'${p.name}'}",qty:"${'${p.qty}'}",price:"${'${p.price}'}",city:"${'${f.city}'}",state:"${'${f.state}'}"}))}).then(()=>this.textContent="Copied!").catch(()=>alert("Copy failed"))'>Copy</button>
               <a class="muted" href="mailto:team@harvestq.org?subject=Report Listing: ${encodeURIComponent(f.farm)}">Report issue</a>
             </div>`; els.farmerGrid.appendChild(card); }); }); }
 
@@ -300,11 +301,41 @@
 
     function switchPanel(id,pushHash=false){ TABS.forEach(t=>els.panels[t.id].hidden=t.id!==id); document.querySelectorAll('.tab').forEach(b=>{ b.classList.toggle('active', b.getAttribute('data-id')===id); b.setAttribute('aria-selected', b.classList.contains('active')); b.tabIndex = b.classList.contains('active')?0:-1; }); if(pushHash) location.hash = `#${id}`; localStorage.setItem('hq:tab', id); }
     function startOnTab(){ const fromHash=location.hash.replace('#',''); const saved=localStorage.getItem('hq:tab')||'home'; const target=TABS.find(t=>t.id===fromHash)?fromHash:saved; switchPanel(target); }
-    function updateCropDatalist(){ const dl=document.getElementById('cropList'); dl.innerHTML=''; const names=Array.from(new Set(Object.keys(IMAGES).concat(...SAMPLE_FARMERS.map(f=>f.products.map(p=>p.name))))).flat().filter(Boolean).sort(); names.forEach(n=>{ const o=document.createElement('option'); o.value=n; dl.appendChild(o); }); }
+    function updateCropDatalist(){ const dl=document.getElementById('cropList'); dl.innerHTML=''; const names=Array.from(new Set(Object.keys(IMAGES).concat(...(DATA_FARMERS||[]).map(f=>f.products.map(p=>p.name))))).flat().filter(Boolean).sort(); names.forEach(n=>{ const o=document.createElement('option'); o.value=n; dl.appendChild(o); }); }
 
     function init(){ setLanguage(currentLang); renderTabs(); startOnTab(); updateCountryOptions(); loadFilters(); els.country.onchange=()=>{ updateStateOptions(); saveFilters(); refreshAll(); }; els.state.onchange=()=>{ saveFilters(); refreshAll(); }; els.refresh.onclick=()=>{ els.refresh.disabled=true; setTimeout(()=>{ refreshAll(); els.refresh.disabled=false; }, 150); }; els.farmerSearch.addEventListener('input', debounce(renderFarmers,200)); els.consumerSearch.addEventListener('input', debounce(renderConsumers,200)); els.modeFilter.addEventListener('change', renderFarmers); els.sortBy.addEventListener('change', renderFarmers); els.aiPriceBtn.addEventListener('click', aiSuggestPrice); els.aiMatchBtn.addEventListener('click', aiFindMatch); loadData().then(()=>{ refreshAll(); }); }
     document.addEventListener('DOMContentLoaded', init);
     window.addEventListener('hashchange', ()=>{ const id=location.hash.replace('#',''); if(TABS.some(t=>t.id===id)) switchPanel(id); });
+  </script>
+
+  <script>
+    // Data validation for country/state names to match COUNTRIES
+    function validateData(){
+      try{
+        const msgs = [];
+        const check = (rec, type) => {
+          if (!rec) return;
+          if (!COUNTRIES[rec.country]) msgs.push(`${type}: unknown country "${rec.country}"`);
+          else if (!COUNTRIES[rec.country].includes(rec.state))
+            msgs.push(`${type}: unknown state "${rec.state}" for ${rec.country}`);
+        };
+        (window.DATA_FARMERS || []).forEach(f => check(f, `Farmer ${f.farm || f.farmer || ''}`));
+        (window.DATA_CONSUMERS || []).forEach(c => check(c, `Consumer ${c.name || c.city || ''}`));
+        if (msgs.length){
+          console.warn('Harvest-Q data validation warnings:', msgs);
+          if (window.els && els.homeWarning){
+            els.homeWarning.innerHTML +=
+              `<div style="margin-top:.5rem">
+                 <strong>Data warnings:</strong>
+                 <ul style="margin:.4rem 0 0; padding-left:1.1rem">
+                   ${msgs.slice(0,5).map(m=>`<li>${m}</li>`).join('')}
+                   ${msgs.length>5 ? `<li>+${msgs.length-5} more…</li>` : ''}
+                 </ul>
+               </div>`;
+          }
+        }
+      } catch(e){ console.warn('Validation failed:', e); }
+    }
   </script>
 </body>
 </html>
