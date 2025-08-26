@@ -5,19 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Harvest Q - Fresh Local Produce & Trade Platform (Beta)</title>
   <meta name="description" content="Harvest Q connects farmers and buyers with fresh, local produce for sale or trade. Explore listings, get AI-powered price suggestions, and support sustainable communities." />
+
+  <!-- PWA + Icons -->
   <link rel="manifest" href="manifest.webmanifest" />
-  <link rel="icon" href="/logo.png" />
   <meta name="theme-color" content="#0f766e" />
+  <!-- Updated favicon set using the new logo (Option 2) -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/logo.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/logo.png" />
+  <link rel="apple-touch-icon" href="/logo.png" />
+
   <style>
     :root { --teal:#0f766e; --teal-d:#0b5b55; --green:#22c55e; --ink:#0f172a; --muted:#6b7280; --bg:#f4f9f6; --card:#ffffff; --ring: 0 0 0 3px rgba(34,197,94,.35); }
     *{box-sizing:border-box}
     html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial}
-    @media (prefers-color-scheme: dark){ :root{--bg:#0b1020; --card:#0e162d; --ink:#e5e7eb; --muted:#9ca3af} header{background:linear-gradient(90deg,#0b5b55,#043f35)} .tab{background:#0f172a;color:#e5e7eb;border-color:#223254} .btn.secondary{background:#0f172a;color:#e5e7eb} .card{border-color:#1f2a44} }
+    @media (prefers-color-scheme: dark){
+      :root{--bg:#0b1020; --card:#0e162d; --ink:#e5e7eb; --muted:#9ca3af}
+      header{background:linear-gradient(90deg,#0b5b55,#043f35)}
+      .tab{background:#0f172a;color:#e5e7eb;border-color:#223254}
+      .btn.secondary{background:#0f172a;color:#e5e7eb}
+      .card{border-color:#1f2a44}
+    }
+
     header{background:linear-gradient(90deg,var(--teal),#065f46);color:#fff;padding:20px}
     header h1{margin:0;font-size:24px;display:flex;align-items:center;gap:10px}
     header p{margin:.25rem 0 0;color:#e2e8f0}
     .brand{display:flex;align-items:center;gap:10px}
-    .brand img{width:32px;height:32px;border-radius:8px}
+    .brand img{width:40px;height:40px;border-radius:8px;display:block}
     .beta{font-size:12px;background:#22c55e;color:#063;padding:.15rem .5rem;border-radius:999px}
     .container{max-width:1100px;margin:0 auto;padding:16px}
     nav.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0 8px}
@@ -46,12 +59,14 @@
     .skeleton{border-radius:14px;background:linear-gradient(90deg,#e5e7eb,#f3f4f6,#e5e7eb);background-size:200% 100%;animation:shimmer 1.2s infinite}
     @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
     .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+
     /* Error overlay */
     #hq-error{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:9999}
     #hq-error .box{max-width:720px;background:#fff;color:#111;border-radius:12px;padding:16px;border:2px solid #ef4444}
     #hq-error h4{margin:0 0 8px 0;font-size:16px;color:#b91c1c}
     #hq-error pre{white-space:pre-wrap;word-break:break-word}
   </style>
+
   <script>
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(()=>{ /* ok if missing in beta */ });
@@ -62,7 +77,8 @@
   <header>
     <div class="container">
       <h1 class="brand">
-        <img src="/logo.png" alt="Harvest Q logo" onerror="this.style.display='none'">
+        <!-- New logo in header -->
+        <img src="/logo.png" alt="Harvest Q logo" width="40" height="40">
         Harvest Q — <span id="header-slogan"></span>
         <span class="beta" aria-label="Beta badge">BETA</span>
       </h1>
@@ -243,7 +259,7 @@
         'ai-price-title':'मूल्य सुझाव','ai-crop-label':'फसल','ai-qty-label':'मात्रा','ai-price-btn-text':'एआई से पूछें',
         'ai-match-title':'किसान मिलान','ai-want-label':'चाहिए','ai-match-btn-text':'मिलान खोजें',
         'footer-text':'© हार्वेस्ट Q — RFAI डेमो • ',
-        'farmer-search-placeholder':'उत्पाद या खेत खोजें…','mode-filter-all':'सभी मोड','mode-filter-sale':'बिक्री के लिए','mode-filter-trade':'विनिमय के लिए तैयार','mode-filter-both':'दोनों','sort-by-name':'नाम','sort-by-price-asc':'कीमत (कम→अधिक)',
+        'farmer-search-placeholder':'उत्पाद या खेत खोजें…','mode-filter-all':'सभी मोड','mode-filter-sale':'बिक्री के लिए','mode-filter-tr्रेड':'विनिमय के लिए तैयार','mode-filter-both':'दोनों','sort-by-name':'नाम','sort-by-price-asc':'कीमत (कम→अधिक)',
         'consumer-search-placeholder':'खरीदार या जरूरत खोजें…','ai-crop-placeholder':'उदा., टमाटर','ai-qty-placeholder':'उदा., 40 पाउंड','ai-want-placeholder':'उदा., पीच 20 पाउंड',
         'empty-farmers':'कोई किसान सूची मेल नहीं खाई।','empty-consumers':'कोई उपभोक्ता सूची मेल नहीं खाई।','empty-laws':'इस क्षेत्र के लिए नियम उपलब्ध नहीं।','empty-med':'इस क्षेत्र के लिए चिकित्सा सुझाव नहीं।'
       },
@@ -408,11 +424,9 @@
       document.querySelectorAll('#sortBy option')[0].textContent = t('sort-by-name');
       document.querySelectorAll('#sortBy option')[1].textContent = t('sort-by-price-asc');
 
-      // update tab labels if already rendered
       document.querySelectorAll('.tab').forEach(btn => { const id = btn.getAttribute('data-id'); btn.textContent = t(`tab-${id}`); });
-
       els.footerText.textContent = t('footer-text') + formatNowTZ();
-      // refresh city "All Cities" label
+
       const firstCity = els.city.querySelector('option[value=""]'); if (firstCity) firstCity.textContent = t('all-cities');
     }
 
@@ -443,7 +457,6 @@
     function updateCityOptions(){
       const cities = getCityList(els.country.value, els.state.value);
       els.city.innerHTML='';
-      // Always include "All Cities"
       const any=document.createElement('option'); any.value=''; any.textContent=t('all-cities'); els.city.appendChild(any);
       if (cities.length){
         cities.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; els.city.appendChild(o); });
@@ -482,10 +495,12 @@
     }
 
     function renderTabs(){
-      els.tabs.innerHTML=''; TABS.forEach(t=>{
+      els.tabs.innerHTML='';
+      TABS.forEach(t=>{
         const btn=document.createElement('button');
-        btn.className='tab'; btn.setAttribute('role','tab'); btn.id=`tab-${t.id}`; btn.setAttribute('data-id',t.id); btn.setAttribute('aria-controls',`panel-${t.id}`);
-        btn.textContent = t__('tab-'+t.id);
+        btn.className='tab'; btn.setAttribute('role','tab'); btn.id=`tab-${t.id}`;
+        btn.setAttribute('data-id',t.id); btn.setAttribute('aria-controls',`panel-${t.id}`);
+        btn.textContent = (LANG[currentLang] && LANG[currentLang]['tab-'+t.id]) || ('tab-'+t.id);
         btn.onclick=()=>switchPanel(t.id,true);
         els.tabs.appendChild(btn);
       });
@@ -500,7 +515,6 @@
           tabs[next].focus(); tabs[next].click();
         }
       });
-      function t__(k){ return (LANG[currentLang] && LANG[currentLang][k]) || k; }
     }
 
     function switchPanel(id,pushHash=false){
@@ -711,11 +725,11 @@
     function refreshAll(){ showSkeletons(); renderFarmers(); renderConsumers(); renderLaws(); renderMedical(); updateCropDatalist(); }
 
     function init(){
-      renderTabs();                     // render tab buttons first
-      setLanguage(currentLang);         // then populate strings & footer timestamp
+      renderTabs();
+      setLanguage(currentLang);
       startOnTab();
       updateCountryOptions();
-      loadFilters();                    // sets country/state/city from storage
+      loadFilters();
       els.country.onchange=()=>{ updateStateOptions(); saveFilters(); refreshAll(); };
       els.state.onchange=()=>{ updateCityOptions(); saveFilters(); refreshAll(); };
       els.city.onchange = ()=>{ saveFilters(); refreshAll(); };
