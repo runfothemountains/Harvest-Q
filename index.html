@@ -46,7 +46,6 @@
     .skeleton{border-radius:14px;background:linear-gradient(90deg,#e5e7eb,#f3f4f6,#e5e7eb);background-size:200% 100%;animation:shimmer 1.2s infinite}
     @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
     .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
-
     /* Error overlay */
     #hq-error{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;z-index:9999}
     #hq-error .box{max-width:720px;background:#fff;color:#111;border-radius:12px;padding:16px;border:2px solid #ef4444}
@@ -713,7 +712,7 @@
 
     function init(){
       renderTabs();                     // render tab buttons first
-      setLanguage(currentLang);         // then populate strings
+      setLanguage(currentLang);         // then populate strings & footer timestamp
       startOnTab();
       updateCountryOptions();
       loadFilters();                    // sets country/state/city from storage
