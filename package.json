@@ -1,0 +1,15 @@
+{
+  "name": "harvest-app",
+  "version": "1.0.0",
+  "description": "Harvest web application",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
