@@ -1,0 +1,13 @@
+{
+  "name": "Harvest Q",
+  "short_name": "HarvestQ",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color":"#f4f9f6",
+  "theme_color":"#0f766e",
+  "icons": [
+    {"src":"./logo.png","sizes":"192x192","type":"image/png"},
+    {"src":"./logo.png","sizes":"512x512","type":"image/png"},
+    {"src":"./logo_maskable.png","sizes":"512x512","purpose":"maskable"}
+  ]
+}
