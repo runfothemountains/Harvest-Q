@@ -1,0 +1,52 @@
+data/
+  us_markets.json            # national fallback
+  us/
+    California.json
+    Texas.json
+    Alabama.json
+    ...
+
+[
+  { "market":"Los Angeles Produce Exchange","city":"Los Angeles","state":"California","lat":34.0522,"lng":-118.2437,"mode":"sale","type":"Wholesale" }
+]
+
+async function loadMarkets(){
+  const legend = els.mapLegend;
+  // pick source based on filters
+  const country = document.querySelector('#countrySelect')?.value || 'US';
+  const state   = document.querySelector('#stateSelect')?.value || '';
+  const src = (country==='US' && state) ? `./data/us/${encodeURIComponent(state)}.json`
+                                        : './data/us_markets.json';
+
+  try{
+    const res = await fetch(src, {cache:'no-store'});
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const list = await res.json();
+    let drawn = 0;
+    (list||[]).forEach(m=>{
+      if(typeof m?.lat!=='number' || typeof m?.lng!=='number') return;
+      const color =
+        m.mode==='sale' ? getComputedStyle(document.documentElement).getPropertyValue('--sale').trim() :
+        m.mode==='trade'? getComputedStyle(document.documentElement).getPropertyValue('--trade').trim() :
+                          getComputedStyle(document.documentElement).getPropertyValue('--both').trim();
+      L.circleMarker([m.lat,m.lng],{radius:6,color}).addTo(map)
+        .bindPopup(`<strong>${m.market}</strong><br>${m.city}, ${m.state}${m.type? `<br>${m.type}`:''}`);
+      drawn++;
+    });
+    if(drawn===0){
+      legend.insertAdjacentHTML('afterend',
+        `<p class="muted" style="margin-top:8px">No market points available for this dataset.</p>`);
+    }else{
+      // smart-fit the map to markers (optional future polish)
+      // (collect latlngs and call map.fitBounds)
+    }
+  }catch(e){
+    console.warn('markets load fail', e);
+    legend.insertAdjacentHTML('afterend',
+      `<p class="muted" style="margin-top:8px">Map data failed to load. Try again later.</p>`);
+  }
+}
+
+document.querySelector('#countrySelect')?.addEventListener('change', ()=>{ populateStateCities(); renderFarmers(); loadMarkets(); });
+document.querySelector('#stateSelect')?.addEventListener('change',  ()=>{ renderFarmers(); loadMarkets(); });
+document.querySelector('#citySelect')?.addEventListener('change',   ()=>{ renderFarmers(); /* map optional */ });
