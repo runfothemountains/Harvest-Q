@@ -373,3 +373,5 @@ E('postCancel')?.addEventListener('click', closePostModal);
   <span class="field-error" id="errPrice" aria-live="polite"></span>
 </label>
 
+/* css/style.css */
+.field-error{ display:block; color:#b91c1c; font-size:12px; margin-top:4px }
