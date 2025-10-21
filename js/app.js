@@ -318,3 +318,10 @@ async function loadMarkets(){
       `<p class="muted" style="margin-top:8px">Map data failed to load. Try again later.</p>`);
   }
 }
+<!-- index.html -->
+<div id="postModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="postTitle" hidden>
+  <div class="modal-box">
+    <h3 id="postTitle">Post a Listing</h3>
+    <!-- form unchanged -->
+  </div>
+</div>
