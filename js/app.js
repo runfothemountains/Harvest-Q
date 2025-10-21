@@ -470,3 +470,11 @@ track('markets_loaded', { count: drawn });
 
 track('listing_posted', { product: els.pfProduct.value, qty: els.pfQty.value, price: els.pfPrice.value, mode: els.pfMode.value });
 
+els.aiPriceBtn?.addEventListener('click', ()=>{
+  track('ai_price_clicked', { crop: els.aiCrop.value, qty: els.aiQty.value });
+  // ...existing logic...
+});
+els.aiMatchBtn?.addEventListener('click', ()=>{
+  track('ai_match_clicked', { want: els.aiWant.value });
+  // ...existing logic...
+});
