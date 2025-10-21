@@ -427,3 +427,5 @@ const savedSort = LS.get('hq:sort','name');
 if (els.modeFilter) els.modeFilter.value = savedMode;
 if (els.sortBy)    els.sortBy.value    = savedSort;
 
+els.modeFilter?.addEventListener('change', e=>{ LS.set('hq:mode', e.target.value); renderFarmers(); });
+els.sortBy?.addEventListener('change',  e=>{ LS.set('hq:sort', e.target.value);  renderFarmers(); });
