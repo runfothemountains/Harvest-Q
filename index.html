@@ -19,18 +19,18 @@
   <script defer src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
   <script>
-    // register relative service worker so it works on GitHub Pages subpaths
+    // Register relative service worker so it works on GitHub Pages subpaths
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js').catch(()=>{});
     }
   </script>
 </head>
 <body>
-  <!-- Compare banner: update URLs after deploy -->
-  <div class="compare-banner">
+  <!-- Compare banner (real links) -->
+  <div class="compare-banner" style="margin:8px 0">
     <strong>Compare:</strong>
-    <a id="cmp-stage1" href="#">Stage 1</a> |
-    <a id="cmp-stage2" href="#">Stage 2</a>
+    <a id="cmp-stage1" href="https://runfothemountains.github.io/Harvest-Q/">Stage 1</a> |
+    <a id="cmp-stage2" href="https://harvest-q.vercel.app/">Stage 2</a>
   </div>
 
   <header class="hq-header">
@@ -109,7 +109,7 @@
       <div id="mapArea" class="card" style="margin-top:12px">
         <h4>Market Map</h4>
         <div id="map" style="height:360px;border-radius:8px;"></div>
-        <div id="map-legend" class="legend"></div>
+        <div id="mapLegend" class="legend"></div>
       </div>
     </section>
 
@@ -147,15 +147,21 @@
     <footer class="footer-note" id="footer-text"></footer>
   </main>
 
-  <!-- Post Listing Modal -->
-  <div id="postModal" class="modal" aria-hidden="true" hidden>
+  <!-- Post Listing Modal (ARIA added; inline error spans added) -->
+  <div id="postModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="postTitle" aria-hidden="true" hidden>
     <div class="modal-box">
-      <h3>Post a Listing</h3>
+      <h3 id="postTitle">Post a Listing</h3>
       <form id="postForm">
         <label>Farm name<input id="pfFarm" required></label>
         <label>Product<input id="pfProduct" required></label>
-        <label>Quantity<input id="pfQty" placeholder="e.g., 40 kg / 100 lb" required></label>
-        <label>Price<input id="pfPrice" placeholder="e.g., 2.50" required></label>
+        <label>Quantity
+          <input id="pfQty" inputmode="decimal" step="0.01" min="0.01" placeholder="e.g., 40 kg / 100 lb" required>
+          <span class="field-error" id="errQty" aria-live="polite"></span>
+        </label>
+        <label>Price
+          <input id="pfPrice" inputmode="decimal" step="0.01" min="0.01" placeholder="e.g., 2.50" required>
+          <span class="field-error" id="errPrice" aria-live="polite"></span>
+        </label>
         <label>Mode
           <select id="pfMode"><option value="sale">Sale</option><option value="trade">Trade</option><option value="both">Both</option></select>
         </label>
@@ -170,101 +176,13 @@
 
   <!-- Error overlay -->
   <div id="hq-error" role="dialog" aria-live="assertive" hidden>
-    <div class="box"><h4>Something went wrong</h4><pre id="hq-error-text"></pre><button class="btn" onclick="document.getElementById('hq-error').hidden=true">Close</button></div>
+    <div class="box">
+      <h4>Something went wrong</h4>
+      <pre id="hq-error-text"></pre>
+      <button class="btn" onclick="document.getElementById('hq-error').hidden=true">Close</button>
+    </div>
   </div>
 
   <script src="./js/app.js" defer></script>
 </body>
 </html>
-
-<!-- index.html -->
-<div id="postModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="postTitle" hidden>
-  <div class="modal-box">
-    <h3 id="postTitle">Post a Listing</h3>
-    <!-- form unchanged -->
-  </div>
-</div>
-
-// js/app.js (near modal wiring)
-let postOpenerBtn = null;
-
-function trapFocus(modal){
-  const selectors = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
-  const focusables = Array.from(modal.querySelectorAll(selectors)).filter(el=>!el.disabled);
-  if(!focusables.length) return;
-  let first = focusables[0], last = focusables[focusables.length-1];
-  function onKey(e){
-    if(e.key==='Tab'){
-      if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
-      else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
-    }
-    if(e.key==='Escape'){ closePostModal(); }
-  }
-  modal.addEventListener('keydown', onKey);
-  modal._focusTrapCleanup = () => modal.removeEventListener('keydown', onKey);
-  first.focus();
-}
-
-function openPostModal(btn){
-  postOpenerBtn = btn || null;
-  els.postModal.hidden = false;
-  els.postModal.setAttribute('aria-hidden','false');
-  trapFocus(els.postModal);
-  els.pfFarm?.focus();
-}
-
-function closePostModal(){
-  els.postModal.hidden = true;
-  els.postModal.setAttribute('aria-hidden','true');
-  els.postModal._focusTrapCleanup?.();
-  postOpenerBtn?.focus();
-}
-
-els.postOpenBtn?.addEventListener('click', ()=>openPostModal(els.postOpenBtn));
-E('postCancel')?.addEventListener('click', closePostModal);
-
-<label>Quantity
-  <input id="pfQty" inputmode="decimal" step="0.01" min="0.01" placeholder="e.g., 40 kg / 100 lb" required>
-  <span class="field-error" id="errQty" aria-live="polite"></span>
-</label>
-<label>Price
-  <input id="pfPrice" inputmode="decimal" step="0.01" min="0.01" placeholder="e.g., 2.50" required>
-  <span class="field-error" id="errPrice" aria-live="polite"></span>
-</label>
-
-/* css/style.css */
-.field-error{ display:block; color:#b91c1c; font-size:12px; margin-top:4px }
-
-function sanitizeNumberInput(str){
-  return String(str||'').replace(/,/g,'').trim();
-}
-function requirePositiveNumber(str){
-  const clean = sanitizeNumberInput(str);
-  const n = Number(clean);
-  if(!clean) return {ok:false, msg:'Required'};
-  if(!isFinite(n) || n<=0) return {ok:false, msg:'Enter a positive number'};
-  return {ok:true, value:n};
-}
-
-els.postForm?.addEventListener('submit', (ev)=>{
-  ev.preventDefault();
-  // clear errors
-  E('errQty').textContent=''; E('errPrice').textContent='';
-  const rQty = requirePositiveNumber(els.pfQty.value);
-  const rPrice = requirePositiveNumber(els.pfPrice.value);
-  let hasErr = false;
-  if(!rQty.ok){ E('errQty').textContent = rQty.msg; hasErr = true; }
-  if(!rPrice.ok){ E('errPrice').textContent = rPrice.msg; hasErr = true; }
-  if(hasErr) return;
-
-  // proceed (normalize if you wish)
-  // ...
-  closePostModal();
-  renderFarmers();
-});
-
-    <div class="compare-banner">
-  <strong>Compare:</strong>
-  <a id="cmp-stage1" href="https://runfothemountains.github.io/Harvest-Q/">Stage 1</a> |
-  <a id="cmp-stage2" href="https://harvest-q.vercel.app/">Stage 2</a>
-</div>
