@@ -429,3 +429,10 @@ if (els.sortBy)    els.sortBy.value    = savedSort;
 
 els.modeFilter?.addEventListener('change', e=>{ LS.set('hq:mode', e.target.value); renderFarmers(); });
 els.sortBy?.addEventListener('change',  e=>{ LS.set('hq:sort', e.target.value);  renderFarmers(); });
+
+function slug(s=''){ return String(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
+function cropImageSrc(name){
+  // Try a local image first (optional: place your crop images under ./img/crops/)
+  return `./img/crops/${slug(name)}.jpg`;
+}
+
