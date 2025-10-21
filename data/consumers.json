@@ -1,0 +1,5 @@
+// data/consumers.json
+[
+  { "country": "US", "state": "California", "city": "San Francisco",
+    "name": "Urban Market", "want": "Tomatoes 30 lb", "notes": "Cash or credit" }
+]
