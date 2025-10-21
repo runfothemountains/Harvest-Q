@@ -325,3 +325,41 @@ async function loadMarkets(){
     <!-- form unchanged -->
   </div>
 </div>
+
+// js/app.js (near modal wiring)
+let postOpenerBtn = null;
+
+function trapFocus(modal){
+  const selectors = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+  const focusables = Array.from(modal.querySelectorAll(selectors)).filter(el=>!el.disabled);
+  if(!focusables.length) return;
+  let first = focusables[0], last = focusables[focusables.length-1];
+  function onKey(e){
+    if(e.key==='Tab'){
+      if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+      else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+    }
+    if(e.key==='Escape'){ closePostModal(); }
+  }
+  modal.addEventListener('keydown', onKey);
+  modal._focusTrapCleanup = () => modal.removeEventListener('keydown', onKey);
+  first.focus();
+}
+
+function openPostModal(btn){
+  postOpenerBtn = btn || null;
+  els.postModal.hidden = false;
+  els.postModal.setAttribute('aria-hidden','false');
+  trapFocus(els.postModal);
+  els.pfFarm?.focus();
+}
+
+function closePostModal(){
+  els.postModal.hidden = true;
+  els.postModal.setAttribute('aria-hidden','true');
+  els.postModal._focusTrapCleanup?.();
+  postOpenerBtn?.focus();
+}
+
+els.postOpenBtn?.addEventListener('click', ()=>openPostModal(els.postOpenBtn));
+E('postCancel')?.addEventListener('click', closePostModal);
