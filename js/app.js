@@ -467,3 +467,6 @@ async function track(event, data={}){
 track('map_loaded');
 // after markets JSON successfully processed:
 track('markets_loaded', { count: drawn });
+
+track('listing_posted', { product: els.pfProduct.value, qty: els.pfQty.value, price: els.pfPrice.value, mode: els.pfMode.value });
+
