@@ -78,3 +78,12 @@ els.postForm?.addEventListener('submit', (ev)=>{
   closePostModal();
   renderFarmers();
 });
+
+  /* Darken muted text a bit in light mode */
+.muted { color: #4b5563; } /* was #6b7280 */
+
+/* Beta chip text darker for contrast */
+.beta { color: #072; background: #22c55e; } /* text now darker than background */
+
+/* Ensure tab active contrast */
+.tab.active { color:#fff; background: var(--harvest); }
