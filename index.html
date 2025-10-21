@@ -222,3 +222,12 @@ function closePostModal(){
 
 els.postOpenBtn?.addEventListener('click', ()=>openPostModal(els.postOpenBtn));
 E('postCancel')?.addEventListener('click', closePostModal);
+
+<label>Quantity
+  <input id="pfQty" inputmode="decimal" step="0.01" min="0.01" placeholder="e.g., 40 kg / 100 lb" required>
+  <span class="field-error" id="errQty" aria-live="polite"></span>
+</label>
+<label>Price
+  <input id="pfPrice" inputmode="decimal" step="0.01" min="0.01" placeholder="e.g., 2.50" required>
+  <span class="field-error" id="errPrice" aria-live="polite"></span>
+</label>
