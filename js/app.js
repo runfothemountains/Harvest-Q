@@ -463,3 +463,7 @@ async function track(event, data={}){
   }catch(e){ /* swallow errors */ }
 }
 
+// after map is created:
+track('map_loaded');
+// after markets JSON successfully processed:
+track('markets_loaded', { count: drawn });
