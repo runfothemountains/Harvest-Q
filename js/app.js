@@ -420,3 +420,10 @@ const LS = {
   get(k, d){ try{ return JSON.parse(localStorage.getItem(k)) ?? d; }catch{ return d; } },
   set(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
 };
+
+// restore saved filters
+const savedMode = LS.get('hq:mode','all');
+const savedSort = LS.get('hq:sort','name');
+if (els.modeFilter) els.modeFilter.value = savedMode;
+if (els.sortBy)    els.sortBy.value    = savedSort;
+
