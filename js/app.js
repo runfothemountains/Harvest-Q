@@ -450,3 +450,16 @@ card.innerHTML = `
     <a class="btn secondary" target="_blank" rel="noopener"
        href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(f.city+','+f.state)}">Open in Maps</a>
   </div>`;
+
+const ANALYTICS_ENDPOINT = ''; // optional like '/api/track' later
+
+async function track(event, data={}){
+  const payload = { event, ts: Date.now(), ...data };
+  // Always dev-log so you can verify locally
+  console.log('[analytics]', payload);
+  if (!ANALYTICS_ENDPOINT) return;
+  try{
+    await fetch(ANALYTICS_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+  }catch(e){ /* swallow errors */ }
+}
+
