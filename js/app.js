@@ -436,3 +436,17 @@ function cropImageSrc(name){
   return `./img/crops/${slug(name)}.jpg`;
 }
 
+const imgSrc = cropImageSrc(p.name);
+const card = document.createElement('div'); 
+card.className='card';
+card.innerHTML = `
+  <img class="thumb" src="${imgSrc}" alt="${p.name}" style="width:100%;height:150px;object-fit:cover;border-radius:8px"
+       onerror="this.onerror=null; this.src='./img/placeholder.png';">
+  <h3>${p.name} — ${p.qty}</h3>
+  <p><strong>Price:</strong> ${p.price}</p>
+  <p><strong>Farm:</strong> ${f.farm} · <span class="muted">${f.city}, ${f.state}</span></p>
+  <p><strong>Pickup:</strong> ${f.pickup}</p>
+  <div class="flex" style="gap:6px;margin-top:8px">
+    <a class="btn secondary" target="_blank" rel="noopener"
+       href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(f.city+','+f.state)}">Open in Maps</a>
+  </div>`;
