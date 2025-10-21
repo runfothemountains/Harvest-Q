@@ -1,0 +1,13 @@
+// data/farmers.json
+[
+  {
+    "country": "US",
+    "state": "California",
+    "city": "Los Angeles",
+    "farmer": "Sunlit Fields",
+    "farm": "Sunlit Fields",
+    "products": [{ "name": "Tomatoes", "qty": "40 lb", "price": "$2.50/lb" }],
+    "pickup": "Wed 10a–2p",
+    "mode": "sale"
+  }
+]
