@@ -403,3 +403,12 @@ els.postForm?.addEventListener('submit', (ev)=>{
   closePostModal();
   renderFarmers();
 });
+
+// Replace: els.homeWarning.innerHTML = "<strong>Note:</strong> ...";
+function setStaticWarning(el){
+  el.textContent = ''; // clear
+  const strong = document.createElement('strong'); strong.textContent = 'Note: ';
+  const rest = document.createTextNode('Demo data for judging. Compliance cards are non-legal summaries; pair with legal counsel.');
+  el.appendChild(strong); el.appendChild(rest);
+}
+setStaticWarning(els.homeWarning);
