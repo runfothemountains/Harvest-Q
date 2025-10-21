@@ -412,3 +412,6 @@ function setStaticWarning(el){
   el.appendChild(strong); el.appendChild(rest);
 }
 setStaticWarning(els.homeWarning);
+
+function escapeHTML(s){ return String(s).replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
+// then el.innerHTML = escapeHTML(userString);
