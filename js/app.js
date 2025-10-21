@@ -288,3 +288,33 @@ async function init(){
   els.footerText.textContent = `© Harvest Q — Stage 2 • ${new Date().toLocaleString()}`;
 }
 document.addEventListener('DOMContentLoaded', init);
+
+async function loadMarkets(){
+  const legend = els.mapLegend;
+  try{
+    const res = await fetch('./data/us_markets.json', {cache:'no-store'});
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const list = await res.json();
+
+    let drawn = 0;
+    list.forEach(m=>{
+      if(!m || typeof m.lat!=='number' || typeof m.lng!=='number') return;
+      const color =
+        m.mode==='sale' ? getComputedStyle(document.documentElement).getPropertyValue('--sale').trim() :
+        m.mode==='trade'? getComputedStyle(document.documentElement).getPropertyValue('--trade').trim() :
+                          getComputedStyle(document.documentElement).getPropertyValue('--both').trim();
+      L.circleMarker([m.lat,m.lng],{radius:6,color}).addTo(map)
+        .bindPopup(`<strong>${m.market}</strong><br>${m.city}, ${m.state}${m.type? `<br>${m.type}`:''}`);
+      drawn++;
+    });
+
+    if(drawn===0){
+      legend.insertAdjacentHTML('afterend',
+        `<p class="muted" style="margin-top:8px">No market points available for this dataset.</p>`);
+    }
+  }catch(err){
+    console.warn('Markets load failed:', err);
+    legend.insertAdjacentHTML('afterend',
+      `<p class="muted" style="margin-top:8px">Map data failed to load. Try again later.</p>`);
+  }
+}
