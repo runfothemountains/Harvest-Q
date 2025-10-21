@@ -1,9 +1,10 @@
 /* Stage-2 app.js
- - i18n (EN/HI only)
+ - i18n (EN/HI)
  - UI orchestration
- - Map (Leaflet) lazy-load / markets
- - Post modal + validation
+ - Map (Leaflet) lazy-load / markets with fallback
+ - Modal accessibility + validation (inline errors)
  - AI price & match stubs
+ - Nice-to-haves: stateful filters, image fallback, analytics hooks
 */
 
 /* -------------------------
@@ -12,6 +13,19 @@
 const CURRENCY = { US:{symbol:'$',unit:'lb'}, India:{symbol:'₹',unit:'kg'}, Nigeria:{symbol:'₦',unit:'kg'} };
 const toNumber = s => Number(String(s||'').replace(/[^0-9.\-]/g,'')) || 0;
 const debounce = (fn,ms=200)=>{let t; return (...a)=>{clearTimeout(t); t=setTimeout(()=>fn(...a),ms);}};
+const LS = {
+  get(k, d){ try{ return JSON.parse(localStorage.getItem(k)) ?? d; }catch{ return d; } },
+  set(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
+};
+const ANALYTICS_ENDPOINT = ''; // set later if you add a backend endpoint
+async function track(event, data={}){ 
+  const payload = { event, ts: Date.now(), ...data };
+  console.log('[analytics]', payload);
+  if(!ANALYTICS_ENDPOINT) return;
+  try{ await fetch(ANALYTICS_ENDPOINT, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)}); }catch{}
+}
+const slug = (s='')=>String(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
+const cropImageSrc = name => `./img/crops/${slug(name)}.jpg`;
 
 /* -------------------------
    i18n (extracted minimal)
@@ -26,7 +40,9 @@ const LANG = {
     'mode-all':'All','mode-sale':'For Sale','mode-trade':'Willing to Trade','mode-both':'Both',
     'sort-name':'Name','sort-price':'Price (low→high)',
     'ai-price-btn':'Ask AI','ai-match-btn':'Find Match',
-    'post-errors':'Please correct highlighted fields'
+    'post-errors':'Please correct highlighted fields',
+    'no-farmers':'No farmer listings match your filters yet.',
+    'no-consumers':'No consumer listings match your filters yet.'
   },
   hi: {
     'tab-home':'होम','tab-farmers':'किसान','tab-consumers':'उपभोक्ता','tab-laws':'कानून','tab-ai':'एआई',
@@ -34,13 +50,14 @@ const LANG = {
     'home-what-title':'यह बीटा क्या दिखाता है','home-what-content':'देश/राज्य/शहर स्विचिंग • किसान और उपभोक्ता • मानचित्र • PWA',
     'refresh':'ताज़ा करें','all-cities':'सभी शहर',
     'farmer-search-placeholder':'उत्पाद या खेत खोजें…','consumer-search-placeholder':'खरीदार खोजें…',
-    'mode-all':'सभी','mode-sale':'बिक्री के लिए','mode-trade':'विनिमय के लिए','mode-both':'दोनों',
+    'mode-all':'सभी','mode-sale':'बिक्री के लिए','mode-trेड':'विनिमय के लिए','mode-both':'दोनों', // note: keep your keys consistent
     'sort-name':'नाम','sort-price':'कीमत (कम→अधिक)',
     'ai-price-btn':'एआई से पूछें','ai-match-btn':'मिलान खोजें',
-    'post-errors':'कृपया फ़ील्ड सुधारें'
+    'post-errors':'कृपया फ़ील्ड सुधारें',
+    'no-farmers':'कोई किसान सूची नहीं मिली।',
+    'no-consumers':'कोई उपभोक्ता सूची नहीं मिली।'
   }
 };
-
 let currentLang = localStorage.getItem('hq:lang') || 'en';
 const t = (k) => (LANG[currentLang] && LANG[currentLang][k]) || k;
 
@@ -49,7 +66,8 @@ const t = (k) => (LANG[currentLang] && LANG[currentLang][k]) || k;
    ------------------------- */
 const E = id => document.getElementById(id);
 const els = {
-  tabs: E('tabs'), panels: {}, country: E('countrySelect'), state: E('stateSelect'), city: E('citySelect'),
+  tabs: E('tabs'), panels: {},
+  country: E('countrySelect'), state: E('stateSelect'), city: E('citySelect'),
   farmerGrid: E('farmerGrid'), consumerGrid: E('consumerGrid'),
   farmerSearch: E('farmerSearch'), consumerSearch: E('consumerSearch'),
   modeFilter: E('modeFilter'), sortBy: E('sortBy'),
@@ -57,9 +75,9 @@ const els = {
   pfFarm: E('pfFarm'), pfProduct: E('pfProduct'), pfQty: E('pfQty'), pfPrice: E('pfPrice'), pfMode: E('pfMode'), postErrors: E('postErrors'),
   aiCrop: E('aiCrop'), aiQty: E('aiQty'), aiPriceBtn: E('aiPriceBtn'), aiPriceOut: E('aiPriceOut'),
   aiWant: E('aiWant'), aiMatchBtn: E('aiMatchBtn'), aiMatchOut: E('aiMatchOut'),
-  mapEl: E('map'), mapLegend: E('map-legend'), footerText: E('footer-text')
+  mapEl: E('map'), mapLegend: E('mapLegend'),
+  footerText: E('footer-text'), homeWarning: E('home-warning')
 };
-
 ['home','farmers','consumers','laws','ai'].forEach(k=>els.panels[k]=E(`panel-${k}`));
 
 /* -------------------------
@@ -67,7 +85,7 @@ const els = {
    ------------------------- */
 let DATA_FARMERS = [];
 let DATA_CONSUMERS = [];
-const SAMPLE_FARMERS = []; // kept small on purpose; you can add full SAMPLE arrays or point to ./data/farmers.json
+const SAMPLE_FARMERS = [];
 const SAMPLE_CONSUMERS = [];
 
 /* -------------------------
@@ -75,7 +93,7 @@ const SAMPLE_CONSUMERS = [];
    ------------------------- */
 async function loadData(){
   async function maybe(path, fallback=[]){
-    try{ const r = await fetch(path, {cache:'no-store'}); if(!r.ok) throw new Error('no'); const j = await r.json(); return j; }
+    try{ const r = await fetch(path, {cache:'no-store'}); if(!r.ok) throw new Error('no'); return await r.json(); }
     catch(e){ console.warn('fallback',path); return fallback; }
   }
   DATA_FARMERS = await maybe('./data/farmers.json', SAMPLE_FARMERS);
@@ -87,8 +105,11 @@ async function loadData(){
    ------------------------- */
 const TABS = [{id:'home'},{id:'farmers'},{id:'consumers'},{id:'laws'},{id:'ai'}];
 function renderTabs(){
-  els.tabs.innerHTML=''; TABS.forEach(ti=>{
-    const b=document.createElement('button'); b.className='tab'; b.dataset.id=ti.id; b.textContent=t(`tab-${ti.id}`); b.onclick=()=>switchPanel(ti.id,true);
+  els.tabs.innerHTML='';
+  TABS.forEach(ti=>{
+    const b=document.createElement('button');
+    b.className='tab'; b.dataset.id=ti.id; b.setAttribute('role','tab');
+    b.textContent=t(`tab-${ti.id}`); b.onclick=()=>switchPanel(ti.id,true);
     els.tabs.appendChild(b);
   });
 }
@@ -98,63 +119,94 @@ function switchPanel(id,push){
   if(push) location.hash = `#${id}`;
   localStorage.setItem('hq:tab', id);
 }
-function startTab(){ const fromHash = location.hash.replace('#',''); const saved = localStorage.getItem('hq:tab')||'home'; const target = TABS.some(t=>t.id===fromHash)?fromHash:saved; switchPanel(target); }
-
+function startTab(){
+  const fromHash = location.hash.replace('#','');
+  const saved = localStorage.getItem('hq:tab')||'home';
+  const target = TABS.some(t=>t.id===fromHash)?fromHash:saved;
+  switchPanel(target);
+}
 function setLanguage(lang){
   currentLang=lang; localStorage.setItem('hq:lang', lang);
-  // static pieces
-  document.querySelector('#header-sub').textContent = t('header-sub');
-  document.querySelector('#home-what-title').textContent = t('home-what-title');
-  document.querySelector('#home-what-content').textContent = t('home-what-content');
-  // placeholders
+  E('header-sub').textContent = t('header-sub');
+  E('home-what-title').textContent = t('home-what-title');
+  E('home-what-content').textContent = t('home-what-content');
   els.farmerSearch.placeholder = t('farmer-search-placeholder');
   els.consumerSearch.placeholder = t('consumer-search-placeholder');
-  document.querySelectorAll('#modeFilter option')[0].textContent = t('mode-all');
-  document.querySelectorAll('#modeFilter option')[1].textContent = t('mode-sale');
-  document.querySelectorAll('#modeFilter option')[2].textContent = t('mode-trade');
-  document.querySelectorAll('#modeFilter option')[3].textContent = t('mode-both');
-  document.querySelectorAll('#sortBy option')[0].textContent = t('sort-name');
-  document.querySelectorAll('#sortBy option')[1].textContent = t('sort-price');
-  document.querySelector('#ai-price-btn-text')?.replaceWith(document.createTextNode(t('ai-price-btn'))); // fallback safe
+  const mops = els.modeFilter?.querySelectorAll('option'); if(mops && mops.length>=4){
+    mops[0].textContent=t('mode-all'); mops[1].textContent=t('mode-sale'); mops[2].textContent=t('mode-trade'); mops[3].textContent=t('mode-both');
+  }
+  const sops = els.sortBy?.querySelectorAll('option'); if(sops && sops.length>=2){
+    sops[0].textContent=t('sort-name'); sops[1].textContent=t('sort-price');
+  }
 }
 
 /* -------------------------
    Renderers
    ------------------------- */
-function emptyState(el, txt){ el.innerHTML = `<div class="card" style="text-align:center;color:var(--muted)">${txt}</div>`; }
-
+function emptyState(el, txt){
+  const card = document.createElement('div');
+  card.className='card'; card.style.textAlign='center'; card.style.color='var(--muted)';
+  card.textContent = txt;
+  el.innerHTML=''; el.appendChild(card);
+}
 function filterByGeo(arr){
-  const country = document.querySelector('#countrySelect').value || 'US';
-  const state = document.querySelector('#stateSelect').value || '';
-  const city = document.querySelector('#citySelect').value || '';
+  const country = els.country.value || 'US';
+  const state = els.state.value || '';
+  const city = els.city.value || '';
   return arr.filter(x => x.country===country && x.state===state && (!city || x.city===city));
 }
-
 function renderFarmers(){
-  const list = filterByGeo(DATA_FARMERS);
+  const src = filterByGeo(DATA_FARMERS);
   const q = (els.farmerSearch.value||'').toLowerCase();
-  if(!list.length) return emptyState(els.farmerGrid, t('no-farmers')||'No farmers yet.');
+  const mode = els.modeFilter?.value || 'all';
+  const sortBy = els.sortBy?.value || 'name';
+
+  let list = src.filter(f=>{
+    const hay = (f.farm+' '+f.farmer+' '+(f.products||[]).map(p=>p.name).join(' ')).toLowerCase();
+    const passQ = !q || hay.includes(q);
+    const passM = mode==='all' || f.mode===mode || (mode==='both' && f.mode==='both');
+    return passQ && passM;
+  });
+
+  // Sort products per farmer for display
+  list = list.map(f=>{
+    const prods = (f.products||[]).slice();
+    if(sortBy==='name') prods.sort((a,b)=>String(a.name).localeCompare(String(b.name)));
+    else if(sortBy==='priceAsc') prods.sort((a,b)=>toNumber(a.price)-toNumber(b.price));
+    return {...f, products: prods};
+  });
+
+  if(!list.length) return emptyState(els.farmerGrid, t('no-farmers'));
   els.farmerGrid.innerHTML='';
   list.forEach(f=>{
-    f.products.forEach(p=>{
+    (f.products||[]).forEach(p=>{
+      const imgSrc = cropImageSrc(p.name);
       const card=document.createElement('div'); card.className='card';
-      card.innerHTML = `<h3>${p.name} — ${p.qty}</h3>
+      card.innerHTML = `
+        <img class="thumb" src="${imgSrc}" alt="${p.name}"
+             style="width:100%;height:150px;object-fit:cover;border-radius:8px"
+             onerror="this.onerror=null; this.src='./img/placeholder.png';">
+        <h3>${p.name} — ${p.qty}</h3>
         <p><strong>Price:</strong> ${p.price}</p>
         <p><strong>Farm:</strong> ${f.farm} · <span class="muted">${f.city}, ${f.state}</span></p>
-        <p><strong>Pickup:</strong> ${f.pickup}</p>
+        <p><strong>Pickup:</strong> ${f.pickup||''}</p>
         <div class="flex" style="gap:6px;margin-top:8px">
-          <a class="btn secondary" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(f.city+','+f.state)}">Open in Maps</a>
+          <a class="btn secondary" target="_blank" rel="noopener"
+             href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(f.city+','+f.state)}">Open in Maps</a>
         </div>`;
       els.farmerGrid.appendChild(card);
     });
   });
 }
-
 function renderConsumers(){
   const list = filterByGeo(DATA_CONSUMERS);
-  if(!list.length) return emptyState(els.consumerGrid, 'No consumers yet.');
+  if(!list.length) return emptyState(els.consumerGrid, t('no-consumers'));
   els.consumerGrid.innerHTML='';
-  list.forEach(c=>{ const card=document.createElement('div'); card.className='card'; card.innerHTML=`<h3>${c.name}</h3><p>${c.city}, ${c.state}</p><p><strong>Wants:</strong> ${c.want}</p>`; els.consumerGrid.appendChild(card); });
+  list.forEach(c=>{
+    const card=document.createElement('div'); card.className='card';
+    card.innerHTML = `<h3>${c.name}</h3><p>${c.city}, ${c.state}</p><p><strong>Wants:</strong> ${c.want}</p>`;
+    els.consumerGrid.appendChild(card);
+  });
 }
 
 /* -------------------------
@@ -170,125 +222,10 @@ function initMap(){
     const legend = els.mapLegend; legend.innerHTML='';
     const mk = (color,label)=>`<div class="item"><div class="dot" style="background:${color}"></div><div class="label">${label}</div></div>`;
     legend.innerHTML = mk('var(--sale)','Sale') + mk('var(--trade)','Trade') + mk('var(--both)','Both');
+    track('map_loaded');
     loadMarkets();
   }catch(e){ console.warn('map init failed', e); }
 }
-async function loadMarkets(){
-  try{
-    const res = await fetch('./data/us_markets.json');
-    if(!res.ok) throw new Error('no markets');
-    const list = await res.json();
-    list.forEach(m=>{
-      if(!m.lat||!m.lng) return;
-      const color = m.mode==='sale' ? getComputedStyle(document.documentElement).getPropertyValue('--sale').trim() :
-                    m.mode==='trade' ? getComputedStyle(document.documentElement).getPropertyValue('--trade').trim() :
-                    getComputedStyle(document.documentElement).getPropertyValue('--both').trim();
-      L.circleMarker([m.lat,m.lng],{radius:6,color}).addTo(map).bindPopup(`<strong>${m.market}</strong><br>${m.city}, ${m.state}<br>${m.type||''}`);
-    });
-  }catch(e){ console.warn('markets load fail', e); }
-}
-
-/* -------------------------
-   Post form validation & flow
-   ------------------------- */
-function requirePositiveNumber(str){
-  const n = toNumber(str);
-  if(!str || !isFinite(n) || n <= 0) return {ok:false};
-  return {ok:true, value:n};
-}
-els.postOpenBtn?.addEventListener('click', ()=>{ els.postModal.hidden=false; els.postModal.setAttribute('aria-hidden','false'); });
-E('postCancel')?.addEventListener('click', ()=>{ els.postModal.hidden=true; els.postModal.setAttribute('aria-hidden','true'); });
-
-els.postForm?.addEventListener('submit', (ev)=>{
-  ev.preventDefault(); els.postErrors.textContent='';
-  const q = requirePositiveNumber(els.pfQty.value), p = requirePositiveNumber(els.pfPrice.value);
-  if(!q.ok || !p.ok){
-    els.postErrors.textContent = t('post-errors');
-    return;
-  }
-  // Normalize and add to DATA_FARMERS for demo
-  const newRec = {
-    country: document.querySelector('#countrySelect').value || 'US',
-    state: document.querySelector('#stateSelect').value || '',
-    city: document.querySelector('#citySelect').value || '',
-    farmer: 'You', farm: els.pfFarm.value, products: [{name: els.pfProduct.value, qty: `${q.value}`, price: `${p.value}`}], pickup:'', mode: els.pfMode.value
-  };
-  DATA_FARMERS.unshift(newRec);
-  els.postModal.hidden=true; renderFarmers(); // simple success flow
-});
-
-/* -------------------------
-   Simple AI stubs (client)
-   ------------------------- */
-const BASE_RATES = { US:{Tomatoes:2.5}, India:{Tomatoes:30}, Nigeria:{Cassava:180} };
-els.aiPriceBtn?.addEventListener('click', ()=>{
-  const crop = els.aiCrop.value, qty = els.aiQty.value;
-  if(!crop || !qty){ els.aiPriceOut.textContent='Enter crop and quantity (e.g., Tomatoes, 40 lb).'; return; }
-  const country = document.querySelector('#countrySelect').value || 'US';
-  const base = (BASE_RATES[country] && BASE_RATES[country][crop]) || 2.0;
-  const n = toNumber(qty) || 1;
-  const lo = (base*0.9).toFixed(2), hi = (base*1.1).toFixed(2);
-  els.aiPriceOut.textContent = `Suggested range: ${CURRENCY[country]?.symbol||'$'}${lo} - ${CURRENCY[country]?.symbol||'$'}${hi} per ${CURRENCY[country]?.unit||'unit'}`;
-});
-
-els.aiMatchBtn?.addEventListener('click', ()=>{
-  const want = els.aiWant.value||'';
-  if(!want){ els.aiMatchOut.textContent='Describe what you want (e.g., Peaches 20 lb).'; return; }
-  // crude local match
-  const pool = DATA_FARMERS.slice(0,10).filter(f=>f.products.some(p=>p.name.toLowerCase().includes(want.toLowerCase())));
-  if(!pool.length){ els.aiMatchOut.textContent='No matches found.'; return; }
-  els.aiMatchOut.textContent = pool.map(f=>`${f.products[0].name} from ${f.farm} (${f.city})`).join('\n');
-});
-
-/* -------------------------
-   Init & wiring
-   ------------------------- */
-function populateCountrySelect(){
-  const countries = ['US','India','Nigeria'];
-  els.country.innerHTML=''; countries.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; els.country.appendChild(o); });
-}
-function populateStateCities(){
-  // minimal mapping; you can expand to full COUNTRIES mapping or load from ./data/countries.json
-  const map = {
-    US:{Alabama:['Auburn','Opelika'],California:['Los Angeles','San Francisco'],Texas:['Houston','Austin']},
-    India:{Punjab:['Ludhiana','Amritsar'],Maharashtra:['Mumbai','Pune'],TamilNadu:['Chennai','Coimbatore']},
-    Nigeria:{Benue:['Makurdi','Gboko'],Kano:['Kano','Wudil'],Rivers:['Port Harcourt','Obio-Akpor']}
-  };
-  const country = els.country.value; const states = Object.keys(map[country]||{});
-  els.state.innerHTML=''; states.forEach(s=>{ const o=document.createElement('option'); o.value=s; o.textContent=s; els.state.appendChild(o); });
-  // city update
-  function updateCity(){ const cities = map[country][els.state.value]||[]; els.city.innerHTML=''; const any=document.createElement('option'); any.value=''; any.textContent = t('all-cities'); els.city.appendChild(any); cities.forEach(ct=>{ const o=document.createElement('option'); o.value=ct; o.textContent=ct; els.city.appendChild(o); }); }
-  els.state.onchange = updateCity; updateCity();
-}
-
-/* -------------------------
-   Boot
-   ------------------------- */
-async function init(){
-  renderTabs();
-  startTab();
-  // language
-  document.querySelector('#langSelect').value = localStorage.getItem('hq:lang') || 'en';
-  document.querySelector('#langSelect').addEventListener('change', e=>{ setLanguage(e.target.value); });
-  setLanguage(document.querySelector('#langSelect').value);
-
-  populateCountrySelect();
-  populateStateCities();
-  document.querySelector('#countrySelect').addEventListener('change', ()=>{ populateStateCities(); renderFarmers(); });
-
-  els.farmerSearch.addEventListener('input', debounce(renderFarmers,200));
-  els.consumerSearch.addEventListener('input', debounce(renderConsumers,200));
-  els.modeFilter.addEventListener('change', renderFarmers);
-  els.sortBy.addEventListener('change', renderFarmers);
-
-  // post modal wiring already above
-  await loadData(); renderFarmers(); renderConsumers();
-  initMap();
-  // footer
-  els.footerText.textContent = `© Harvest Q — Stage 2 • ${new Date().toLocaleString()}`;
-}
-document.addEventListener('DOMContentLoaded', init);
-
 async function loadMarkets(){
   const legend = els.mapLegend;
   try{
@@ -297,7 +234,7 @@ async function loadMarkets(){
     const list = await res.json();
 
     let drawn = 0;
-    list.forEach(m=>{
+    (list||[]).forEach(m=>{
       if(!m || typeof m.lat!=='number' || typeof m.lng!=='number') return;
       const color =
         m.mode==='sale' ? getComputedStyle(document.documentElement).getPropertyValue('--sale').trim() :
@@ -308,6 +245,7 @@ async function loadMarkets(){
       drawn++;
     });
 
+    track('markets_loaded', { count: drawn });
     if(drawn===0){
       legend.insertAdjacentHTML('afterend',
         `<p class="muted" style="margin-top:8px">No market points available for this dataset.</p>`);
@@ -318,22 +256,16 @@ async function loadMarkets(){
       `<p class="muted" style="margin-top:8px">Map data failed to load. Try again later.</p>`);
   }
 }
-<!-- index.html -->
-<div id="postModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="postTitle" hidden>
-  <div class="modal-box">
-    <h3 id="postTitle">Post a Listing</h3>
-    <!-- form unchanged -->
-  </div>
-</div>
 
-// js/app.js (near modal wiring)
+/* -------------------------
+   Post form: accessibility + validation
+   ------------------------- */
 let postOpenerBtn = null;
-
 function trapFocus(modal){
-  const selectors = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
-  const focusables = Array.from(modal.querySelectorAll(selectors)).filter(el=>!el.disabled);
+  const q = 'button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])';
+  const focusables = Array.from(modal.querySelectorAll(q)).filter(el=>!el.disabled);
   if(!focusables.length) return;
-  let first = focusables[0], last = focusables[focusables.length-1];
+  const first = focusables[0], last = focusables[focusables.length-1];
   function onKey(e){
     if(e.key==='Tab'){
       if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
@@ -345,7 +277,6 @@ function trapFocus(modal){
   modal._focusTrapCleanup = () => modal.removeEventListener('keydown', onKey);
   first.focus();
 }
-
 function openPostModal(btn){
   postOpenerBtn = btn || null;
   els.postModal.hidden = false;
@@ -353,32 +284,18 @@ function openPostModal(btn){
   trapFocus(els.postModal);
   els.pfFarm?.focus();
 }
-
 function closePostModal(){
   els.postModal.hidden = true;
   els.postModal.setAttribute('aria-hidden','true');
   els.postModal._focusTrapCleanup?.();
   postOpenerBtn?.focus();
 }
-
 els.postOpenBtn?.addEventListener('click', ()=>openPostModal(els.postOpenBtn));
 E('postCancel')?.addEventListener('click', closePostModal);
 
-<label>Quantity
-  <input id="pfQty" inputmode="decimal" step="0.01" min="0.01" placeholder="e.g., 40 kg / 100 lb" required>
-  <span class="field-error" id="errQty" aria-live="polite"></span>
-</label>
-<label>Price
-  <input id="pfPrice" inputmode="decimal" step="0.01" min="0.01" placeholder="e.g., 2.50" required>
-  <span class="field-error" id="errPrice" aria-live="polite"></span>
-</label>
-
-/* css/style.css */
-.field-error{ display:block; color:#b91c1c; font-size:12px; margin-top:4px }
-
-function sanitizeNumberInput(str){
-  return String(str||'').replace(/,/g,'').trim();
-}
+// Inline validation + sanitization
+const errQty = E('errQty'); const errPrice = E('errPrice');
+function sanitizeNumberInput(str){ return String(str||'').replace(/,/g,'').trim(); }
 function requirePositiveNumber(str){
   const clean = sanitizeNumberInput(str);
   const n = Number(clean);
@@ -386,95 +303,127 @@ function requirePositiveNumber(str){
   if(!isFinite(n) || n<=0) return {ok:false, msg:'Enter a positive number'};
   return {ok:true, value:n};
 }
-
 els.postForm?.addEventListener('submit', (ev)=>{
   ev.preventDefault();
-  // clear errors
-  E('errQty').textContent=''; E('errPrice').textContent='';
+  els.postErrors.textContent=''; if(errQty) errQty.textContent=''; if(errPrice) errPrice.textContent='';
+
   const rQty = requirePositiveNumber(els.pfQty.value);
   const rPrice = requirePositiveNumber(els.pfPrice.value);
-  let hasErr = false;
-  if(!rQty.ok){ E('errQty').textContent = rQty.msg; hasErr = true; }
-  if(!rPrice.ok){ E('errPrice').textContent = rPrice.msg; hasErr = true; }
-  if(hasErr) return;
 
-  // proceed (normalize if you wish)
-  // ...
+  let bad=false;
+  if(!rQty.ok){ if(errQty) errQty.textContent=rQty.msg; bad=true; }
+  if(!rPrice.ok){ if(errPrice) errPrice.textContent=rPrice.msg; bad=true; }
+  if(bad){ els.postErrors.textContent = t('post-errors'); return; }
+
+  const country = els.country.value || 'US';
+  const newRec = {
+    country, state: els.state.value || '', city: els.city.value || '',
+    farmer: 'You',
+    farm: els.pfFarm.value,
+    products: [{name: els.pfProduct.value, qty: `${rQty.value}`, price: `${rPrice.value}`}],
+    pickup:'', mode: els.pfMode.value
+  };
+  DATA_FARMERS.unshift(newRec);
+  track('listing_posted', { product: els.pfProduct.value, qty: rQty.value, price: rPrice.value, mode: els.pfMode.value, country });
   closePostModal();
   renderFarmers();
 });
 
-// Replace: els.homeWarning.innerHTML = "<strong>Note:</strong> ...";
-function setStaticWarning(el){
-  el.textContent = ''; // clear
-  const strong = document.createElement('strong'); strong.textContent = 'Note: ';
-  const rest = document.createTextNode('Demo data for judging. Compliance cards are non-legal summaries; pair with legal counsel.');
-  el.appendChild(strong); el.appendChild(rest);
-}
-setStaticWarning(els.homeWarning);
-
-function escapeHTML(s){ return String(s).replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
-// then el.innerHTML = escapeHTML(userString);
-
-const LS = {
-  get(k, d){ try{ return JSON.parse(localStorage.getItem(k)) ?? d; }catch{ return d; } },
-  set(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
-};
-
-// restore saved filters
-const savedMode = LS.get('hq:mode','all');
-const savedSort = LS.get('hq:sort','name');
-if (els.modeFilter) els.modeFilter.value = savedMode;
-if (els.sortBy)    els.sortBy.value    = savedSort;
-
-els.modeFilter?.addEventListener('change', e=>{ LS.set('hq:mode', e.target.value); renderFarmers(); });
-els.sortBy?.addEventListener('change',  e=>{ LS.set('hq:sort', e.target.value);  renderFarmers(); });
-
-function slug(s=''){ return String(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,''); }
-function cropImageSrc(name){
-  // Try a local image first (optional: place your crop images under ./img/crops/)
-  return `./img/crops/${slug(name)}.jpg`;
-}
-
-const imgSrc = cropImageSrc(p.name);
-const card = document.createElement('div'); 
-card.className='card';
-card.innerHTML = `
-  <img class="thumb" src="${imgSrc}" alt="${p.name}" style="width:100%;height:150px;object-fit:cover;border-radius:8px"
-       onerror="this.onerror=null; this.src='./img/placeholder.png';">
-  <h3>${p.name} — ${p.qty}</h3>
-  <p><strong>Price:</strong> ${p.price}</p>
-  <p><strong>Farm:</strong> ${f.farm} · <span class="muted">${f.city}, ${f.state}</span></p>
-  <p><strong>Pickup:</strong> ${f.pickup}</p>
-  <div class="flex" style="gap:6px;margin-top:8px">
-    <a class="btn secondary" target="_blank" rel="noopener"
-       href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(f.city+','+f.state)}">Open in Maps</a>
-  </div>`;
-
-const ANALYTICS_ENDPOINT = ''; // optional like '/api/track' later
-
-async function track(event, data={}){
-  const payload = { event, ts: Date.now(), ...data };
-  // Always dev-log so you can verify locally
-  console.log('[analytics]', payload);
-  if (!ANALYTICS_ENDPOINT) return;
-  try{
-    await fetch(ANALYTICS_ENDPOINT, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
-  }catch(e){ /* swallow errors */ }
-}
-
-// after map is created:
-track('map_loaded');
-// after markets JSON successfully processed:
-track('markets_loaded', { count: drawn });
-
-track('listing_posted', { product: els.pfProduct.value, qty: els.pfQty.value, price: els.pfPrice.value, mode: els.pfMode.value });
-
+/* -------------------------
+   Simple AI stubs (client)
+   ------------------------- */
+const BASE_RATES = { US:{Tomatoes:2.5}, India:{Tomatoes:30}, Nigeria:{Cassava:180} };
 els.aiPriceBtn?.addEventListener('click', ()=>{
   track('ai_price_clicked', { crop: els.aiCrop.value, qty: els.aiQty.value });
-  // ...existing logic...
+  const crop = els.aiCrop.value, qty = els.aiQty.value;
+  if(!crop || !qty){ els.aiPriceOut.textContent='Enter crop and quantity (e.g., Tomatoes, 40 lb).'; return; }
+  const country = els.country.value || 'US';
+  const base = (BASE_RATES[country] && BASE_RATES[country][crop]) || 2.0;
+  const lo = (base*0.9).toFixed(2), hi = (base*1.1).toFixed(2);
+  els.aiPriceOut.textContent = `Suggested range: ${CURRENCY[country]?.symbol||'$'}${lo} - ${CURRENCY[country]?.symbol||'$'}${hi} per ${CURRENCY[country]?.unit||'unit'}`;
 });
 els.aiMatchBtn?.addEventListener('click', ()=>{
   track('ai_match_clicked', { want: els.aiWant.value });
-  // ...existing logic...
+  const want = (els.aiWant.value||'').trim();
+  if(!want){ els.aiMatchOut.textContent='Describe what you want (e.g., Peaches 20 lb).'; return; }
+  const pool = DATA_FARMERS.filter(f=> (f.products||[]).some(p=>p.name.toLowerCase().includes(want.toLowerCase())));
+  if(!pool.length){ els.aiMatchOut.textContent='No matches found in current filters.'; return; }
+  els.aiMatchOut.textContent = pool.slice(0,5).map(f=>`${f.products[0].name} from ${f.farm} (${f.city})`).join('\n');
 });
+
+/* -------------------------
+   Geo selects
+   ------------------------- */
+function populateCountrySelect(){
+  const countries = ['US','India','Nigeria'];
+  els.country.innerHTML=''; countries.forEach(c=>{ const o=document.createElement('option'); o.value=c; o.textContent=c; els.country.appendChild(o); });
+}
+function populateStateCities(){
+  const map = {
+    US:{Alabama:['Auburn','Opelika'],California:['Los Angeles','San Francisco'],Texas:['Houston','Austin']},
+    India:{Punjab:['Ludhiana','Amritsar'],Maharashtra:['Mumbai','Pune'],TamilNadu:['Chennai','Coimbatore']},
+    Nigeria:{Benue:['Makurdi','Gboko'],Kano:['Kano','Wudil'],Rivers:['Port Harcourt','Obio-Akpor']}
+  };
+  const country = els.country.value; const states = Object.keys(map[country]||{});
+  els.state.innerHTML=''; states.forEach(s=>{ const o=document.createElement('option'); o.value=s; o.textContent=s; els.state.appendChild(o); });
+  function updateCity(){
+    const cities = (map[country] && map[country][els.state.value]) || [];
+    els.city.innerHTML=''; const any=document.createElement('option'); any.value=''; any.textContent = t('all-cities'); els.city.appendChild(any);
+    cities.forEach(ct=>{ const o=document.createElement('option'); o.value=ct; o.textContent=ct; els.city.appendChild(o); });
+  }
+  els.state.onchange = ()=>{ updateCity(); renderFarmers(); renderConsumers(); loadMarkets(); };
+  updateCity();
+}
+
+/* -------------------------
+   Warning (no unsafe innerHTML)
+   ------------------------- */
+function setStaticWarning(){
+  if(!els.homeWarning) return;
+  els.homeWarning.textContent='';
+  const strong = document.createElement('strong'); strong.textContent='Note: ';
+  const rest = document.createTextNode('Demo data for judging. Compliance cards are non-legal summaries; pair with legal counsel.');
+  els.homeWarning.appendChild(strong); els.homeWarning.appendChild(rest);
+}
+
+/* -------------------------
+   Boot
+   ------------------------- */
+async function init(){
+  renderTabs();
+  startTab();
+
+  // language
+  const langSel = E('langSelect');
+  if(langSel){ langSel.value = currentLang; langSel.addEventListener('change', e=>setLanguage(e.target.value)); }
+  setLanguage(langSel?.value || currentLang);
+
+  // geo
+  populateCountrySelect();
+  populateStateCities();
+  els.country.addEventListener('change', ()=>{ populateStateCities(); renderFarmers(); renderConsumers(); loadMarkets(); });
+
+  // restore saved filters
+  const savedMode = LS.get('hq:mode','all');
+  const savedSort = LS.get('hq:sort','name');
+  if (els.modeFilter) els.modeFilter.value = savedMode;
+  if (els.sortBy)    els.sortBy.value    = savedSort;
+
+  // filter listeners (persist)
+  els.farmerSearch.addEventListener('input', debounce(renderFarmers,200));
+  els.consumerSearch.addEventListener('input', debounce(renderConsumers,200));
+  els.modeFilter.addEventListener('change', e=>{ LS.set('hq:mode', e.target.value); renderFarmers(); });
+  els.sortBy.addEventListener('change',  e=>{ LS.set('hq:sort', e.target.value);  renderFarmers(); });
+
+  // data + initial render
+  await loadData();
+  renderFarmers(); renderConsumers();
+
+  // map
+  initMap();
+
+  // footer + warning
+  els.footerText.textContent = `© Harvest Q — Stage 2 • ${new Date().toLocaleString()}`;
+  setStaticWarning();
+}
+document.addEventListener('DOMContentLoaded', init);
