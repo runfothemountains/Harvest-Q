@@ -234,3 +234,31 @@ E('postCancel')?.addEventListener('click', closePostModal);
 
 /* css/style.css */
 .field-error{ display:block; color:#b91c1c; font-size:12px; margin-top:4px }
+
+function sanitizeNumberInput(str){
+  return String(str||'').replace(/,/g,'').trim();
+}
+function requirePositiveNumber(str){
+  const clean = sanitizeNumberInput(str);
+  const n = Number(clean);
+  if(!clean) return {ok:false, msg:'Required'};
+  if(!isFinite(n) || n<=0) return {ok:false, msg:'Enter a positive number'};
+  return {ok:true, value:n};
+}
+
+els.postForm?.addEventListener('submit', (ev)=>{
+  ev.preventDefault();
+  // clear errors
+  E('errQty').textContent=''; E('errPrice').textContent='';
+  const rQty = requirePositiveNumber(els.pfQty.value);
+  const rPrice = requirePositiveNumber(els.pfPrice.value);
+  let hasErr = false;
+  if(!rQty.ok){ E('errQty').textContent = rQty.msg; hasErr = true; }
+  if(!rPrice.ok){ E('errPrice').textContent = rPrice.msg; hasErr = true; }
+  if(hasErr) return;
+
+  // proceed (normalize if you wish)
+  // ...
+  closePostModal();
+  renderFarmers();
+});
