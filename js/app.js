@@ -454,3 +454,22 @@ async function init(){
   setStaticWarning();
 }
 document.addEventListener('DOMContentLoaded', init);
+
+// Very small demo lists (expand later)
+const GEO = {
+  US: { Alabama:['Auburn','Opelika'], California:['Los Angeles','San Francisco'], Texas:['Houston','Austin'] },
+  India: { Punjab:['Ludhiana','Amritsar'], Maharashtra:['Mumbai','Pune'] },
+  Nigeria: { Benue:['Makurdi','Gboko'], Kano:['Kano','Wudil'] },
+  Russia: { Moscow:['Moscow'], Krasnodar:['Krasnodar'] },
+  Canada: { Ontario:['Toronto','Ottawa'], Quebec:['Montreal','Quebec City'] },
+  China: { Guangdong:['Guangzhou','Shenzhen'], Shandong:['Jinan','Qingdao'] },
+  Germany: { Bavaria:['Munich','Nuremberg'], NRW:['Cologne','Düsseldorf'] },
+  Brazil: { SãoPaulo:['São Paulo','Campinas'], Parana:['Curitiba','Londrina'] },
+  Kenya: { Nairobi:['Nairobi'], Kiambu:['Thika'] },
+  Ethiopia: { Oromia:['Adama'], Amhara:['Bahir Dar'] },
+  Turkey: { Ankara:['Ankara'], Izmir:['Izmir'] },
+  France: { ÎledeFrance:['Paris'], Occitanie:['Toulouse'] },
+  Spain: { Andalusia:['Seville'], Catalonia:['Barcelona'] },
+  Italy: { Lazio:['Rome'], Lombardy:['Milan'] },
+  Guatemala: { Guatemala:['Guatemala City'], Quetzaltenango:['Xela'] }
+};
