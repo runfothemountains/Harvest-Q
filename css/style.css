@@ -62,3 +62,21 @@ html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial
   .tab{background:#0f1720;color:#e5e7eb;border-color:#223254}
   .card{border-color:#182132}
 }
+
+.notice{
+  background:#ecfeff;
+  border:1px solid #bae6fd;
+  color:#064e3b;
+  padding:10px;
+  border-radius:10px;
+}
+.badge{
+  display:inline-block;
+  font-size:12px;
+  background:#fde68a;
+  color:#7c2d12;
+  border:1px solid #fcd34d;
+  padding:.1rem .45rem;
+  border-radius:999px;
+  margin-right:8px;
+}
