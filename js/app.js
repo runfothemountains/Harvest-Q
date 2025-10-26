@@ -10,7 +10,24 @@
 /* -------------------------
    Small helpers & constants
    ------------------------- */
-const CURRENCY = { US:{symbol:'$',unit:'lb'}, India:{symbol:'₹',unit:'kg'}, Nigeria:{symbol:'₦',unit:'kg'} };
+const CURRENCY = const CURRENCY = {
+  US:{symbol:'$', unit:'lb', code:'USD'},
+  India:{symbol:'₹', unit:'kg', code:'INR'},
+  Nigeria:{symbol:'₦', unit:'kg', code:'NGN'},
+  Russia:{symbol:'₽', unit:'kg', code:'RUB'},
+  Canada:{symbol:'$', unit:'kg', code:'CAD'},
+  China:{symbol:'¥', unit:'kg', code:'CNY'},
+  Germany:{symbol:'€', unit:'kg', code:'EUR'},
+  Brazil:{symbol:'R$', unit:'kg', code:'BRL'},
+  Kenya:{symbol:'KSh', unit:'kg', code:'KES'},
+  Ethiopia:{symbol:'Br', unit:'kg', code:'ETB'},
+  Turkey:{symbol:'₺', unit:'kg', code:'TRY'},
+  France:{symbol:'€', unit:'kg', code:'EUR'},
+  Spain:{symbol:'€', unit:'kg', code:'EUR'},
+  Italy:{symbol:'€', unit:'kg', code:'EUR'},
+  Guatemala:{symbol:'Q', unit:'kg', code:'GTQ'}
+};
+
 const toNumber = s => Number(String(s||'').replace(/[^0-9.\-]/g,'')) || 0;
 const debounce = (fn,ms=200)=>{let t; return (...a)=>{clearTimeout(t); t=setTimeout(()=>fn(...a),ms);}};
 const LS = {
