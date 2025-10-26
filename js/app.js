@@ -512,3 +512,21 @@ function populateStateCities(){
   els.state.onchange = updateCity;
   updateCity();
 }
+
+const BASE_RATES = {
+  US: {Tomatoes:2.5, Corn:1.2, "Bell peppers":2.2},
+  India: {Tomatoes:30, "Basmati rice":90, Okra:30},
+  Nigeria: {Cassava:180, Millet:120, Groundnuts:220},
+  Russia: {Potatoes:35, Wheat:25, Carrots:28},
+  Canada: {Wheat:2.1, Canola:2.4, Blueberries:4.0},
+  China: {Rice:6.5, Cabbage:3.2, Tomatoes:5.0},
+  Germany: {Potatoes:1.8, Apples:3.0, Barley:1.6},
+  Brazil: {Soybeans:6.0, Coffee:12.0, Maize:3.2},
+  Kenya: {Maize:70, Kale:60, Tomatoes:90},
+  Ethiopia: {Teff:85, Maize:55, Coffee:120},
+  Turkey: {Tomatoes:18, Wheat:12, Olives:25},
+  France: {Wheat:1.9, Grapes:4.5, Apples:3.2},
+  Spain: {Oranges:2.8, Olives:3.1, Tomatoes:2.4},
+  Italy: {Tomatoes:2.7, Grapes:4.8, Olives:3.4},
+  Guatemala: {Coffee:25, Bananas:12, Cardamom:40}
+};
