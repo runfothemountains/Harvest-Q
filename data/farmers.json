@@ -1,32 +1,21 @@
 [
-  {
-    "country": "US",
-    "state": "California",
-    "city": "Los Angeles",
-    "farmer": "Elena Rivera",
-    "farm": "Sunlit Fields",
-    "products": [
-      { "name": "Tomatoes", "qty": "40 lb", "price": "$2.50/lb" },
-      { "name": "Cucumbers", "qty": "30 lb", "price": "$1.80/lb" }
-    ],
-    "pickup": "Wed 10a–2p",
-    "mode": "sale"
-  },
-  {
-    "country": "US",
-    "state": "Texas",
-    "city": "Austin",
-    "farmer": "James Carter",
-    "farm": "Lone Star Produce",
-    "products": [
-      { "name": "Watermelon", "qty": "100 lb", "price": "$0.85/lb" },
-      { "name": "Corn", "qty": "80 lb", "price": "$1.10/lb" }
-    ],
-    "pickup": "Fri 9a–3p",
-    "mode": "both"
-  },
-  {
-    "country": "India",
-    "state": "Punjab",
-    "city": "Ludhiana",
-    "farmer": "Anil
+  { "country":"US","state":"California","city":"Los Angeles","farmer":"Elena Rivera",
+    "farm":"Sunlit Fields","products":[{"name":"Tomatoes","qty":"40 lb","price":"$2.50/lb"}],
+    "pickup":"Wed 10a–2p","mode":"sale" },
+
+  { "country":"India","state":"Punjab","city":"Ludhiana","farmer":"Anil Mehta",
+    "farm":"Green Valley","products":[{"name":"Basmati rice","qty":"120 kg","price":"₹90/kg"}],
+    "pickup":"Farm gate 8a–4p","mode":"trade" },
+
+  { "country":"Nigeria","state":"Kano","city":"Kano","farmer":"Aminu Bello",
+    "farm":"Savanna Harvest","products":[{"name":"Groundnuts","qty":"100 kg","price":"₦200/kg"}],
+    "pickup":"Market pickup Sat","mode":"both" },
+
+  { "country":"Brazil","state":"SãoPaulo","city":"São Paulo","farmer":"Mariana Souza",
+    "farm":"Fazenda Aurora","products":[{"name":"Coffee","qty":"80 kg","price":"R$12/kg"}],
+    "pickup":"Co-op hub Fri","mode":"sale" },
+
+  { "country":"Germany","state":"Bavaria","city":"Munich","farmer":"Lena Bauer",
+    "farm":"Isar Acres","products":[{"name":"Potatoes","qty":"150 kg","price":"€1.80/kg"}],
+    "pickup":"Sat 9–12","mode":"sale" }
+]
