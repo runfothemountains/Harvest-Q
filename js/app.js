@@ -575,3 +575,7 @@ async function loadMarkets(){
 document.querySelector('#countrySelect').addEventListener('change', ()=>{
   populateStateCities(); renderFarmers(); renderConsumers(); initMap(); // rebuild map for new country
 });
+
+function refreshAll(){
+  renderFarmers(); renderConsumers(); renderLaws?.(); renderMedical?.(); renderTrade?.();
+}
