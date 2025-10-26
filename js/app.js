@@ -103,7 +103,17 @@ async function loadData(){
 /* -------------------------
    Tabs & language wiring
    ------------------------- */
-const TABS = [{id:'home'},{id:'farmers'},{id:'consumers'},{id:'laws'},{id:'ai'}];
+const TABS = const TABS = [
+  {id:'home'},
+  {id:'farmers'},
+  {id:'consumers'},
+  {id:'laws'},
+  {id:'medical'},  // if present
+  {id:'trade'},    // if present
+  {id:'ai'},
+  {id:'grants'}    // ✅ New Harvest Grant tab
+];
+
 function renderTabs(){
   els.tabs.innerHTML='';
   TABS.forEach(ti=>{
