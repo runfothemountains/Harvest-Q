@@ -571,3 +571,7 @@ async function loadMarkets(){
       `<p class="muted" style="margin-top:8px">No market points drawn from ${srcUsed}.</p>`);
   }
 }
+
+document.querySelector('#countrySelect').addEventListener('change', ()=>{
+  populateStateCities(); renderFarmers(); renderConsumers(); initMap(); // rebuild map for new country
+});
