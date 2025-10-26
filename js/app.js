@@ -530,3 +530,44 @@ const BASE_RATES = {
   Italy: {Tomatoes:2.7, Grapes:4.8, Olives:3.4},
   Guatemala: {Coffee:25, Bananas:12, Cardamom:40}
 };
+
+async function loadMarkets(){
+  const country = els.country?.value || 'US';
+  const tryFiles = [
+    `./data/markets/${country}.json`,
+    './data/us_markets.json'
+  ];
+  const legend = els.mapLegend;
+
+  let list = null, srcUsed = '';
+  for (const url of tryFiles){
+    try{
+      const r = await fetch(url, {cache:'no-store'});
+      if (r.ok){ list = await r.json(); srcUsed = url; break; }
+    }catch(_){}
+  }
+
+  if (!list || !Array.isArray(list) || !list.length){
+    legend.insertAdjacentHTML('afterend',
+      `<p class="muted" style="margin-top:8px">No market data available for ${country} yet.</p>`);
+    return;
+  }
+
+  let drawn = 0;
+  list.forEach(m=>{
+    if (typeof m.lat !== 'number' || typeof m.lng !== 'number') return;
+    const color =
+      m.mode==='sale' ? getComputedStyle(document.documentElement).getPropertyValue('--sale').trim() :
+      m.mode==='trade'? getComputedStyle(document.documentElement).getPropertyValue('--trade').trim() :
+                        getComputedStyle(document.documentElement).getPropertyValue('--both').trim();
+    L.circleMarker([m.lat,m.lng], {radius:6, color})
+      .addTo(map)
+      .bindPopup(`<strong>${m.market}</strong><br>${m.city}, ${m.state||''}${m.type?`<br>${m.type}`:''}`);
+    drawn++;
+  });
+
+  if (!drawn){
+    legend.insertAdjacentHTML('afterend',
+      `<p class="muted" style="margin-top:8px">No market points drawn from ${srcUsed}.</p>`);
+  }
+}
