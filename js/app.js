@@ -473,3 +473,42 @@ const GEO = {
   Italy: { Lazio:['Rome'], Lombardy:['Milan'] },
   Guatemala: { Guatemala:['Guatemala City'], Quetzaltenango:['Xela'] }
 };
+
+function populateCountrySelect(){
+  const countries = Object.keys(GEO); // auto from GEO above
+  els.country.innerHTML = '';
+  countries.forEach(c=>{
+    const o = document.createElement('option');
+    o.value = c; o.textContent = c;
+    els.country.appendChild(o);
+  });
+  if (!countries.includes(els.country.value)) els.country.value = 'US';
+}
+
+function populateStateCities(){
+  const country = els.country.value;
+  const states = Object.keys(GEO[country] || {});
+  els.state.innerHTML = '';
+  states.forEach(s=>{
+    const o = document.createElement('option');
+    o.value = s; o.textContent = s;
+    els.state.appendChild(o);
+  });
+  if (!states.includes(els.state.value)) els.state.value = states[0] || '';
+
+  function updateCity(){
+    const cities = (GEO[country] && GEO[country][els.state.value]) || [];
+    els.city.innerHTML = '';
+    const any = document.createElement('option');
+    any.value = ''; any.textContent = (typeof t==='function' ? t('all-cities') : 'All Cities');
+    els.city.appendChild(any);
+    cities.forEach(ct=>{
+      const o = document.createElement('option');
+      o.value = ct; o.textContent = ct;
+      els.city.appendChild(o);
+    });
+    els.city.value = '';
+  }
+  els.state.onchange = updateCity;
+  updateCity();
+}
