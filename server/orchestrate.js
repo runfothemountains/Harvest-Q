@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import { WatsonXAI } from '@ibm-cloud/watsonx-ai';
+import { publishListing, enrichListing } from './agents/farmer.js';
 
 const app = express();
 app.use(express.json());
