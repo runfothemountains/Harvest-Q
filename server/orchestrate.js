@@ -3,6 +3,45 @@ import express from 'express';
 import { WatsonXAI } from '@ibm-cloud/watsonx-ai';
 import { publishListing, enrichListing } from './agents/farmer.js';
 
+import fs from 'node:fs/promises';
+import path from 'node:path';
+
+// Utility: load JSON safely
+async function loadJSON(relPath) {
+  try {
+    const p = path.join(process.cwd(), relPath);
+    const raw = await fs.readFile(p, 'utf-8');
+    return JSON.parse(raw);
+  } catch (e) {
+    return null;
+  }
+}
+
+// naive distance placeholder (string compare only)
+function pseudoDistance(a = '', b = '') {
+  if (!a || !b) return 9999;
+  return a.toLowerCase() === b.toLowerCase() ? 5 : 50; // same city ~5km, else ~50km
+}
+
+// extract barter-ready items from a farmer record
+function listBarterables(farmer) {
+  // Expecting your farmer schema to have products; optionally mark barter true.
+  // We’ll treat all products as barterable if status !== "Sold".
+  const products = Array.isArray(farmer.products) ? farmer.products : [];
+  return products
+    .filter(p => (p.status || '').toLowerCase() !== 'sold')
+    .map(p => ({
+      farmerId: farmer.id,
+      farmerName: farmer.name,
+      location: farmer.location || '',
+      name: p.name,
+      qty: p.quantity || '',
+      // optional tag if you later add p.barter === true
+      barter: p.barter !== false
+    }));
+}
+
+
 const app = express();
 app.use(express.json());
 
