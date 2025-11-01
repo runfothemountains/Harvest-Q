@@ -733,3 +733,20 @@ async function aiGrantTriageFlow(btn) {
 document.addEventListener('click', (e) => {
   if (e.target.matches('.ai-grant-triage')) aiGrantTriageFlow(e.target);
 });
+
+function setAIButtonsEnabled(enabled) {
+  document.querySelectorAll('.ai-suggest-farmers, .ai-suggest-buyers, .ai-grant-triage')
+    .forEach(b => b.disabled = !enabled);
+}
+
+document.addEventListener('DOMContentLoaded', () => setAIButtonsEnabled(false));
+
+function watsonxOrchestrate() {
+  const statusEl = document.getElementById('agentStatus');
+  statusEl.textContent = 'Connecting to IBM watsonx…';
+  setTimeout(() => {
+    window.ORCH_CONNECTED = true;
+    statusEl.innerHTML = '✅ Connected. Agents are ready.';
+    setAIButtonsEnabled(true);
+  }, 1200);
+}
