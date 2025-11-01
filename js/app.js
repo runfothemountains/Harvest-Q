@@ -716,3 +716,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('connectAgentBtn');
   if (btn) btn.addEventListener('click', watsonxOrchestrate);
 });
+
+async function aiGrantTriageFlow(btn) {
+  if (!window.ORCH_CONNECTED) return alert('Connect IBM Agent first.');
+  const applicant = btn.dataset.applicant;
+  const purpose = btn.dataset.purpose;
+
+  const triage = await callTool('scoreGrant', { applicant, purpose });
+  const r = triage.result || triage;
+  renderAI(btn, `
+    <strong>Score:</strong> ${Math.round((r.score || 0) * 100)} / 100
+    <br>${r.rationale || 'Triage complete.'}
+  `);
+}
+
+document.addEventListener('click', (e) => {
+  if (e.target.matches('.ai-grant-triage')) aiGrantTriageFlow(e.target);
+});
