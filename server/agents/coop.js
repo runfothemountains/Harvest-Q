@@ -184,3 +184,10 @@ async function createBulkLot({ farmerIds = [], crop, buyerId, totalQty, blendedP
   // TODO: persist to Cloudant + notify members/buyer
   return { ok: true, bulkLot: summary };
 }
+
+const toolImpl = {
+  // ...existing tool implementations...
+  groupByCrop,
+  analyzeVolume,
+  createBulkLot
+};
