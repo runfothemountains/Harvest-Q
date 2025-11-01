@@ -67,3 +67,28 @@ function renderAI(btn, html) {
 document.addEventListener('click', (e) => {
   if (e.target.matches('.ai-suggest-farmers')) aiSuggestFarmersFlow(e.target);
 });
+
+async function aiSuggestBuyersFlow(btn) {
+  if (!window.ORCH_CONNECTED) return alert('Connect IBM Agent first.');
+  const crop = btn.dataset.crop;
+  const quantity = btn.dataset.qty || '0';
+  const region = btn.dataset.location || '';
+
+  // Use PricingAgent for a quick price hint
+  const price = await callTool('suggestPrice', { crop, region, quantity });
+  const p = price.result || price;
+
+  // In a full build, you’d query a business dataset here.
+  // For the demo, show price + route suggestion to a mock “nearby market”.
+  const route = await callTool('planRoute', { pickup: region, dropoff: region });
+  const plan = route.result || route;
+
+  renderAI(btn, `
+    <strong>Price hint:</strong> ${p.suggestedPricePerUnit} ${p.currency}/unit
+    <br>${plan.window} • Est. distance: ${plan.distanceKm}km
+  `);
+}
+
+document.addEventListener('click', (e) => {
+  if (e.target.matches('.ai-suggest-buyers')) aiSuggestBuyersFlow(e.target);
+});
