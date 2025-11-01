@@ -168,3 +168,26 @@ async function suggestImprovements({ purpose = '', weaknesses = [] }) {
     ]
   };
 }
+
+const toolImpl = {
+  // ...existing implementations...
+  scoreGrant,
+  verifyDocs,
+  suggestImprovements,
+  // notify   <-- already present earlier; include here if not yet mapped
+};
+
+# scoreGrant
+curl -s -X POST http://localhost:8080/api/agent \
+ -H "Content-Type: application/json" \
+ -d '{"tool":"scoreGrant","args":{"applicant":"Food4Neighbors","purpose":"Cold storage pilot to reduce tomato spoilage with co-op partners and vendor quotes.","amountUSD":500,"category":"cold storage infrastructure","location":"Accra","impactAreas":["access","infrastructure"]}}' | jq
+
+# verifyDocs
+curl -s -X POST http://localhost:8080/api/agent \
+ -H "Content-Type: application/json" \
+ -d '{"tool":"verifyDocs","args":{"applicant":"Aisha Bello","docs":["ID","Project Summary","Budget"]}}' | jq
+
+# suggestImprovements
+curl -s -X POST http://localhost:8080/api/agent \
+ -H "Content-Type: application/json" \
+ -d '{"tool":"suggestImprovements","args":{"purpose":"We want to rent a cooler.","weaknesses":["budget unclear","no timeline"]}}' | jq
