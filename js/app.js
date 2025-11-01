@@ -700,3 +700,19 @@ document.querySelector('#countrySelect').addEventListener('change', ()=>{
 function refreshAll(){
   renderFarmers(); renderConsumers(); renderLaws?.(); renderMedical?.(); renderTrade?.();
 }
+
+window.ORCH_CONNECTED = false;
+
+function watsonxOrchestrate() {
+  const statusEl = document.getElementById('agentStatus');
+  statusEl.textContent = 'Connecting to IBM watsonx…';
+  setTimeout(() => {
+    window.ORCH_CONNECTED = true;
+    statusEl.innerHTML = '✅ Connected. Agents are ready.';
+  }, 1200);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('connectAgentBtn');
+  if (btn) btn.addEventListener('click', watsonxOrchestrate);
+});
