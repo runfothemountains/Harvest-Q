@@ -29,6 +29,127 @@ const CURRENCY = const CURRENCY = {
 };
 
 const toNumber = s => Number(String(s||'').replace(/[^0-9.\-]/g,'')) || 0;
+
+// --- Barter Agent implementations ---
+
+// 1) Find compatible barter partners
+async function findBarterMatch({ itemOffered, itemWanted, location, maxDistanceKm = 100, minQuantity }) {
+  const data = await loadJSON('data/farmers.json');
+  if (!data) return { matches: [], note: 'No farmer dataset found.' };
+
+  // Flatten all barter-capable items
+  const items = data.flatMap(listBarterables);
+
+  // Farmers who HAVE what I want
+  const suppliers = items.filter(i => i.name.toLowerCase().includes(itemWanted.toLowerCase()));
+
+  // Farmers who WANT what I offer (rough proxy: they list it too, so a swap is plausible)
+  const counterparts = items.filter(i => i.name.toLowerCase().includes(itemOffered.toLowerCase()));
+
+  // Pair by proximity and distinct farmer
+  const pairs = [];
+  for (const s of suppliers) {
+    for (const c of counterparts) {
+      if (s.farmerId === c.farmerId) continue;
+      const dist = pseudoDistance(s.location, location || c.location);
+      if (dist <= maxDistanceKm) {
+        pairs.push({
+          partnerId: s.farmerId,
+          partnerName: s.farmerName,
+          distanceKm: dist,
+          theyOffer: { name: s.name, qty: s.qty },
+          youOffer:  { name: c.name, qty: c.qty },
+          rationale: `Close proximity and reciprocal goods (${itemOffered}↔${itemWanted}).`
+        });
+      }
+    }
+  }
+
+  // Sort by distance
+  pairs.sort((a,b)=>a.distanceKm - b.distanceKm);
+
+  // Return top 3 options
+  return { matches: pairs.slice(0, 3), note: pairs.length ? 'Top barter candidates.' : 'No compatible partners found.' };
+}
+
+// 2) Evaluate trade value (very simple reference math)
+async function evaluateTradeValue({ itemsA = [], itemsB = [] }) {
+  // If refPricePerUnit missing, use tiny reference table (you can expand later).
+  const ref = {
+    tomato: 0.5, onion: 0.6, corn: 0.22, rice: 0.9, avocado: 2.1, dates: 4.0
+  };
+
+  function unitPrice(name, fallback = 1.0) {
+    return ref[name?.toLowerCase()] ?? fallback;
+  }
+
+  // calculate notional value = sum(qty_numeric * price_per_unit)
+  function parseQty(q) {
+    // naive: extract numeric part only
+    const m = String(q).match(/[\d.]+/);
+    return m ? Number(m[0]) : 0;
+  }
+
+  const valA = itemsA.reduce((sum, it) => {
+    const p = it.refPricePerUnit ?? unitPrice(it.name);
+    return sum + parseQty(it.qty) * p;
+  }, 0);
+
+  const valB = itemsB.reduce((sum, it) => {
+    const p = it.refPricePerUnit ?? unitPrice(it.name);
+    return sum + parseQty(it.qty) * p;
+  }, 0);
+
+  // propose simple ratio A:B
+  const ratio = valB ? (valA / valB) : 0;
+  const fair = ratio > 0.9 && ratio < 1.1; // within ~10%
+
+  return {
+    valueA: Number(valA.toFixed(2)),
+    valueB: Number(valB.toFixed(2)),
+    proposedRatioAtoB: Number(ratio.toFixed(2)),
+    fairness: fair ? 'balanced' : (ratio < 0.9 ? 'A owes more' : 'B owes more'),
+    note: 'Naive valuation using reference prices; replace with real market feed when available.'
+  };
+}
+
+// 3) Initiate exchange (stub; logs and returns a contract snapshot)
+async function initiateExchange({ partnerId, terms }) {
+  // In production: persist to Cloudant and trigger NotifyAgent.
+  const contractId = `BAR-${Date.now()}`;
+  const summary = {
+    contractId,
+    partnerId,
+    terms,
+    status: 'pending-confirmation',
+    createdAt: new Date().toISOString()
+  };
+  // TODO: send event/notification here
+  return { ok: true, summary };
+}
+
+const toolImpl = {
+  // ...existing tool impls...
+  findBarterMatch,
+  evaluateTradeValue,
+  initiateExchange
+};
+
+async function uiFindBarterMatch(offered, wanted, location) {
+  if (!window.ORCH_CONNECTED) return alert('Connect IBM Agent first.');
+  const r = await fetch('/api/agent', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      message: `Find barter match for ${offered} ↔ ${wanted}`,
+      tool: 'findBarterMatch',
+      args: { itemOffered: offered, itemWanted: wanted, location }
+    })
+  });
+  const data = await r.json();
+  // render data.result.matches into your Barter grid
+  console.log('Barter matches:', data);
+}
+
 const debounce = (fn,ms=200)=>{let t; return (...a)=>{clearTimeout(t); t=setTimeout(()=>fn(...a),ms);}};
 const LS = {
   get(k, d){ try{ return JSON.parse(localStorage.getItem(k)) ?? d; }catch{ return d; } },
