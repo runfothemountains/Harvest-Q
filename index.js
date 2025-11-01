@@ -14,3 +14,13 @@ async function watsonxOrchestrate() {
     statusEl.textContent = '❌ IBM connection failed (demo fallback active).';
   }
 }
+
+async function callTool(tool, args = {}) {
+  const r = await fetch('/api/agent', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    // message is optional; tool+args are what your server reads
+    body: JSON.stringify({ message: `run ${tool}`, tool, args })
+  });
+  return r.json();
+}
