@@ -24,3 +24,46 @@ async function callTool(tool, args = {}) {
   });
   return r.json();
 }
+
+async function aiSuggestFarmersFlow(btn) {
+  if (!window.ORCH_CONNECTED) return alert('Connect IBM Agent first.');
+  const crop = btn.dataset.crop;
+  const minQty = btn.dataset.minqty || '0';
+  const location = btn.dataset.location || '';
+
+  // Step 1: find suppliers
+  const res1 = await callTool('findSuppliers', { crop, minQty, location, maxDistanceKm: 120 });
+  const suppliers = res1.result?.suppliers || res1.suppliers || [];
+  if (!suppliers.length) return renderAI(btn, 'No matching suppliers found.');
+
+  // Step 2: score top 3 suppliers
+  const top = suppliers.slice(0, 3);
+  const scored = [];
+  for (const s of top) {
+    const { result } = await callTool('scoreMatch', { supplierId: s.supplierId, criteria: { location } });
+    scored.push({ ...s, score: (result?.score ?? 0) });
+  }
+  scored.sort((a,b) => (b.score - a.score));
+
+  // Step 3: route suggestion for the best supplier
+  const best = scored[0];
+  const route = await callTool('planRoute', { pickup: best.location, dropoff: location });
+  const plan = route.result || route;
+
+  // Render
+  renderAI(btn, `
+    <strong>Top match:</strong> ${best.supplierName} (${best.product})
+    <br>Qty: ${best.quantity} • Distance: ${best.distanceKm}km • Score: ${best.score}
+    <br>Route: ${plan.distanceKm}km — ${plan.window}
+  `);
+}
+
+function renderAI(btn, html) {
+  const box = btn.parentElement.querySelector('.ai-result') || btn.nextElementSibling;
+  if (box) box.innerHTML = html;
+}
+
+// Delegate click
+document.addEventListener('click', (e) => {
+  if (e.target.matches('.ai-suggest-farmers')) aiSuggestFarmersFlow(e.target);
+});
