@@ -750,3 +750,13 @@ function watsonxOrchestrate() {
     setAIButtonsEnabled(true);
   }, 1200);
 }
+
+async function uiCoopFlow(crop, location, targetQty){
+  if (!window.ORCH_CONNECTED) return alert('Connect IBM Agent first.');
+  const g = await callTool('groupByCrop', { crop, location, maxDistanceKm: 120, minQty: '50 kg' });
+  const group = g.result?.groups?.[0] || g.groups?.[0];
+  if (!group) return alert('No cluster found.');
+  const ids = group.members.map(m => m.farmerId);
+  const a = await callTool('analyzeVolume', { farmerIds: ids, targetQty, crop });
+  // Render group.members + a.shares + a.gap in your grid…
+}
