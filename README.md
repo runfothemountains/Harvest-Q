@@ -127,8 +127,13 @@ UI	Description
 Stage	Focus
 
 1	Foundation + domain setup
+
 2	Marketplace UI & core data flow
+
 3	IBM AI Agent integration (current)
+
 4	Trade / Health / Community modes
+
 5	Analytics & business onboarding
+
 6	International expansion / multi-currency support
