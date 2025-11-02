@@ -172,3 +172,7 @@ Integration with IBM watsonx Orchestrate for agentic automation
 Scalable architecture (Stages 2–7 planned)
 
 Community impact through direct trade and micro-grants
+
+📄 License
+
+MIT License 
