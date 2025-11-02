@@ -74,3 +74,5 @@ Response
 { "ok": true, "tool": "detectLanguage", "result": { "detected": "fr", "confidence": 0.9 } }
 
 > Each tool in server/orchestrate.js follows the IBM Agent Development Kit (JSON-schema + function mapping).
+
+https://github.com/runfothemountains/Harvest-Q.git
