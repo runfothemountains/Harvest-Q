@@ -113,3 +113,11 @@ watsonx.ai Prompt Lab enables fine-tuned reason-and-act patterns.
 Granite models provide robust classification & language understanding.
 
 SDG-9 Impact: industrial innovation + sustainable food infrastructure.
+
+📸 Screenshots
+
+UI	Description
+
+	Landing / Language Switch
+	Barter Agent Quick Start
+	Buyer matching interface
