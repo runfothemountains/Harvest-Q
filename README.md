@@ -1,8 +1,6 @@
 # 🌾 Harvest Q — Stage 4  
 > *Connecting farmers, consumers, and communities through AI-powered trade.*
 
-(Live Demo)](https://harvest-q-2-3-4.vercel.app)
-
 ---
 
 ## 🧭 Overview
