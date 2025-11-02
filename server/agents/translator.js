@@ -134,3 +134,12 @@ async function summarizeTranslation({ original, translated }) {
     note: 'Simple text-based summary; full model could rate translation semantics.'
   };
 }
+
+          const toolImpl = {
+  // …existing implementations…
+  detectLanguage,
+  translateText,
+  autoTranslate,
+  preserveFields,
+  summarizeTranslation
+};
