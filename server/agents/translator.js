@@ -143,3 +143,28 @@ async function summarizeTranslation({ original, translated }) {
   preserveFields,
   summarizeTranslation
 };
+
+          # detectLanguage
+curl -s -X POST http://localhost:8080/api/agent \
+ -H "Content-Type: application/json" \
+ -d '{"tool":"detectLanguage","args":{"text":"Bonjour, comment allez-vous?"}}' | jq
+
+# translateText
+curl -s -X POST http://localhost:8080/api/agent \
+ -H "Content-Type: application/json" \
+ -d '{"tool":"translateText","args":{"text":"Good morning!","sourceLang":"en","targetLang":"sw"}}' | jq
+
+# autoTranslate
+curl -s -X POST http://localhost:8080/api/agent \
+ -H "Content-Type: application/json" \
+ -d '{"tool":"autoTranslate","args":{"text":"Gracias por tu ayuda.","targetLang":"en"}}' | jq
+
+# preserveFields
+curl -s -X POST http://localhost:8080/api/agent \
+ -H "Content-Type: application/json" \
+ -d '{"tool":"preserveFields","args":{"text":"Tomatoes 200 kg for $50","fields":["200 kg","$50"]}}' | jq
+
+# summarizeTranslation
+curl -s -X POST http://localhost:8080/api/agent \
+ -H "Content-Type: application/json" \
+ -d '{"tool":"summarizeTranslation","args":{"original":"Good day, farmer!","translated":"¡Buenos días, agricultor!"}}' | jq
