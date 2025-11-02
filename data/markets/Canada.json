@@ -1,1 +1,81 @@
-
+{
+  "country": "Canada",
+  "farmers": [
+    {
+      "id": "ca-farmer-001",
+      "name": "Emily Thompson",
+      "location": "Ontario",
+      "products": [
+        {
+          "id": "ca-prod-001",
+          "name": "Potatoes",
+          "quantity": "1000 kg",
+          "price_per_kg": 0.85,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "ca-prod-002",
+          "name": "Carrots",
+          "quantity": "600 kg",
+          "price_per_kg": 1.0,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "ca-prod-003",
+          "name": "Maple Syrup",
+          "quantity": "250 liters",
+          "price_per_liter": 8.5,
+          "status": "available",
+          "barter": true,
+          "notes": "Pure organic maple syrup from Ontario farms — Canada’s signature export."
+        }
+      ]
+    },
+    {
+      "id": "ca-farmer-002",
+      "name": "Noah Levesque",
+      "location": "Quebec",
+      "products": [
+        {
+          "id": "ca-prod-004",
+          "name": "Wheat",
+          "quantity": "1500 kg",
+          "price_per_kg": 0.6,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "ca-prod-005",
+          "name": "Apples",
+          "quantity": "800 kg",
+          "price_per_kg": 1.4,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "ca-prod-006",
+          "name": "Cranberries",
+          "quantity": "300 kg",
+          "price_per_kg": 3.0,
+          "status": "available",
+          "barter": true,
+          "notes": "Locally grown cranberries from Quebec marshes — unique regional crop."
+        }
+      ]
+    }
+  ],
+  "consumers": [
+    {
+      "id": "ca-consumer-001",
+      "name": "Green Market Co.",
+      "location": "Vancouver, British Columbia",
+      "request": {
+        "product": "Organic Apples",
+        "quantity": "500 kg",
+        "notes": "Seeking bulk shipment of organic apples for a natural foods chain. Open to barter with imported grains."
+      }
+    }
+  ]
+}
