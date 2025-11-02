@@ -182,3 +182,17 @@ const toolImpl = {
   compareMarketRates
 };
 
+# priceBands
+curl -s -X POST http://localhost:8080/api/agent \
+ -H "Content-Type: application/json" \
+ -d '{"tool":"priceBands","args":{"crop":"Tomatoes","region":"Kano","quality":"Organic"}}' | jq
+
+# calcBreakeven
+curl -s -X POST http://localhost:8080/api/agent \
+ -H "Content-Type: application/json" \
+ -d '{"tool":"calcBreakeven","args":{"unit":"kg","quantity":500,"seed":60,"fertilizer":80,"labor":120,"transport":70,"storage":30,"overhead":20}}' | jq
+
+# compareMarketRates
+curl -s -X POST http://localhost:8080/api/agent \
+ -H "Content-Type: application/json" \
+ -d '{"tool":"compareMarketRates","args":{"crop":"Tomatoes","regions":["Kano","Abuja","Lagos"]}}' | jq
