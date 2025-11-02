@@ -225,3 +225,18 @@ const toolImpl = {
   flagIssue,
   recommendHandling
 };
+
+# gradeProduct
+curl -s -X POST http://localhost:8080/api/agent \
+ -H "Content-Type: application/json" \
+ -d '{"tool":"gradeProduct","args":{"lotId":"LOT-001","crop":"Tomatoes","attributes":{"defectsPct":8,"sizeUniformity":86,"moisturePct":0,"certification":"Organic"}}}' | jq
+
+# flagIssue
+curl -s -X POST http://localhost:8080/api/agent \
+ -H "Content-Type: application/json" \
+ -d '{"tool":"flagIssue","args":{"lotId":"LOT-001","issue":"High moisture","detail":"Reading at 14.1%","severity":"high"}}' | jq
+
+# recommendHandling
+curl -s -X POST http://localhost:8080/api/agent \
+ -H "Content-Type: application/json" \
+ -d '{"tool":"recommendHandling","args":{"lotId":"LOT-001","crop":"Maize","region":"Nigeria","storageType":"silo","attributes":{"moisturePct":14.1}}}' | jq
