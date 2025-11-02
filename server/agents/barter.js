@@ -92,3 +92,30 @@ const tools = [
   // ...you can add more tools below...
 ];
 
+// /js/agents/barter.js
+export async function uiFindBarterMatch({ itemOffered, itemWanted, location, maxDistanceKm = 150, minQuantity }) {
+  const r = await fetch('/api/agent', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ tool:'findBarterMatch', args:{ itemOffered, itemWanted, location, maxDistanceKm, minQuantity } })
+  });
+  return r.json();
+}
+
+export async function uiEvaluateTradeValue({ itemsA, itemsB }) {
+  const r = await fetch('/api/agent', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ tool:'evaluateTradeValue', args:{ itemsA, itemsB } })
+  });
+  return r.json();
+}
+
+export async function uiInitiateExchange({ partnerId, terms }) {
+  const r = await fetch('/api/agent', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ tool:'initiateExchange', args:{ partnerId, terms } })
+  });
+  return r.json();
+}
