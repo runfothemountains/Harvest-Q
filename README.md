@@ -142,9 +142,13 @@ Stage	Focus
 
 {
   "id": "farmer-001",
+  
   "name": "Aisha Bello",
+  
   "location": "Kano",
+  
   "wants": ["Tomatoes"],
+  
   "products": [
     {
       "id": "p-001",
