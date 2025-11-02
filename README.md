@@ -104,3 +104,12 @@ css/style.css           → Global styles
 
 docs/                   → Screenshots & architecture images
 
+🧠 Why IBM watsonx Matters
+
+Orchestrate brings enterprise-grade multi-agent coordination.
+
+watsonx.ai Prompt Lab enables fine-tuned reason-and-act patterns.
+
+Granite models provide robust classification & language understanding.
+
+SDG-9 Impact: industrial innovation + sustainable food infrastructure.
