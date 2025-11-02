@@ -410,3 +410,8 @@ async function initiateExchange({ partnerId, terms }) {
     ]
   };
     }
+
+// --- Register Barter Agent implementations ---
+toolImpl.findBarterMatch    = findBarterMatch;
+toolImpl.evaluateTradeValue = evaluateTradeValue;
+toolImpl.initiateExchange   = initiateExchange;
