@@ -1,4 +1,4 @@
-# 🌾 Harvest Q — Stage 3  
+# 🌾 Harvest Q — Stage 4  
 > *Connecting farmers, consumers, and communities through AI-powered trade.*
 
 **Compare:** [Stage 1](https://archive.harvestq.app) · [Stage 2](https://current.harvestq.app) · [Stage 3 (Live Demo)](https://harvest-q-2-3-4.vercel.app)
