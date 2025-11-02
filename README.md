@@ -88,3 +88,13 @@ curl -s -X POST http://localhost:8080/api/agent \
  -H "Content-Type: application/json" \
  -d '{"tool":"detectLanguage","args":{"text":"Hola"}}'
  
+📂 Project Layout
+
+index.html              → UI shell & tabs
+index.js                → Front-end logic (Quick Start + IBM connect)
+api/agent.js            → Single serverless endpoint for all tools
+server/orchestrate.js   → Agent schemas + implementations
+data/*.json             → Demo data for farmers/buyers/co-ops
+css/style.css           → Global styles
+docs/                   → Screenshots & architecture images
+
