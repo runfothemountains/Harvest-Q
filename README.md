@@ -75,4 +75,16 @@ Response
 
 > Each tool in server/orchestrate.js follows the IBM Agent Development Kit (JSON-schema + function mapping).
 
-https://github.com/runfothemountains/Harvest-Q.git
+⚙️ Run Locally
+
+git clone https://github.com/runfothemountains/Harvest-Q.git
+cd Harvest-Q
+npm ci
+npm start   # launches local server on http://localhost:8080
+
+Then test:
+
+curl -s -X POST http://localhost:8080/api/agent \
+ -H "Content-Type: application/json" \
+ -d '{"tool":"detectLanguage","args":{"text":"Hola"}}'
+ 
