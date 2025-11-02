@@ -44,3 +44,19 @@ Notify Agent	Sends alerts to buyers & drivers
 Grant Agent	Manages community micro-grants ($500 pilot)
 
 Insights Agent	Generates weekly market and SDG-9 reports
+
+🏗️ Tech Stack
+
+Frontend: HTML / CSS / Vanilla JS (PWA ready)
+
+Backend: Node 18 serverless API (Vercel)
+
+Data: Static JSON seed (data/farmers.json, buyers.json, coops.json)
+
+AI & Automation:
+
+IBM watsonx Orchestrate (Agent Catalog + multi-agent flows)
+
+IBM watsonx.ai (Prompt Lab + Granite LLMs)
+
+IBM Code Assistant (for rapid function stubs)
