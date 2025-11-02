@@ -140,10 +140,19 @@ Stage	Focus
 
 👩🏽‍🌾 Sample Data
 
-
-	  
+{
+  "id": "farmer-001",
+  "name": "Aisha Bello",
+  "location": "Kano",
+  "wants": ["Tomatoes"],
+  "products": [
+    {
+      "id": "p-001",
+      "name": "Onions",
+      "quantity": "200 kg",
+      "price_per_kg": 0.8,
+      "status": "available",
       "barter": true
     }
   ]
 }
-
