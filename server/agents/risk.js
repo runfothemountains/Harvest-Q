@@ -250,3 +250,23 @@ const toolImpl = {
   aggregateRisk,
   recommendMitigation
 };
+
+# priceVolatility
+curl -s -X POST http://localhost:8080/api/agent \
+ -H "Content-Type: application/json" \
+ -d '{"tool":"priceVolatility","args":{"crop":"Tomatoes","region":"Kano","period":"30d"}}' | jq
+
+# deliveryDelayRisk
+curl -s -X POST http://localhost:8080/api/agent \
+ -H "Content-Type: application/json" \
+ -d '{"tool":"deliveryDelayRisk","args":{"distanceKm":320,"mode":"truck","windowHours":24,"region":"Nigeria"}}' | jq
+
+# aggregateRisk
+curl -s -X POST http://localhost:8080/api/agent \
+ -H "Content-Type: application/json" \
+ -d '{"tool":"aggregateRisk","args":{"factors":[{"name":"spoilage","score":0.6,"weight":0.4},{"name":"delay","score":0.5,"weight":0.3},{"name":"price","score":0.3,"weight":0.3}]}}' | jq
+
+# recommendMitigation
+curl -s -X POST http://localhost:8080/api/agent \
+ -H "Content-Type: application/json" \
+ -d '{"tool":"recommendMitigation","args":{"crop":"Tomatoes","riskLevel":"high","context":{"distanceKm":120,"storageType":"ambient","volatilityPct":22,"delayRiskPct":28}}}' | jq
