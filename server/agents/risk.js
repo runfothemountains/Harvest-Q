@@ -242,3 +242,11 @@ async function recommendMitigation({ crop, riskLevel, context = {} }) {
     notes
   };
                                    }
+
+const toolImpl = {
+  // …existing implementations…
+  priceVolatility,
+  deliveryDelayRisk,
+  aggregateRisk,
+  recommendMitigation
+};
