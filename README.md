@@ -138,6 +138,8 @@ Stage	Focus
 
 6	International expansion / multi-currency support
 
+👩🏽‍🌾 Sample Data
+
 {
   "id": "farmer-001",
   "name": "Aisha Bello",
@@ -154,3 +156,4 @@ Stage	Focus
     }
   ]
 }
+
