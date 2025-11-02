@@ -160,3 +160,15 @@ Stage	Focus
     }
   ]
 }
+
+🏆 IBM Competition Note
+
+This project demonstrates:
+
+Real-world use case for Industry + Infrastructure (SDG 9)
+
+Integration with IBM watsonx Orchestrate for agentic automation
+
+Scalable architecture (Stages 2–7 planned)
+
+Community impact through direct trade and micro-grants
