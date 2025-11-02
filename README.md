@@ -60,3 +60,17 @@ IBM watsonx Orchestrate (Agent Catalog + multi-agent flows)
 IBM watsonx.ai (Prompt Lab + Granite LLMs)
 
 IBM Code Assistant (for rapid function stubs)
+
+🔌 API Structure
+
+All agents share one endpoint → /api/agent
+
+Request
+
+{ "tool": "detectLanguage", "args": { "text": "Bonjour" } }
+
+Response
+
+{ "ok": true, "tool": "detectLanguage", "result": { "detected": "fr", "confidence": 0.9 } }
+
+> Each tool in server/orchestrate.js follows the IBM Agent Development Kit (JSON-schema + function mapping).
