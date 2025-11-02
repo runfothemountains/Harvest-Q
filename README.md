@@ -137,3 +137,20 @@ Stage	Focus
 5	Analytics & business onboarding
 
 6	International expansion / multi-currency support
+
+{
+  "id": "farmer-001",
+  "name": "Aisha Bello",
+  "location": "Kano",
+  "wants": ["Tomatoes"],
+  "products": [
+    {
+      "id": "p-001",
+      "name": "Onions",
+      "quantity": "200 kg",
+      "price_per_kg": 0.8,
+      "status": "available",
+      "barter": true
+    }
+  ]
+}
