@@ -218,3 +218,10 @@ async function recommendHandling({ lotId, crop, region = 'unspecified', storageT
     notes
   };
 }
+
+const toolImpl = {
+  // …existing implementations…
+  gradeProduct,
+  flagIssue,
+  recommendHandling
+};
