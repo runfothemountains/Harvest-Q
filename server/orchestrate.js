@@ -121,3 +121,68 @@ app.post('/api/agent', async (req, res) => {
 
 // start
 app.listen(8080, () => console.log('HarvestQ Orchestrate server on :8080'));
+
+// ------------------------------------------------------------
+//  server/orchestrate.js
+//  Central backend for all Harvest Q Agents (IBM Hackathon)
+// ------------------------------------------------------------
+
+// 1️⃣  Existing imports / setup
+import fs from "fs";  // or const fs = require('fs');
+import path from "path";
+// ... your helper functions like loadJSON, parseQty, pseudoDistance, etc.
+
+// 2️⃣  Existing tools array
+const tools = [
+  // earlier agents: pricing, logistics, risk, translator, etc.
+];
+
+// 3️⃣  Append the Barter Agent tools here
+// (this is the first big section I gave you)
+tools.push(
+  {
+    type: 'function',
+    function: {
+      name: 'findBarterMatch',
+      description: 'Find compatible barter partners by crop, quantity, and proximity.',
+      parameters: {
+        type: 'object',
+        properties: {
+          itemOffered:   { type: 'string' },
+          itemWanted:    { type: 'string' },
+          location:      { type: 'string' },
+          maxDistanceKm: { type: 'number' },
+          minQuantity:   { type: 'string' }
+        },
+        required: ['itemOffered','itemWanted']
+      }
+    }
+  },
+  // ... evaluateTradeValue + initiateExchange tools ...
+);
+
+// 4️⃣  Add the Barter Agent function implementations right below
+// (this is the second big section I gave you)
+async function findBarterMatch({ itemOffered, itemWanted, location, maxDistanceKm, minQuantity }) {
+  // full implementation code here...
+}
+
+async function evaluateTradeValue({ itemsA, itemsB }) {
+  // full implementation code here...
+}
+
+async function initiateExchange({ partnerId, terms }) {
+  // full implementation code here...
+}
+
+// 5️⃣  Add the functions to the toolImpl mapping
+const toolImpl = {
+  // existing agents...
+  findBarterMatch,
+  evaluateTradeValue,
+  initiateExchange
+};
+
+// 6️⃣  Export or register (depending on your setup)
+export { tools, toolImpl };
+// or:  module.exports = { tools, toolImpl };  ← if using CommonJS
