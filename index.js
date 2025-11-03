@@ -15,6 +15,25 @@ async function watsonxOrchestrate() {
   }
 }
 
+const trace = (step, payload) => {
+  const el = document.getElementById('agentTrace');
+  const row = document.createElement('pre');
+  row.textContent = `[${new Date().toLocaleTimeString()}] ${step}: ` +
+                    JSON.stringify(payload, null, 2);
+  el.prepend(row);
+};
+
+async function runTool(tool, args){
+  trace('CALL', {tool, args});
+  const t0 = performance.now();
+  const r = await fetch('/api/agent', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({tool, args})
+  }).then(x=>x.json()).catch(e=>({ok:false, error:String(e)}));
+  trace('RESULT', {tool, ms: Math.round(performance.now()-t0), ...r});
+  return r;
+}
+
 async function callTool(tool, args = {}) {
   const r = await fetch('/api/agent', {
     method: 'POST',
