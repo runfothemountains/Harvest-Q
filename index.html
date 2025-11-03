@@ -269,6 +269,33 @@
   <h2>Quick Start — Try an Agent</h2>
   <div class="qs-grid">
 
+    <!-- AI Agent Playground -->
+<section id="panel-playground" role="tabpanel" hidden>
+  <div class="card">
+    <h2>🧠 AI Agent Playground</h2>
+    <p>Test Harvest Q's AI Agents and watch real-time trace output below.</p>
+
+    <!-- Controls -->
+    <div class="controls">
+      <label for="toolSelect">Select Agent:</label>
+      <select id="toolSelect">
+        <option value="findBarterMatch">findBarterMatch (Barter Agent)</option>
+        <option value="priceBands">priceBands (Pricing Agent)</option>
+        <option value="detectLanguage">detectLanguage (Translator Agent)</option>
+        <option value="aggregateRisk">aggregateRisk (Risk Agent)</option>
+      </select>
+      <button id="runToolBtn">Run Agent</button>
+    </div>
+
+    <!-- Trace Output -->
+    <div id="agentTrace"
+         style="background:#111;color:#0f0;padding:1em;font-family:monospace;
+         max-height:300px;overflow-y:auto;border-radius:8px;margin-top:10px;">
+      <p><em>Agent trace output will appear here...</em></p>
+    </div>
+  </div>
+</section>
+
     <!-- Farmer Agent -->
     <div class="qs-card">
       <h3>Farmer Agent</h3>
