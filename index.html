@@ -1,1 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Harvest Q – Stage 3 (Beta)</title>
+  <meta name="description" content="Harvest Q – Connecting Farmers, Consumers & Communities through Trade, Grants, and AI" />
 
+  <!-- PWA & icons -->
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <meta name="theme-color" content="#0f766e" />
+  <link rel="icon" href="./logo.png" />
+  <link rel="apple-touch-icon" href="./logo.png" />
+
+  <link rel="stylesheet" href="./css/style.css" />
+
+  <!-- Leaflet Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script defer src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <script>
+    // Single service worker registration
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => {
+          if (reg.waiting) reg.waiting.postMessage('SKIP_WAITING');
+        })
+        .catch(()=>{});
+    }
+  </script>
+</head>
+<body>
+  <header class="hq-header">
+    <div class="container">
+      <div class="brand">
+        <img src="./logo.png" alt="Harvest Q logo" onerror="this.style.display='none'">
+        <div>
+          <h1>Harvest Q <span class="beta">BETA</span></h1>
+          <p id="header-sub">Connecting farms, communities, and AI for sustainable food systems.</p>
+        </div>
+      </div>
+      <div class="lang-area">
+        <label for="langSelect" class="muted">Language</label>
+        <select id="langSelect">
+          <option value="en">English</option>
+          <option value="hi">हिन्दी (Hindi)</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Tabs: buttons are rendered by app.js -->
+    <nav id="tabs" class="tabs" role="tablist" aria-label="Main sections"></nav>
+
+    <!-- HOME -->
+    <section id="panel-home" role="tabpanel" hidden>
+      <div class="grid two-col">
+        <div>
+          <div class="card">
+            <h3>Welcome to Harvest Q</h3>
+            <p>
+              Empowering farmers, consumers, and local organizations to trade, connect, and grow sustainably.
+              Choose your country below to explore markets and community initiatives.
+            </p>
+          </div>
+          <div class="card">
+            <h3>Quick Filters</h3>
+            <div class="toolbar">
+              <label>Country
+                <!-- JS populates this from GEO in app.js -->
+                <select id="countrySelect"></select>
+              </label>
+              <label>State/Region
+                <select id="stateSelect"></select>
+              </label>
+              <label id="cityLabel">City
+                <select id="citySelect">
+                  <option value="">All Cities</option>
+                </select>
+              </label>
+              <!-- Optional; currently no handler in app.js, can keep as “dummy” -->
+              <button class="btn" id="refreshBtn" type="button">Refresh</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card warning" id="home-warning">
+            <strong>Note:</strong> This beta shows community-driven features for the IBM Hackathon. Data is demo-only.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FARMERS -->
+    <section id="panel-farmers" role="tabpanel" hidden>
+      <div class="toolbar">
+        <input id="farmerSearch" placeholder="Search farmers or products..." />
+        <select id="modeFilter">
+          <option value="all">All</option>
+          <option value="sale">For Sale</option>
+          <option value="trade">Trade</option>
+          <option value="both">Both</option>
+        </select>
+        <select id="sortBy">
+          <option value="name">Name</option>
+          <option value="priceAsc">Price (Low → High)</option>
+        </select>
+        <button class="btn" id="postOpenBtn">Post a Listing</button>
+      </div>
+      <div id="farmerGrid" class="grid"></div>
+      <div id="mapArea" class="card" style="margin-top:12px">
+        <h4>Market Map</h4>
+        <div id="map" style="height:360px;border-radius:8px;"></div>
+        <div id="map-legend" class="legend"></div>
+      </div>
+    </section>
+
+    <!-- CONSUMERS -->
+    <section id="panel-consumers" role="tabpanel" hidden>
+      <div class="toolbar">
+        <input id="consumerSearch" placeholder="Search buyers or requests..." />
+      </div>
+      <div id="consumerGrid" class="grid"></div>
+    </section>
+
+    <!-- LAWS (dynamic cards from app.js / LAW_INFO) -->
+    <section id="panel-laws" role="tabpanel" hidden>
+      <div class="card">
+        <h3>Key Agricultural and Consumer Laws</h3>
+        <p>High-level summaries for farmers and buyers. Always confirm with local authorities.</p>
+      </div>
+      <div id="lawGrid" class="grid"></div>
+      <p class="footer-note" id="laws-disclaimer"></p>
+    </section>
+
+    <!-- MEDICAL (dynamic cards from MED_TIPS) -->
+    <section id="panel-medical" role="tabpanel" hidden>
+      <div class="card">
+        <h3>Farmer Health & Safety</h3>
+        <p>Healthy farmers sustain healthy communities. Harvest Q encourages safe farm and health practices.</p>
+      </div>
+      <div id="medGrid" class="grid"></div>
+    </section>
+
+    <!-- TRADE / BARTER (dynamic from TRADE_EXAMPLES) -->
+    <section id="panel-trade" role="tabpanel" hidden>
+      <div class="card">
+        <h3>Community Barter Exchange</h3>
+        <p>Many members exchange goods or services instead of cash. Here are examples of how barter can work.</p>
+      </div>
+
+      <!-- JS will set this text based on language -->
+      <p class="footer-note" id="trade-disclaimer"></p>
+      <!-- JS will create #tradeGrid inside this panel -->
+    </section>
+
+    <!-- AI (stub – wired to ai* IDs in app.js if you want later) -->
+    <section id="panel-ai" role="tabpanel" hidden>
+      <div class="card">
+        <h3>AI Pricing & Barter Suggestions</h3>
+        <p class="muted">Simple on-device logic + optional backend agent calls.</p>
+        <div class="toolbar">
+          <input id="aiCrop" placeholder="Crop (e.g., Tomatoes)" />
+          <input id="aiQty" placeholder="Quantity (e.g., 40 kg)" />
+          <button class="btn" id="aiPriceBtn">Get Price Hint</button>
+        </div>
+        <pre id="aiPriceOut"></pre>
+      </div>
+
+      <div class="card">
+        <h3>Find Barter Match</h3>
+        <div class="toolbar">
+          <input id="aiWant" placeholder="What do you want to trade? (e.g., Maize ↔ Rice)" />
+          <button class="btn" id="aiMatchBtn">Find Match</button>
+        </div>
+        <pre id="aiMatchOut"></pre>
+      </div>
+    </section>
+
+    <!-- GRANTS -->
+    <section id="panel-grants" role="tabpanel" hidden>
+      <div class="card">
+        <h3>Harvest Grant Program</h3>
+        <p>We’re launching a <strong>$500 Micro-Grant</strong> to support farmers, consumers, and organizations fighting hunger and food waste.</p>
+        <h4>Who Can Apply?</h4>
+        <ul class="muted">
+          <li>Farmers improving sustainability or food access.</li>
+          <li>Consumers promoting local produce or community gardens.</li>
+          <li>Organizations supporting the elderly, homeless, or low-income families.</li>
+        </ul>
+        <div class="flex" style="gap:8px;margin-top:10px">
+          <a class="btn" href="mailto:grants@harvestq.org?subject=Harvest%20Grant%20Application">Apply Now</a>
+          <a class="btn secondary" href="#">Read Program FAQ</a>
+        </div>
+        <p class="footer-note">Applications open soon. Stay tuned for official announcements.</p>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer-note" id="footer-text">
+      © Harvest Q — Connecting Farms & Communities
+    </footer>
+  </main>
+
+  <script src="./js/app.js" defer></script>
+</body>
+  </html>
