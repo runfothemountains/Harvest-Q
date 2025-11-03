@@ -1,26 +1,38 @@
-// sw.js
-const VERSION = 'hq-stage2-v3';
+// sw.js — Harvest Q Stages 2,3 and 4
+const VERSION = 'hq-stage3-v1';
 const CACHE_SHELL = `hq-shell-${VERSION}`;
 const CACHE_RUNTIME = `hq-rt-${VERSION}`;
 
-// App shell to precache (must be same-path URLs for GH Pages + Vercel)
+// App shell to precache (same-origin, relative paths for GH Pages / Vercel)
 const APP_SHELL = [
   './',
   './index.html',
   './css/style.css',
   './js/app.js',
+  './js/index.js',          // ⬅️ new: Stage 3 front-end glue
   './logo.png',
   './manifest.webmanifest',
-  // Optional: local placeholder used in app.js on image error
-  './img/placeholder.png'
+  './img/placeholder.png'   // used when crop image fails
 ];
 
-// Helper: delete all old caches with our prefixes
+// Delete old caches with our prefixes on activate
 async function cleanOldCaches() {
   const keys = await caches.keys();
   const keep = new Set([CACHE_SHELL, CACHE_RUNTIME]);
-  await Promise.all(keys.map(k => (!keep.has(k) && (k.startsWith('hq-shell-') || k.startsWith('hq-rt-'))) ? caches.delete(k) : null));
+  await Promise.all(
+    keys.map(k => {
+      const ours = k.startsWith('hq-shell-') || k.startsWith('hq-rt-');
+      return (!keep.has(k) && ours) ? caches.delete(k) : Promise.resolve(true);
+    })
+  );
 }
+
+// Allow page to tell the SW to take over immediately
+self.addEventListener('message', (event) => {
+  if (event.data === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -36,11 +48,12 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Strategy notes
-// - HTML navigations: Network-first, fallback to cached index.html (offline SPA).
-// - JSON (your data/*.json): Network-first, fallback to cache.
-// - Images: Stale-while-revalidate (fast on repeat visits), fallback to placeholder if available.
-// - Everything else (CSS/JS): Cache-first (served from APP_SHELL), fall back to network.
+// Caching strategy:
+// - Navigations: network-first, fallback to cached index.html (offline SPA).
+// - JSON (data/*.json, markets/*.json): network-first, fallback to cache.
+// - Images: stale-while-revalidate, fallback to placeholder.
+// - Static same-origin assets (CSS/JS/fonts): cache-first, then network.
+// - Cross-origin (Leaflet CDN, etc.): network-first, fallback to cache.
 
 self.addEventListener('fetch', (event) => {
   const req = event.request;
@@ -49,114 +62,97 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(req.url);
   const isSameOrigin = url.origin === self.location.origin;
 
-  // 1) Handle SPA navigations cleanly (works on Vercel + GH Pages)
+  // 1) SPA navigations – keep offline UX smooth
   if (req.mode === 'navigate') {
-    event.respondWith(
-      (async () => {
-        try {
-          // Try fresh page first
-          const net = await fetch(req);
-          // Optionally cache a copy of the main page for offline
-          const copy = net.clone();
-          const cache = await caches.open(CACHE_RUNTIME);
-          cache.put('./index.html', copy);
-          return net;
-        } catch {
-          // Offline fallback to cached shell
-          const cached = await caches.match('./index.html', { ignoreSearch: true });
-          return cached || new Response('Offline', { status: 503, statusText: 'Offline' });
-        }
-      })()
-    );
+    event.respondWith((async () => {
+      try {
+        const net = await fetch(req);
+        // Cache a fresh copy of index for offline
+        const cache = await caches.open(CACHE_RUNTIME);
+        cache.put('./index.html', net.clone());
+        return net;
+      } catch {
+        const cached = await caches.match('./index.html', { ignoreSearch: true });
+        return cached || new Response('Offline', { status: 503, statusText: 'Offline' });
+      }
+    })());
     return;
   }
 
-  // 2) JSON (network-first)
+  // 2) JSON (network-first): data/*.json, markets/*.json, etc.
   if (url.pathname.endsWith('.json')) {
-    event.respondWith(
-      (async () => {
-        try {
-          const net = await fetch(req, { cache: 'no-store' });
-          const copy = net.clone();
-          const cache = await caches.open(CACHE_RUNTIME);
-          cache.put(req, copy);
-          return net;
-        } catch {
-          const cached = await caches.match(req, { ignoreSearch: true });
-          return cached || new Response('[]', { headers: { 'Content-Type': 'application/json' } });
-        }
-      })()
-    );
+    event.respondWith((async () => {
+      try {
+        const net = await fetch(req, { cache: 'no-store' });
+        const cache = await caches.open(CACHE_RUNTIME);
+        cache.put(req, net.clone());
+        return net;
+      } catch {
+        const cached = await caches.match(req, { ignoreSearch: true });
+        return cached || new Response('[]', { headers: { 'Content-Type': 'application/json' } });
+      }
+    })());
     return;
   }
 
   // 3) Images (stale-while-revalidate)
   if (/\.(png|jpg|jpeg|gif|webp|svg)$/i.test(url.pathname)) {
-    event.respondWith(
-      (async () => {
-        const cache = await caches.open(CACHE_RUNTIME);
-        const cached = await cache.match(req);
-        const fetchAndUpdate = fetch(req).then((res) => {
+    event.respondWith((async () => {
+      const cache = await caches.open(CACHE_RUNTIME);
+      const cached = await cache.match(req);
+      const fetchAndUpdate = fetch(req)
+        .then((res) => {
           if (res && res.ok) cache.put(req, res.clone());
           return res;
-        }).catch(() => null);
+        })
+        .catch(() => null);
 
-        // Return cached immediately if present; kick off background refresh
-        if (cached) {
-          event.waitUntil(fetchAndUpdate);
-          return cached;
-        }
+      if (cached) {
+        // Refresh in background
+        event.waitUntil(fetchAndUpdate);
+        return cached;
+      }
+      const net = await fetchAndUpdate;
+      if (net) return net;
 
-        // No cache — try network, then placeholder
-        const net = await fetchAndUpdate;
-        if (net) return net;
-
-        // Fallback to placeholder if we have one
-        const placeholder = await caches.match('./img/placeholder.png');
-        return placeholder || new Response('', { status: 404 });
-      })()
-    );
+      // Fallback placeholder
+      const placeholder = await caches.match('./img/placeholder.png');
+      return placeholder || new Response('', { status: 404 });
+    })());
     return;
   }
 
-  // 4) Everything else
-  // Same-origin assets from APP_SHELL: cache-first; otherwise network-first.
+  // 4) Same-origin assets (cache-first)
   if (isSameOrigin) {
-    event.respondWith(
-      (async () => {
-        const cached = await caches.match(req);
-        if (cached) return cached;
-        try {
-          const net = await fetch(req);
-          // Optionally cache runtime assets too (CSS/JS/fonts not in shell)
-          const cache = await caches.open(CACHE_RUNTIME);
-          cache.put(req, net.clone());
-          return net;
-        } catch {
-          // As a last resort, try index for same-origin navigations (already handled above)
-          const fallback = await caches.match('./index.html', { ignoreSearch: true });
-          return fallback || new Response('', { status: 503 });
-        }
-      })()
-    );
-    return;
-  }
-
-  // 5) Cross-origin (e.g., Leaflet CDN): network-first with cache fallback
-  event.respondWith(
-    (async () => {
+    event.respondWith((async () => {
+      const cached = await caches.match(req, { ignoreSearch: true });
+      if (cached) return cached;
       try {
         const net = await fetch(req);
-        // Cache successful cross-origin responses for resilience
-        if (net && net.ok && (net.type === 'basic' || net.type === 'cors')) {
-          const cache = await caches.open(CACHE_RUNTIME);
-          cache.put(req, net.clone());
-        }
+        const cache = await caches.open(CACHE_RUNTIME);
+        cache.put(req, net.clone());
         return net;
       } catch {
-        const cached = await caches.match(req);
-        return cached || new Response('', { status: 503 });
+        // Last-chance fallback for navigations already covered above
+        const fallback = await caches.match('./index.html', { ignoreSearch: true });
+        return fallback || new Response('', { status: 503 });
       }
-    })()
-  );
-});
+    })());
+    return;
+  }
+
+  // 5) Cross-origin (Leaflet tiles, CDNs): network-first with cache fallback
+  event.respondWith((async () => {
+    try {
+      const net = await fetch(req);
+      if (net && net.ok && (net.type === 'basic' || net.type === 'cors')) {
+        const cache = await caches.open(CACHE_RUNTIME);
+        cache.put(req, net.clone());
+      }
+      return net;
+    } catch {
+      const cached = await caches.match(req);
+      return cached || new Response('', { status: 503 });
+    }
+  })());
+}); 
