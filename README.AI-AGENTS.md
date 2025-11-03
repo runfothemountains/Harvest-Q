@@ -10,7 +10,7 @@ Due to environment limits, this submission demonstrates 2 fully functional agent
 
 ---
 
-🧠 1. Overview of Agents
+## 🧠 1. Overview of Agents
 
 Featured Agents (Demonstrated in Code & Screenshots)
 
@@ -38,8 +38,6 @@ User input → findBarterMatch → evaluateTradeValue → Ranked results returne
 
 Output Example:
 “Top partner: Farmer A — 45 km away — Fairness: Balanced”
-
-
 
 ---
 
@@ -84,7 +82,7 @@ Due to the sandbox limitations of watsonx Orchestrate, only two active agents (P
 
 ---
 
-⚙️ 2. Deployment Status
+## ⚙️ 2. Deployment Status
 
 Status	Description
 
@@ -104,7 +102,7 @@ WATSONX_MODEL_ID=
 
 ---
 
-🧭 3. Orchestrate Integration
+## 🧭 3. Orchestrate Integration
 
 Each agent corresponds to a defined tool in the Orchestrate workspace.
 The project’s backend mirrors these agents as executable API endpoints to simulate a real orchestration flow.
@@ -117,7 +115,7 @@ The code in server/orchestrate.js reproduces IBM’s agent orchestration model, 
 
 ---
 
-🚀 4. Next Steps
+## 🚀 4. Next Steps
 
 Once deployment access opens:
 
@@ -135,7 +133,7 @@ Once deployment access opens:
 
 ---
 
-🏁 5. Notes to Judges
+## 🏁 5. Notes to Judges
 
 This submission showcases two of the 15 created agents, demonstrating:
 
