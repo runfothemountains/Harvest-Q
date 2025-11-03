@@ -3,3 +3,84 @@
   {"market":"Houston Central Market","city":"Houston","state":"Texas","lat":29.7604,"lng":-95.3698,"mode":"trade","type":"Regional hub"}
 ]
 
+{
+  "country": "United States",
+  "farmers": [
+    {
+      "id": "us-farmer-001",
+      "name": "John Miller",
+      "location": "Iowa",
+      "products": [
+        {
+          "id": "us-prod-001",
+          "name": "Corn",
+          "quantity": "3000 kg",
+          "price_per_kg": 0.9,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "us-prod-002",
+          "name": "Soybeans",
+          "quantity": "2000 kg",
+          "price_per_kg": 1.1,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "us-prod-003",
+          "name": "Cranberries",
+          "quantity": "400 kg",
+          "price_per_kg": 3.8,
+          "status": "available",
+          "barter": true,
+          "notes": "Harvested from Wisconsin bogs — premium American fruit export for sauces and juices."
+        }
+      ]
+    },
+    {
+      "id": "us-farmer-002",
+      "name": "Sarah Johnson",
+      "location": "California",
+      "products": [
+        {
+          "id": "us-prod-004",
+          "name": "Almonds",
+          "quantity": "800 kg",
+          "price_per_kg": 5.0,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "us-prod-005",
+          "name": "Lettuce",
+          "quantity": "1000 kg",
+          "price_per_kg": 1.2,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "us-prod-006",
+          "name": "Blueberries",
+          "quantity": "500 kg",
+          "price_per_kg": 4.5,
+          "status": "available",
+          "barter": true,
+          "notes": "Fresh blueberries from California’s Central Valley — rich in antioxidants and exported globally."
+        }
+      ]
+    }
+  ],
+  "consumers": [
+    {
+      "id": "us-consumer-001",
+      "name": "Green Earth Grocers",
+      "location": "Atlanta, Georgia",
+      "request": {
+        "product": "Almonds",
+        "quantity": "400 kg",
+        "notes": "Seeking California almonds for natural snacks brand. Prefers local cooperative partnerships or bulk trade options."
+      }
+    }
+  ]
+}
