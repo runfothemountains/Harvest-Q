@@ -1,1 +1,81 @@
-
+{
+  "country": "Nigeria",
+  "farmers": [
+    {
+      "id": "ng-farmer-001",
+      "name": "Chinedu Okafor",
+      "location": "Anambra State",
+      "products": [
+        {
+          "id": "ng-prod-001",
+          "name": "Cassava",
+          "quantity": "2000 kg",
+          "price_per_kg": 0.5,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "ng-prod-002",
+          "name": "Yams",
+          "quantity": "1200 kg",
+          "price_per_kg": 0.8,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "ng-prod-003",
+          "name": "Palm Oil",
+          "quantity": "500 liters",
+          "price_per_liter": 2.5,
+          "status": "available",
+          "barter": true,
+          "notes": "Pure red palm oil processed locally — a key Nigerian export commodity."
+        }
+      ]
+    },
+    {
+      "id": "ng-farmer-002",
+      "name": "Amina Bello",
+      "location": "Kano State",
+      "products": [
+        {
+          "id": "ng-prod-004",
+          "name": "Groundnuts (Peanuts)",
+          "quantity": "800 kg",
+          "price_per_kg": 1.0,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "ng-prod-005",
+          "name": "Rice",
+          "quantity": "1500 kg",
+          "price_per_kg": 0.9,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "ng-prod-006",
+          "name": "Hibiscus Flowers (Zobo)",
+          "quantity": "300 kg",
+          "price_per_kg": 4.0,
+          "status": "available",
+          "barter": true,
+          "notes": "Dried hibiscus petals used for Zobo drink and export markets in the Middle East and Europe."
+        }
+      ]
+    }
+  ],
+  "consumers": [
+    {
+      "id": "ng-consumer-001",
+      "name": "Lagos Fresh Co-op",
+      "location": "Lagos State",
+      "request": {
+        "product": "Palm Oil",
+        "quantity": "200 liters",
+        "notes": "Seeking locally processed palm oil for food manufacturing. Open to barter with packaged cassava flour."
+      }
+    }
+  ]
+}
