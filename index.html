@@ -213,3 +213,11 @@
   <script src="./js/app.js" defer></script>
 </body>
   </html>
+
+<script>
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').then(reg => {
+    if (reg.waiting) reg.waiting.postMessage('SKIP_WAITING');
+  }).catch(()=>{});
+}
+</script>
