@@ -1,1 +1,65 @@
-
+{
+  "country": "Germany",
+  "farmers": [
+    {
+      "id": "de-farmer-001",
+      "name": "Hans Müller",
+      "location": "Bavaria",
+      "products": [
+        {
+          "id": "de-prod-001",
+          "name": "Barley",
+          "quantity": "1500 kg",
+          "price_per_kg": 0.85,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "de-prod-002",
+          "name": "Potatoes",
+          "quantity": "1000 kg",
+          "price_per_kg": 0.75,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "de-prod-003",
+          "name": "White Asparagus",
+          "quantity": "200 kg",
+          "price_per_kg": 6.5,
+          "status": "available",
+          "barter": true,
+          "notes": "Premium seasonal 'Spargel' grown in Bavaria — considered a national delicacy."
+        }
+      ]
+    },
+    {
+      "id": "de-farmer-002",
+      "name": "Greta Schneider",
+      "location": "Lower Saxony",
+      "products": [
+        {
+          "id": "de-prod-004",
+          "name": "Wheat",
+          "quantity": "1300 kg",
+          "price_per_kg": 0.9,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "de-prod-005",
+          "name": "Cabbage",
+          "quantity": "600 kg",
+          "price_per_kg": 0.8,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "de-prod-006",
+          "name": "Rye Grain",
+          "quantity": "800 kg",
+          "price_per_kg": 1.1,
+          "status": "available",
+          "barter": true,
+          "notes": "Traditional German rye grain used for bread and beer production."
+        }
