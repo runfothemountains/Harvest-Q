@@ -5,7 +5,7 @@ tasks:
     init: |
       npm install
     command: |
-      npm run start
+      npm run dev
 
 ports:
   - port: 8080
@@ -16,4 +16,4 @@ vscode:
   extensions:
     - ms-vscode.js-debug
     - esbenp.prettier-vscode
-    - dbaeumer.vscode-eslint 
+    - dbaeumer.vscode-eslint
