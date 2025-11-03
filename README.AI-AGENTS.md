@@ -148,6 +148,8 @@ And full compliance with the hackathon’s “AI Agent design and orchestration�
 
 Due to platform restrictions, live deployment was not possible, but all agent behaviors are simulated through verified backend integration and recorded screenshots.
 
+The snap shots are in the root under: IBM--Barter-Agent.PNG and IBM-Farmer Agent.PNG
+
 
 ---
 
