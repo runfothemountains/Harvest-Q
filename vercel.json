@@ -1,7 +1,6 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
-
   "headers": [
     {
       "source": "/sw.js",
@@ -34,12 +33,6 @@
       ]
     },
     {
-      "source": "/markets/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "no-store" }
-      ]
-    },
-    {
       "source": "/(.*)",
       "headers": [
         { "key": "Referrer-Policy", "value": "no-referrer" },
@@ -49,16 +42,14 @@
       ]
     }
   ],
-
   "rewrites": [
-    /* OPTION A: SPA fallback (frontend-only) */
-    { "source": "/(.*)", "destination": "/" }
-
-    /* OPTION B (optional): proxy API to your backend
-       Uncomment and set your backend URL if your Node server
-       runs elsewhere (Gitpod/Render/Railway/etc.)
-    ,
-    { "source": "/api/agent", "destination": "https://YOUR-BACKEND-HOST/api/agent" }
-    */
+    {
+      "source": "/api/agent",
+      "destination": "https://YOUR-BACKEND-HOST.example.com/api/agent"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
   ]
-}
+} 
