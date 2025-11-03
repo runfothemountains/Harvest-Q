@@ -1,11 +1,16 @@
 {
   "name": "Harvest Q",
   "short_name": "HarvestQ",
+  "id": "com.harvestq.app",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#f4f9f6",
   "theme_color": "#0f766e",
-  "description": "Harvest Q connects farmers and buyers with fresh, local produce for sale or trade. Explore listings, maps, and AI-powered tools for sustainable communities.",
+  "description": "Harvest Q connects farmers, buyers, and communities in a direct marketplace for fresh produce, fair trade, and sustainable growth.",
+  "categories": ["marketplace", "farming", "community", "productivity"],
+  "lang": "en",
   "icons": [
     {
       "src": "./logo.png",
@@ -21,7 +26,7 @@
       "src": "./logo_maskable.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "maskable any"
     }
   ]
-}
+} 
