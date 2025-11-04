@@ -1,1 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Harvest Q – Stage 3 (Beta)</title>
+  <meta name="description" content="Harvest Q – Connecting Farmers, Consumers & Communities through Trade, Grants, and AI" />
 
+  <!-- PWA & icons -->
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <meta name="theme-color" content="#0f766e" />
+  <link rel="icon" href="./logo.png" />
+  <link rel="apple-touch-icon" href="./logo.png" />
+
+  <link rel="stylesheet" href="./css/style.css" />
+
+  <!-- Leaflet Map -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script defer src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <!-- Service worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').then(reg => {
+        if (reg.waiting) {
+          reg.waiting.postMessage('SKIP_WAITING');
+        }
+      }).catch(() => {});
+    }
+  </script>
+</head>
+<body>
+  <header class="hq-header">
+    <div class="container">
+      <div class="brand">
+        <img src="./logo.png" alt="Harvest Q logo" onerror="this.style.display='none'">
+        <div>
+          <h1>Harvest Q <span class="beta">BETA</span></h1>
+          <p id="header-sub">Connecting farms, communities, and AI for sustainable food systems.</p>
+        </div>
+      </div>
+      <div class="lang-area">
+        <label for="langSelect" class="muted">Language</label>
+        <select id="langSelect">
+          <!-- NOTE: Only `en` and `hi` have full translations in app.js for now.
+               Extra languages below still use English strings behind the scenes. -->
+          <option value="en">English</option>
+          <option value="hi">हिन्दी (Hindi)</option>
+          <option value="en">Français (French)</option>
+          <option value="en">Español (Spanish)</option>
+          <option value="en">Português (Portuguese)</option>
+          <option value="en">Kiswahili (Swahili)</option>
+        </select>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Tabs -->
+    <nav id="tabs" class="tabs" role="tablist" aria-label="Main sections">
+      <!-- data-panel values must match IDs WITHOUT "panel-" prefix -->
+      <button data-panel="home">Home</button>
+      <button data-panel="farmers">Farmers</button>
+      <button data-panel="consumers">Consumers</button>
+      <button data-panel="laws">Laws</button>
+      <button data-panel="medical">Medical</button>
+      <button data-panel="trade">Trade</button>
+      <button data-panel="ai">AI</button>
+      <button data-panel="grants">Grants</button>
+    </nav>
+
+    <!-- HOME -->
+    <section id="panel-home" role="tabpanel" hidden>
+      <div class="grid two-col">
+        <div>
+          <div class="card">
+            <h3>Welcome to Harvest Q</h3>
+            <p>
+              Empowering farmers, consumers, and local organizations to trade, connect, and grow sustainably.
+              Choose your country below to explore markets and community initiatives.
+            </p>
+          </div>
+
+          <!-- This card matches what your JS expects for i18n -->
+          <div class="card">
+            <h3 id="home-what-title">What this beta shows</h3>
+            <p id="home-what-content">
+              Country / state / city filters · Farmers & consumers listings · Market map ·
+              PWA scaffold with offline support · Early AI & agent integration.
+            </p>
+          </div>
+
+          <div class="card">
+            <h3>Quick Filters</h3>
+            <div class="toolbar">
+              <label>Country
+                <select id="countrySelect">
+                  <option>US</option><option>India</option><option>Nigeria</option><option>Russia</option>
+                  <option>Canada</option><option>China</option><option>Germany</option><option>Brazil</option>
+                  <option>Kenya</option><option>Ethiopia</option><option>Turkey</option><option>France</option>
+                  <option>Spain</option><option>Italy</option><option>Guatemala</option>
+                </select>
+              </label>
+              <label>State/Region
+                <select id="stateSelect"></select>
+              </label>
+              <label id="cityLabel">City
+                <select id="citySelect"><option value="">All Cities</option></select>
+              </label>
+              <button class="btn" id="refreshBtn">Refresh</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="card warning" id="home-warning">
+            <strong>Note:</strong> This beta shows community-driven features for the IBM Hackathon. Data is demo-only.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FARMERS -->
+    <section id="panel-farmers" role="tabpanel" hidden>
+      <div class="toolbar">
+        <input id="farmerSearch" placeholder="Search farmers or products..." />
+        <select id="modeFilter">
+          <option value="all">All</option>
+          <option value="sale">For Sale</option>
+          <option value="trade">Trade</option>
+          <option value="both">Both</option>
+        </select>
+        <select id="sortBy">
+          <option value="name">Name</option>
+          <option value="priceAsc">Price (Low → High)</option>
+        </select>
+        <button class="btn" id="postOpenBtn">Post a Listing</button>
+      </div>
+      <div id="farmerGrid" class="grid"></div>
+      <div id="mapArea" class="card" style="margin-top:12px">
+        <h4>Market Map</h4>
+        <div id="map" style="height:360px;border-radius:8px;"></div>
+        <div id="map-legend" class="legend"></div>
+      </div>
+    </section>
+
+    <!-- CONSUMERS -->
+    <section id="panel-consumers" role="tabpanel" hidden>
+      <div class="toolbar">
+        <input id="consumerSearch" placeholder="Search buyers or requests..." />
+      </div>
+      <div id="consumerGrid" class="grid"></div>
+    </section>
+
+    <!-- LAWS -->
+    <section id="panel-laws" role="tabpanel" hidden>
+      <div class="card">
+        <h3>Key Agricultural and Consumer Laws</h3>
+        <p>Below are essential laws that protect farmers and consumers in each participating country.</p>
+      </div>
+
+      <!-- JS can override / localize using LAW_INFO -->
+      <div id="lawGrid" class="grid">
+        <div class="card"><h4>🇺🇸 United States</h4><ul><li>Farm Bill — Crop insurance & conservation.</li><li>FSMA — Produce safety standards.</li><li>Fair Packaging & Labeling Act.</li></ul></div>
+        <div class="card"><h4>🇮🇳 India</h4><ul><li>Essential Commodities Act.</li><li>Consumer Protection Act.</li><li>PM-KISAN farmer income support.</li></ul></div>
+        <div class="card"><h4>🇳🇬 Nigeria</h4><ul><li>Agricultural Credit Guarantee Scheme.</li><li>Consumer Protection Council Act.</li><li>Land Use Act — Farm ownership rights.</li></ul></div>
+        <div class="card"><h4>🇧🇷 Brazil</h4><ul><li>Agricultural Policy Law.</li><li>Consumer Defense Code.</li><li>Environmental Crimes Law.</li></ul></div>
+        <div class="card"><h4>🇨🇦 Canada</h4><ul><li>Safe Food for Canadians Act.</li><li>Agricultural Products Marketing Act.</li><li>Competition Act.</li></ul></div>
+        <div class="card"><h4>🇫🇷 France</h4><ul><li>Common Agricultural Policy (EU).</li><li>Consumer Code.</li><li>Farm Transition Law.</li></ul></div>
+        <div class="card"><h4>🇰🇪 Kenya</h4><ul><li>Agriculture & Food Authority Act.</li><li>Weights and Measures Act.</li><li>Consumer Protection Act (2012).</li></ul></div>
+        <div class="card"><h4>🇪🇹 Ethiopia</h4><ul><li>Cooperative Societies Proclamation.</li><li>Seed Law.</li><li>Trade & Consumer Protection Proclamation.</li></ul></div>
+        <div class="card"><h4>🇨🇳 China</h4><ul><li>Rural Land Contract Law.</li><li>Food Safety Law.</li><li>Farmers’ Cooperatives Law.</li></ul></div>
+        <div class="card"><h4>🇪🇸 Spain</h4><ul><li>Agri-Food Chain Law.</li><li>Organic Production Regulation.</li><li>Consumer Rights Law.</li></ul></div>
+      </div>
+
+      <p id="laws-disclaimer" class="footer-note">
+        Provided for education only. Always verify local laws before trading or exporting.
+      </p>
+    </section>
+
+    <!-- MEDICAL -->
+    <section id="panel-medical" role="tabpanel" hidden>
+      <div class="card">
+        <h3>Farmer Health & Safety</h3>
+        <p>Healthy farmers sustain healthy communities. Harvest Q encourages good agricultural and medical practices.</p>
+        <ul class="muted">
+          <li>🚰 Always use clean water when washing or irrigating produce.</li>
+          <li>🧤 Wear gloves and protective gear when using fertilizers or pesticides.</li>
+          <li>💧 Stay hydrated and take shade breaks during long harvest days.</li>
+          <li>🏥 Visit your local clinic for annual health checks and vaccinations.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Mental & Community Wellness</h4>
+        <p>Farming can be stressful — join local cooperatives, talk with peers, and use Harvest Q to find support groups.</p>
+      </div>
+    </section>
+
+    <!-- TRADE / BARTER -->
+    <section id="panel-trade" role="tabpanel" hidden>
+      <div class="card">
+        <h3>Community Barter Exchange</h3>
+        <p>Many members exchange goods or services instead of cash. Here are current examples from different countries.</p>
+      </div>
+
+      <div class="grid">
+        <div class="card"><h4>🌽 Farm-to-Farm</h4><ul><li>Tomatoes ↔ Onions</li><li>Maize ↔ Rice</li><li>Groundnuts ↔ Palm oil</li><li>Yams ↔ Beans</li></ul></div>
+        <div class="card"><h4>🍯 Value-Added</h4><ul><li>Honey ↔ Fresh fruits</li><li>Soap ↔ Cornmeal</li><li>Shea butter ↔ Cocoa beans</li></ul></div>
+        <div class="card"><h4>🐄 Livestock & Feed</h4><ul><li>Goat milk ↔ Poultry feed</li><li>Eggs ↔ Cassava chips</li><li>Fish fingerlings ↔ Maize bran</li></ul></div>
+        <div class="card"><h4>🌿 Tools & Labor</h4><ul><li>Tractor hours ↔ Harvest help</li><li>Fertilizer ↔ Irrigation repair</li><li>Crates ↔ Transport support</li></ul></div>
+        <div class="card"><h4>🧺 Community Trades</h4><ul><li>Solar lamps ↔ Produce baskets</li><li>Seeds ↔ School supplies</li><li>Vegetables ↔ Meals for elderly</li></ul></div>
+      </div>
+
+      <p id="trade-disclaimer" class="footer-note">
+        Harvest Q promotes fair barter to reduce waste and build community resilience.
+      </p>
+    </section>
+
+    <!-- GRANTS -->
+    <section id="panel-grants" role="tabpanel" hidden>
+      <div class="card">
+        <h3>Harvest Grant Program</h3>
+        <p>We’re launching a <strong>$500 Micro-Grant</strong> to support farmers, consumers, and organizations fighting hunger and food waste.</p>
+        <h4>Who Can Apply?</h4>
+        <ul class="muted">
+          <li>Farmers improving sustainability or food access.</li>
+          <li>Consumers promoting local produce or community gardens.</li>
+          <li>Organizations supporting the elderly, homeless, or low-income families.</li>
+        </ul>
+        <div class="flex" style="gap:8px;margin-top:10px">
+          <a class="btn" href="mailto:grants@harvestq.org?subject=Harvest%20Grant%20Application">Apply Now</a>
+          <a class="btn secondary" href="#">Read Program FAQ</a>
+        </div>
+        <p class="footer-note">Applications open soon. Stay tuned for official announcements.</p>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer-note" id="footer-text">© Harvest Q — Connecting Farms & Communities</footer>
+  </main>
+
+  <script src="./js/app.js" defer></script>
+</body>
+  </html>
