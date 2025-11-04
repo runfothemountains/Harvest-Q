@@ -1,0 +1,81 @@
+{
+  "country": "Ethiopia",
+  "farmers": [
+    {
+      "id": "et-farmer-001",
+      "name": "Abebe Tesfaye",
+      "location": "Oromia Region",
+      "products": [
+        {
+          "id": "et-prod-001",
+          "name": "Maize",
+          "quantity": "900 kg",
+          "price_per_kg": 0.7,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "et-prod-002",
+          "name": "Wheat",
+          "quantity": "1200 kg",
+          "price_per_kg": 0.8,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "et-prod-003",
+          "name": "Arabica Coffee Beans",
+          "quantity": "300 kg",
+          "price_per_kg": 5.5,
+          "status": "available",
+          "barter": true,
+          "notes": "Premium single-origin Arabica from Oromia — Ethiopia’s most famous export crop."
+        }
+      ]
+    },
+    {
+      "id": "et-farmer-002",
+      "name": "Selam Dawit",
+      "location": "Amhara Region",
+      "products": [
+        {
+          "id": "et-prod-004",
+          "name": "Teff Grain",
+          "quantity": "800 kg",
+          "price_per_kg": 2.2,
+          "status": "available",
+          "barter": true,
+          "notes": "Local staple grain used for injera bread; high demand domestically and abroad."
+        },
+        {
+          "id": "et-prod-005",
+          "name": "Lentils",
+          "quantity": "600 kg",
+          "price_per_kg": 1.0,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "et-prod-006",
+          "name": "Onions",
+          "quantity": "500 kg",
+          "price_per_kg": 0.9,
+          "status": "available",
+          "barter": true
+        }
+      ]
+    }
+  ],
+  "consumers": [
+    {
+      "id": "et-consumer-001",
+      "name": "Addis Green Market",
+      "location": "Addis Ababa",
+      "request": {
+        "product": "Arabica Coffee Beans",
+        "quantity": "150 kg",
+        "notes": "Seeking premium coffee beans for export packaging. Willing to trade processed teff flour or pay in cash."
+      }
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "country": "Guatemala",
+  "farmers": [
+    {
+      "id": "gt-farmer-001",
+      "name": "Miguel Hernández",
+      "location": "Antigua Guatemala",
+      "products": [
+        {
+          "id": "gt-prod-001",
+          "name": "Corn (Maize)",
+          "quantity": "1000 kg",
+          "price_per_kg": 0.7,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "gt-prod-002",
+          "name": "Beans",
+          "quantity": "700 kg",
+          "price_per_kg": 0.9,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "gt-prod-003",
+          "name": "Guatemalan Coffee",
+          "quantity": "250 kg",
+          "price_per_kg": 6.0,
+          "status": "available",
+          "barter": true,
+          "notes": "High-altitude Arabica coffee grown in volcanic soil — signature Guatemalan export."
+        }
+      ]
+    },
+    {
+      "id": "gt-farmer-002",
+      "name": "Ana López",
+      "location": "Huehuetenango",
+      "products": [
+        {
+          "id": "gt-prod-004",
+          "name": "Rice",
+          "quantity": "800 kg",
+          "price_per_kg": 0.75,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "gt-prod-005",
+          "name": "Plantains",
+          "quantity": "500 kg",
+          "price_per_kg": 1.2,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "gt-prod-006",
+          "name": "Cardamom",
+          "quantity": "100 kg",
+          "price_per_kg": 9.5,
+          "status": "available",
+          "barter": true,
+          "notes": "Premium cardamom pods — Guatemala is one of the world’s top producers."
+        }
+      ]
+    }
+  ],
+  "consumers": [
+    {
+      "id": "gt-consumer-001",
+      "name": "Café del Lago",
+      "location": "Panajachel, Sololá",
+      "request": {
+        "product": "Guatemalan Coffee",
+        "quantity": "150 kg",
+        "notes": "Seeking direct-sourced coffee beans for local café and export blend. Open to barter with rice and fresh fruit."
+      }
+    }
+  ]
+}

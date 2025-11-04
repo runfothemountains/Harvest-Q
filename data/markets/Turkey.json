@@ -1,0 +1,81 @@
+{
+  "country": "Turkey",
+  "farmers": [
+    {
+      "id": "tr-farmer-001",
+      "name": "Ahmet Demir",
+      "location": "Antalya Province",
+      "products": [
+        {
+          "id": "tr-prod-001",
+          "name": "Tomatoes",
+          "quantity": "1000 kg",
+          "price_per_kg": 1.0,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "tr-prod-002",
+          "name": "Cucumbers",
+          "quantity": "600 kg",
+          "price_per_kg": 0.9,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "tr-prod-003",
+          "name": "Dried Figs",
+          "quantity": "300 kg",
+          "price_per_kg": 6.0,
+          "status": "available",
+          "barter": true,
+          "notes": "Sun-dried figs from Aydın region — traditional Turkish export and specialty crop."
+        }
+      ]
+    },
+    {
+      "id": "tr-farmer-002",
+      "name": "Leyla Kaya",
+      "location": "Gaziantep",
+      "products": [
+        {
+          "id": "tr-prod-004",
+          "name": "Wheat",
+          "quantity": "1500 kg",
+          "price_per_kg": 0.75,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "tr-prod-005",
+          "name": "Peppers",
+          "quantity": "500 kg",
+          "price_per_kg": 1.4,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "tr-prod-006",
+          "name": "Pistachios (Antep)",
+          "quantity": "250 kg",
+          "price_per_kg": 10.0,
+          "status": "available",
+          "barter": true,
+          "notes": "Premium Gaziantep pistachios — globally known for quality and flavor."
+        }
+      ]
+    }
+  ],
+  "consumers": [
+    {
+      "id": "tr-consumer-001",
+      "name": "Istanbul Natural Market",
+      "location": "Istanbul",
+      "request": {
+        "product": "Pistachios (Antep)",
+        "quantity": "150 kg",
+        "notes": "Looking to source Gaziantep pistachios directly from farmers for local confectionery production. Willing to barter with dried fruits."
+      }
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "country": "Russia",
+  "farmers": [
+    {
+      "id": "ru-farmer-001",
+      "name": "Ivan Petrov",
+      "location": "Krasnodar Krai",
+      "products": [
+        {
+          "id": "ru-prod-001",
+          "name": "Wheat",
+          "quantity": "2500 kg",
+          "price_per_kg": 0.6,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "ru-prod-002",
+          "name": "Barley",
+          "quantity": "1500 kg",
+          "price_per_kg": 0.55,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "ru-prod-003",
+          "name": "Buckwheat",
+          "quantity": "800 kg",
+          "price_per_kg": 1.5,
+          "status": "available",
+          "barter": true,
+          "notes": "Traditional Russian grain used in cereals and national dishes; strong domestic demand."
+        }
+      ]
+    },
+    {
+      "id": "ru-farmer-002",
+      "name": "Anastasia Volkova",
+      "location": "Altai Region",
+      "products": [
+        {
+          "id": "ru-prod-004",
+          "name": "Potatoes",
+          "quantity": "1000 kg",
+          "price_per_kg": 0.7,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "ru-prod-005",
+          "name": "Sunflower Seeds",
+          "quantity": "600 kg",
+          "price_per_kg": 1.2,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "ru-prod-006",
+          "name": "Honey (Altai Wildflower)",
+          "quantity": "250 kg",
+          "price_per_kg": 4.5,
+          "status": "available",
+          "barter": true,
+          "notes": "Natural Altai wildflower honey — prized for purity and export quality."
+        }
+      ]
+    }
+  ],
+  "consumers": [
+    {
+      "id": "ru-consumer-001",
+      "name": "Moscow Natural Foods Market",
+      "location": "Moscow",
+      "request": {
+        "product": "Honey (Altai Wildflower)",
+        "quantity": "100 kg",
+        "notes": "Seeking direct trade partnership with beekeepers for premium wildflower honey. Open to barter with grain or packaging materials."
+      }
+    }
+  ]
+}

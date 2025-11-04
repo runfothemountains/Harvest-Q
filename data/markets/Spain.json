@@ -1,0 +1,81 @@
+{
+  "country": "Spain",
+  "farmers": [
+    {
+      "id": "es-farmer-001",
+      "name": "Carlos García",
+      "location": "Andalusia",
+      "products": [
+        {
+          "id": "es-prod-001",
+          "name": "Olives",
+          "quantity": "1200 kg",
+          "price_per_kg": 2.0,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "es-prod-002",
+          "name": "Tomatoes",
+          "quantity": "900 kg",
+          "price_per_kg": 1.1,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "es-prod-003",
+          "name": "Saffron",
+          "quantity": "50 kg",
+          "price_per_kg": 25.0,
+          "status": "available",
+          "barter": true,
+          "notes": "Premium La Mancha saffron — hand-harvested, world-renowned spice."
+        }
+      ]
+    },
+    {
+      "id": "es-farmer-002",
+      "name": "Isabella Torres",
+      "location": "Valencia",
+      "products": [
+        {
+          "id": "es-prod-004",
+          "name": "Oranges",
+          "quantity": "800 kg",
+          "price_per_kg": 1.4,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "es-prod-005",
+          "name": "Lettuce",
+          "quantity": "500 kg",
+          "price_per_kg": 0.9,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "es-prod-006",
+          "name": "Almonds",
+          "quantity": "300 kg",
+          "price_per_kg": 4.8,
+          "status": "available",
+          "barter": true,
+          "notes": "Locally grown almonds — Valencia region, popular for Mediterranean exports."
+        }
+      ]
+    }
+  ],
+  "consumers": [
+    {
+      "id": "es-consumer-001",
+      "name": "Madrid Gourmet Co-op",
+      "location": "Madrid",
+      "request": {
+        "product": "Saffron",
+        "quantity": "20 kg",
+        "notes": "Looking for La Mancha saffron for gourmet seasoning products. Open to barter with olive oil and citrus shipments."
+      }
+    }
+  ]
+}

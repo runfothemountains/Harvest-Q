@@ -1,0 +1,16 @@
+[
+  { "country":"US","state":"California","city":"San Francisco",
+    "name":"Urban Market","want":"Tomatoes 30 lb","notes":"Cash or credit" },
+
+  { "country":"India","state":"Punjab","city":"Amritsar",
+    "name":"Community Kitchen","want":"Basmati rice 60 kg","notes":"Pays cash or rice credit" },
+
+  { "country":"Nigeria","state":"Kano","city":"Wudil",
+    "name":"School Canteen","want":"Groundnuts 50 kg; Millet 80 kg","notes":"Weekly delivery" },
+
+  { "country":"Brazil","state":"SãoPaulo","city":"Campinas",
+    "name":"Cafe Dois Irmãos","want":"Coffee 40 kg","notes":"Pickup Tue/Thu" },
+
+  { "country":"Germany","state":"Bavaria","city":"Nuremberg",
+    "name":"Kartoffelhaus","want":"Potatoes 120 kg","notes":"Invoice monthly" }
+]

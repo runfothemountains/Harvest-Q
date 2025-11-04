@@ -1,0 +1,93 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch index.html (Chrome Debug)",
+      "type": "pwa-chrome",
+      "request": "launch",
+      "file": "${workspaceFolder}/index.html",
+      "webRoot": "${workspaceFolder}",
+      "runtimeArgs": [
+        "--remote-debugging-port=9222",
+        "--auto-open-devtools-for-tabs"
+      ],
+      "sourceMaps": true,
+      "preLaunchTask": "npm: build",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Launch Node Server (IBM Orchestrate API)",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/server/orchestrate.js",
+      "runtimeExecutable": "node",
+      "cwd": "${workspaceFolder}",
+      "envFile": "${workspaceFolder}/.env",
+      "env": {
+        "NODE_ENV": "development",
+        "PORT": "3000",
+        "WATSONX_APIKEY": "${env:WATSONX_APIKEY}",
+        "WATSONX_URL": "${env:WATSONX_URL}",
+        "WATSONX_PROJECT_ID": "${env:WATSONX_PROJECT_ID}",
+        "WATSONX_MODEL_ID": "${env:WATSONX_MODEL_ID}"
+      },
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Attach to Chrome (Running Frontend)",
+      "type": "pwa-chrome",
+      "request": "attach",
+      "port": 9222,
+      "webRoot": "${workspaceFolder}",
+      "timeout": 30000
+    },
+    {
+      "name": "Live Server (Static Frontend Preview)",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/live-server/live-server.js",
+      "args": [
+        "--port=5500",
+        "--open=index.html",
+        "--watch=${workspaceFolder}"
+      ],
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "NODE_ENV": "development"
+      }
+    },
+    {
+      "name": "Preview Vercel Build (local)",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/vercel/dist/index.js",
+      "args": [
+        "dev",
+        "--yes"
+      ],
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "console": "integratedTerminal"
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full Stack: API + Frontend",
+      "configurations": [
+        "Launch Node Server (IBM Orchestrate API)",
+        "Launch index.html (Chrome Debug)"
+      ]
+    },
+    {
+      "name": "Local Test: API + Live Server",
+      "configurations": [
+        "Launch Node Server (IBM Orchestrate API)",
+        "Live Server (Static Frontend Preview)"
+      ]
+    }
+  ]
+}

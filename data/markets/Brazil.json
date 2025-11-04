@@ -1,0 +1,81 @@
+{
+  "country": "Brazil",
+  "farmers": [
+    {
+      "id": "br-farmer-001",
+      "name": "Carlos Mendes",
+      "location": "São Paulo",
+      "products": [
+        {
+          "id": "br-prod-001",
+          "name": "Tomatoes",
+          "quantity": "500 kg",
+          "price_per_kg": 1.2,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "br-prod-002",
+          "name": "Sweet Corn",
+          "quantity": "300 kg",
+          "price_per_kg": 0.9,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "br-prod-003",
+          "name": "Açaí Berries",
+          "quantity": "150 kg",
+          "price_per_kg": 3.5,
+          "status": "available",
+          "barter": true,
+          "notes": "Locally harvested from Pará — regional specialty product."
+        }
+      ]
+    },
+    {
+      "id": "br-farmer-002",
+      "name": "Luciana Alves",
+      "location": "Minas Gerais",
+      "products": [
+        {
+          "id": "br-prod-004",
+          "name": "Cassava",
+          "quantity": "800 kg",
+          "price_per_kg": 0.75,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "br-prod-005",
+          "name": "Bananas",
+          "quantity": "400 kg",
+          "price_per_kg": 0.6,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "br-prod-006",
+          "name": "Cupuaçu Fruit",
+          "quantity": "100 kg",
+          "price_per_kg": 4.2,
+          "status": "available",
+          "barter": true,
+          "notes": "Amazon superfruit; popular in local desserts and juices."
+        }
+      ]
+    }
+  ],
+  "consumers": [
+    {
+      "id": "br-consumer-001",
+      "name": "Mariana Rocha",
+      "location": "Rio de Janeiro",
+      "request": {
+        "product": "Fresh Cassava",
+        "quantity": "200 kg",
+        "notes": "Seeking farm-direct cassava for restaurant use. Willing to pay fair market price or trade seasonal vegetables."
+      }
+    }
+  ]
+        }

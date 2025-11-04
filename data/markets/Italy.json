@@ -1,0 +1,81 @@
+{
+  "country": "Italy",
+  "farmers": [
+    {
+      "id": "it-farmer-001",
+      "name": "Luca Romano",
+      "location": "Tuscany",
+      "products": [
+        {
+          "id": "it-prod-001",
+          "name": "Tomatoes",
+          "quantity": "1000 kg",
+          "price_per_kg": 1.1,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "it-prod-002",
+          "name": "Olives",
+          "quantity": "700 kg",
+          "price_per_kg": 2.4,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "it-prod-003",
+          "name": "Extra Virgin Olive Oil",
+          "quantity": "300 liters",
+          "price_per_liter": 7.0,
+          "status": "available",
+          "barter": true,
+          "notes": "Cold-pressed Tuscan olive oil — premium local export with DOP certification."
+        }
+      ]
+    },
+    {
+      "id": "it-farmer-002",
+      "name": "Giulia Bianchi",
+      "location": "Sicily",
+      "products": [
+        {
+          "id": "it-prod-004",
+          "name": "Wheat (Durum)",
+          "quantity": "1200 kg",
+          "price_per_kg": 0.9,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "it-prod-005",
+          "name": "Lemons",
+          "quantity": "500 kg",
+          "price_per_kg": 1.6,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "it-prod-006",
+          "name": "Pecorino Cheese",
+          "quantity": "150 kg",
+          "price_per_kg": 8.5,
+          "status": "available",
+          "barter": true,
+          "notes": "Traditional sheep’s milk cheese from Sicily, aged for 6 months."
+        }
+      ]
+    }
+  ],
+  "consumers": [
+    {
+      "id": "it-consumer-001",
+      "name": "Ristorante Terra Mia",
+      "location": "Rome",
+      "request": {
+        "product": "Extra Virgin Olive Oil",
+        "quantity": "100 liters",
+        "notes": "Seeking local cold-pressed olive oil for restaurant supply. Prefers trade partnership with nearby farmers."
+      }
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "country": "France",
+  "farmers": [
+    {
+      "id": "fr-farmer-001",
+      "name": "Jean-Luc Moreau",
+      "location": "Normandy",
+      "products": [
+        {
+          "id": "fr-prod-001",
+          "name": "Wheat",
+          "quantity": "1200 kg",
+          "price_per_kg": 0.95,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "fr-prod-002",
+          "name": "Potatoes",
+          "quantity": "700 kg",
+          "price_per_kg": 0.8,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "fr-prod-003",
+          "name": "Camembert Cheese",
+          "quantity": "200 kg",
+          "price_per_kg": 7.0,
+          "status": "available",
+          "barter": true,
+          "notes": "Authentic soft cheese made in Normandy — regional specialty with AOC designation."
+        }
+      ]
+    },
+    {
+      "id": "fr-farmer-002",
+      "name": "Claire Dubois",
+      "location": "Provence",
+      "products": [
+        {
+          "id": "fr-prod-004",
+          "name": "Tomatoes",
+          "quantity": "500 kg",
+          "price_per_kg": 1.2,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "fr-prod-005",
+          "name": "Lettuce",
+          "quantity": "300 kg",
+          "price_per_kg": 0.9,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "fr-prod-006",
+          "name": "Lavender",
+          "quantity": "150 kg",
+          "price_per_kg": 4.5,
+          "status": "available",
+          "barter": true,
+          "notes": "Fragrant Provence lavender used for oils, teas, and cosmetics."
+        }
+      ]
+    }
+  ],
+  "consumers": [
+    {
+      "id": "fr-consumer-001",
+      "name": "La Table Verte Bistro",
+      "location": "Paris",
+      "request": {
+        "product": "

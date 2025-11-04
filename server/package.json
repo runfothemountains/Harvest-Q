@@ -1,0 +1,37 @@
+{
+  "name": "harvestq-orchestrate",
+  "version": "1.1.0",
+  "description": "Harvest Q Orchestrate Server – AI Agent backend for farmers, consumers, and barter matching (IBM watsonx integration).",
+  "private": true,
+  "type": "module",
+  "main": "server/orchestrate.js",
+  "scripts": {
+    "dev": "nodemon server/orchestrate.js",
+    "start": "node server/orchestrate.js",
+    "build": "echo 'No build step required for server.'"
+  },
+  "engines": {
+    "node": ">=18.17"
+  },
+  "dependencies": {
+    "@ibm-cloud/watsonx-ai": "^1.0.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  },
+  "keywords": [
+    "harvestq",
+    "orchestrate",
+    "ibm-watsonx",
+    "ai-agents",
+    "farmers",
+    "barter",
+    "grant-scoring",
+    "sustainable-agriculture"
+  ],
+  "author": "Chamblee Productions / Run For AI",
+  "license": "MIT"
+}

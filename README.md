@@ -1,77 +1,176 @@
-# Harvest-Q
-![Made with ❤️ for IBM Hackathon](https://img.shields.io/badge/Made%20with%20%E2%9D%A4-IBM%20Hackathon-blue)
-![Status](https://img.shields.io/badge/Status-Demo%20Ready-brightgreen)
-
-## Description
-
-Harvest Q is a community-driven platform connecting **farmers directly with people** to make food access easier, fairer, and healthier. Born from a viral TikTok conversation, Harvest Q blends **AI, logistics, and health** to create a smarter food ecosystem.  
-
-
-## 🚀 Interactive Demo
-
-👉 [**Click here to try the demo**](https://runfothemountains.github.io/Harvest-Q/)
-
-We’ve included a working demo that simulates marketplace interactions and shows how Harvest Q could function in practice.  
-
+# 🌾 Harvest Q — Stage 4  
+> *Connecting farmers, consumers, and communities through AI-powered trade.*
 
 ---
 
-## 📸 Visuals  
+## 🧭 Overview
+**Harvest Q** is a direct marketplace where **farmers list food products** and **consumers purchase or barter directly** — no middlemen.  
+Each interaction is enhanced by **IBM watsonx AI Agents** that automate pricing, translation, risk checks, logistics, and notifications.
 
-### Mockup  
-- https://github.com/runfothemountains/Harvest-Q/blob/main/harvestq_mockup.png
-- 
-- ## Origin: Viral TikTok Post  
+This submission represents **Stage 3**, where AI agents built with **IBM watsonx Orchestrate** and **watsonx.ai** begin powering real-time workflows.
 
-This post sparked the movement that inspired
+---
 
-![Viral Post Screenshot](https://raw.githubusercontent.com/runfothemountains/Harvest-Q/main/Screenshot_20250818-070644.png)
-
-## ✉️ Letter to the Judges
-
-Dear Judges,  
-
-This project began in an unexpected but powerful way. Earlier this year, one of my posts on TikTok went viral, sparking a wave of conversation about farming, food access, and community resilience. In the days that followed, I was contacted by associates of both a state governor and a congresswoman, who encouraged me to explore a software solution that could empower farmers and citizens alike. Their suggestion became the seed for what we are now building.  
-
-What started as a simple concept—connecting people directly with farmers so they could buy fresh food—has since grown into something more comprehensive. As I engaged with experts and community voices, I discovered the layers of legal, logistical, and health considerations that shape how food moves from farms to tables. With these insights, we have evolved the model into **Harvest Q**, a platform designed to integrate agriculture, health, logistics, and technology while staying aligned with federal and state laws.  
-
-- Documentation on how Harvest Q addresses farmer–citizen needs while respecting laws and contracts.
-
-Thank you for your time, consideration, and for supporting innovation that can make a real difference for farmers and families alike.  
-
-Respectfully,  
-**The Harvest Q Team**  
-
-## Documentation & Testing
-Supporting evidence, screenshots, and test cases are stored in the [/docs](/docs) folder:
-- **HarvestQ_Input_Output.PNG** – Watsonx model input/output examples
-- **HarvestQ_User_Test.PNG** – Screenshots of early user testing
-- **testing_notes.md** – Explanations of what each test demonstrates
-## 📂 Documentation
-
-- [Testing Notes] 
-  → Includes input/output screenshots, test scenarios, and limitations.  
-
-- [Compliance Examples]
-  → Outlines farmer laws, medical advice, and regional compliance considerations.  
-
-- Screenshots:  
-  - ![Input/Output Testing]  
-  - ![User Interaction Test]
-
-    ---
-
-🔮 Future Features
-
-We envision Harvest Q evolving with:
-
-Trade Mode → Allowing farmers and citizens to barter goods fairly
-
-Health Mode → Nutrition insights powered by AI and public health data
-
-Community Mode → Local hubs, cooperative logistics, and government integration
-
-AI Market Analysis → Smart pricing, alternative channels, and sustainability tracking
+## 🚀 Quick Demo
+- **Live App:** [https://harvest-q-2-3-4.vercel.app](https://harvest-q-2-3-4.vercel.app)  
+- **API Endpoint (for Agents):** `POST /api/agent`  
+- **Example Call:**
+  ```bash
+  curl -s -X POST https://harvest-q-2-3-4.vercel.app/api/agent \
+    -H "Content-Type: application/json" \
+    -d '{"tool":"findBarterMatch","args":{"itemOffered":"Tomatoes","itemWanted":"Onions","location":"Kano"}}'
 
 
+🧩 Key Features
 
+Module	Description
+
+Pricing Agent	Calculates fair-market rates & regional comparisons
+
+Risk Agent	Evaluates spoilage, delivery delay & market volatility
+
+Quality Agent	Grades products and recommends handling
+
+Translator Agent	Auto-translates listings and messages across languages
+
+Barter Agent	Matches farmers for cash-free trades and suggests ratios
+
+Logistics Agent	Optimizes delivery routes and timelines
+
+Notify Agent	Sends alerts to buyers & drivers
+
+Grant Agent	Manages community micro-grants ($500 pilot)
+
+Insights Agent	Generates weekly market and SDG-9 reports
+
+🏗️ Tech Stack
+
+Frontend: HTML / CSS / Vanilla JS (PWA ready)
+
+Backend: Node 18 serverless API (Vercel)
+
+Data: Static JSON seed (data/farmers.json, buyers.json, coops.json)
+
+AI & Automation:
+
+IBM watsonx Orchestrate (Agent Catalog + multi-agent flows)
+
+IBM watsonx.ai (Prompt Lab + Granite LLMs)
+
+IBM Code Assistant (for rapid function stubs)
+
+🔌 API Structure
+
+All agents share one endpoint → /api/agent
+
+Request
+
+{ "tool": "detectLanguage", "args": { "text": "Bonjour" } }
+
+Response
+
+{ "ok": true, "tool": "detectLanguage", "result": { "detected": "fr", "confidence": 0.9 } }
+
+> Each tool in server/orchestrate.js follows the IBM Agent Development Kit (JSON-schema + function mapping).
+
+⚙️ Run Locally
+
+git clone https://github.com/runfothemountains/Harvest-Q.git
+cd Harvest-Q
+npm ci
+npm start   # launches local server on http://localhost:8080
+
+Then test:
+
+curl -s -X POST http://localhost:8080/api/agent \
+ -H "Content-Type: application/json" \
+ -d '{"tool":"detectLanguage","args":{"text":"Hola"}}'
+ 
+📂 Project Layout
+
+index.html              → UI shell & tabs
+
+index.js                → Front-end logic (Quick Start + IBM connect)
+
+api/agent.js            → Single serverless endpoint for all tools
+
+server/orchestrate.js   → Agent schemas + implementations
+
+data/*.json             → Demo data for farmers/buyers/co-ops
+
+css/style.css           → Global styles
+
+docs/                   → Screenshots & architecture images
+
+🧠 Why IBM watsonx Matters
+
+Orchestrate brings enterprise-grade multi-agent coordination.
+
+watsonx.ai Prompt Lab enables fine-tuned reason-and-act patterns.
+
+Granite models provide robust classification & language understanding.
+
+SDG-9 Impact: industrial innovation + sustainable food infrastructure.
+
+📸 Screenshots
+
+UI	Description
+
+	Landing / Language Switch
+	Barter Agent Quick Start
+	Buyer matching interface
+
+📅 Development Roadmap
+
+Stage	Focus
+
+1	Foundation + domain setup
+
+2	Marketplace UI & core data flow
+
+3	IBM AI Agent integration (current)
+
+4	Trade / Health / Community modes
+
+5	Analytics & business onboarding
+
+6	International expansion / multi-currency support
+
+👩🏽‍🌾 Sample Data
+
+{
+  "id": "farmer-001",
+  
+  "name": "Aisha Bello",
+  
+  "location": "Kano",
+  
+  "wants": ["Tomatoes"],
+  
+  "products": [
+    {
+      "id": "p-001",
+      "name": "Onions",
+      "quantity": "200 kg",
+      "price_per_kg": 0.8,
+      "status": "available",
+      "barter": true
+    }
+  ]
+}
+
+🏆 IBM Competition Note
+
+This project demonstrates:
+
+Real-world use case for Industry + Infrastructure (SDG 9)
+
+Integration with IBM watsonx Orchestrate for agentic automation
+
+Scalable architecture (Stages 2–7 planned)
+
+Community impact through direct trade and micro-grants
+
+📄 License
+
+MIT License 

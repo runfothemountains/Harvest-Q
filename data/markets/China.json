@@ -1,0 +1,81 @@
+{
+  "country": "China",
+  "farmers": [
+    {
+      "id": "cn-farmer-001",
+      "name": "Li Wei",
+      "location": "Henan Province",
+      "products": [
+        {
+          "id": "cn-prod-001",
+          "name": "Rice",
+          "quantity": "2000 kg",
+          "price_per_kg": 0.65,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "cn-prod-002",
+          "name": "Soybeans",
+          "quantity": "1000 kg",
+          "price_per_kg": 0.9,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "cn-prod-003",
+          "name": "Goji Berries",
+          "quantity": "250 kg",
+          "price_per_kg": 4.5,
+          "status": "available",
+          "barter": true,
+          "notes": "Premium Ningxia Goji Berries — traditional Chinese superfood and export product."
+        }
+      ]
+    },
+    {
+      "id": "cn-farmer-002",
+      "name": "Chen Xiaoling",
+      "location": "Sichuan Province",
+      "products": [
+        {
+          "id": "cn-prod-004",
+          "name": "Green Tea Leaves",
+          "quantity": "150 kg",
+          "price_per_kg": 6.0,
+          "status": "available",
+          "barter": true,
+          "notes": "High-grade Sichuan green tea — locally handpicked."
+        },
+        {
+          "id": "cn-prod-005",
+          "name": "Corn",
+          "quantity": "800 kg",
+          "price_per_kg": 0.75,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "cn-prod-006",
+          "name": "Bok Choy",
+          "quantity": "400 kg",
+          "price_per_kg": 1.1,
+          "status": "available",
+          "barter": true
+        }
+      ]
+    }
+  ],
+  "consumers": [
+    {
+      "id": "cn-consumer-001",
+      "name": "Zhang Mei",
+      "location": "Shanghai",
+      "request": {
+        "product": "Goji Berries",
+        "quantity": "100 kg",
+        "notes": "Looking for direct farm-sourced goji berries for organic tea blends. Prefers barter with green tea or payment in cash."
+      }
+    }
+  ]
+}

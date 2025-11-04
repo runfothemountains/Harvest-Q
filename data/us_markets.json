@@ -1,0 +1,34 @@
+[
+  {
+    "market": "Auburn Farmers Market",
+    "city": "Auburn",
+    "state": "Alabama",
+    "lat": 32.6099,
+    "lng": -85.4808,
+    "mode": "both",
+    "type": "Weekly market"
+  },
+  {
+    "market": "Los Angeles Produce Exchange",
+    "city": "Los Angeles",
+    "state": "California",
+    "lat": 34.0522,
+    "lng": -118.2437,
+    "mode": "sale",
+    "type": "Wholesale market"
+  },
+  {
+    "market": "Houston Central Market",
+    "city": "Houston",
+    "state": "Texas",
+    "lat": 29.7604,
+    "lng": -95.3698,
+    "mode": "trade",
+    "type": "Regional hub"
+  }
+]
+
+[
+  {"market":"LA Produce Exchange","city":"Los Angeles","state":"California","lat":34.0522,"lng":-118.2437,"mode":"sale","type":"Wholesale"},
+  {"market":"Houston Central Market","city":"Houston","state":"Texas","lat":29.7604,"lng":-95.3698,"mode":"trade","type":"Regional hub"}
+]

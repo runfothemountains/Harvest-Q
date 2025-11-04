@@ -1,0 +1,81 @@
+{
+  "country": "Kenya",
+  "farmers": [
+    {
+      "id": "ke-farmer-001",
+      "name": "Peter Njoroge",
+      "location": "Nakuru County",
+      "products": [
+        {
+          "id": "ke-prod-001",
+          "name": "Maize",
+          "quantity": "1500 kg",
+          "price_per_kg": 0.65,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "ke-prod-002",
+          "name": "Beans",
+          "quantity": "800 kg",
+          "price_per_kg": 0.9,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "ke-prod-003",
+          "name": "Tea Leaves (Kericho)",
+          "quantity": "300 kg",
+          "price_per_kg": 4.0,
+          "status": "available",
+          "barter": true,
+          "notes": "High-altitude Kenyan tea from Kericho — globally recognized export."
+        }
+      ]
+    },
+    {
+      "id": "ke-farmer-002",
+      "name": "Grace Achieng",
+      "location": "Kisumu County",
+      "products": [
+        {
+          "id": "ke-prod-004",
+          "name": "Sorghum",
+          "quantity": "900 kg",
+          "price_per_kg": 0.75,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "ke-prod-005",
+          "name": "Sweet Potatoes",
+          "quantity": "600 kg",
+          "price_per_kg": 1.1,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "ke-prod-006",
+          "name": "Macadamia Nuts",
+          "quantity": "200 kg",
+          "price_per_kg": 6.5,
+          "status": "available",
+          "barter": true,
+          "notes": "Premium macadamia nuts — Kenya is among the world’s leading producers."
+        }
+      ]
+    }
+  ],
+  "consumers": [
+    {
+      "id": "ke-consumer-001",
+      "name": "Nairobi Organic Market",
+      "location": "Nairobi County",
+      "request": {
+        "product": "Tea Leaves (Kericho)",
+        "quantity": "100 kg",
+        "notes": "Seeking locally sourced Kericho tea for organic product line. Open to barter with grains and root crops."
+      }
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+[
+  {"market":"Ludhiana Mandi","city":"Ludhiana","state":"Punjab","lat":30.9000,"lng":75.8573,"mode":"sale","type":"APMC"}
+]
+
+{
+  "country": "India",
+  "farmers": [
+    {
+      "id": "in-farmer-001",
+      "name": "Ravi Patel",
+      "location": "Gujarat",
+      "products": [
+        {
+          "id": "in-prod-001",
+          "name": "Wheat",
+          "quantity": "1500 kg",
+          "price_per_kg": 0.7,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "in-prod-002",
+          "name": "Onions",
+          "quantity": "900 kg",
+          "price_per_kg": 0.6,
+          "status": "available",
+          "barter": true
+        },
+        {
+          "id": "in-prod-003",
+          "name": "Turmeric",
+          "quantity": "300 kg",
+          "price_per_kg": 3.2,
+          "status": "available",
+          "barter": true,
+          "notes": "High-curcumin turmeric root — traditional Indian spice and export commodity."
+        }
+      ]
+    },
+    {
+      "id": "in-farmer-002",
+      "name": "Priya Singh",
+      "location": "Punjab",
+      "products": [
+        {
+          "id": "in-prod-004",
+          "name": "Rice (Basmati)",
+          "quantity": "2000 kg",
+          "price_per_kg": 1.1,
+          "status": "available",
+          "barter": false
+        },
+        {
+          "id": "in-prod-005",
+          "name": "Potatoes",
+          "quantity": "800 kg",
