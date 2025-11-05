@@ -151,7 +151,7 @@
       </div>
       <div id="consumerGrid" class="grid"></div>
 
-      <!-- Consumer Map (to be wired in JS similarly to farmers map) -->
+      <!-- Consumer Map (wired in JS similarly to farmers map) -->
       <div id="consumerMapArea" class="card" style="margin-top:12px">
         <h4>Consumer Map</h4>
         <div id="consumer-map" style="height:360px;border-radius:8px;"></div>
@@ -190,17 +190,9 @@
       <div class="card">
         <h3>Farmer Health & Safety</h3>
         <p>Healthy farmers sustain healthy communities. Harvest Q encourages good agricultural and medical practices.</p>
-        <ul class="muted">
-          <li>🚰 Always use clean water when washing or irrigating produce.</li>
-          <li>🧤 Wear gloves and protective gear when using fertilizers or pesticides.</li>
-          <li>💧 Stay hydrated and take shade breaks during long harvest days.</li>
-          <li>🏥 Visit your local clinic for annual health checks and vaccinations.</li>
-        </ul>
       </div>
-      <div class="card">
-        <h4>Mental & Community Wellness</h4>
-        <p>Farming can be stressful — join local cooperatives, talk with peers, and use Harvest Q to find support groups.</p>
-      </div>
+      <!-- JS will fill this grid from MED_TIPS -->
+      <div id="medGrid" class="grid"></div>
     </section>
 
     <!-- TRADE / BARTER -->
@@ -309,10 +301,50 @@
       </div>
     </section>
 
+    <!-- POST LISTING MODAL -->
+    <div id="postModal" class="modal" hidden aria-hidden="true">
+      <div class="modal-content">
+        <h3>Post a Listing</h3>
+        <form id="postForm">
+          <div class="field">
+            <label for="pfFarm">Farm name</label>
+            <input id="pfFarm" required placeholder="e.g. Green Valley Farm" />
+          </div>
+          <div class="field">
+            <label for="pfProduct">Product</label>
+            <input id="pfProduct" required placeholder="e.g. Tomatoes" />
+          </div>
+          <div class="field">
+            <label for="pfQty">Quantity</label>
+            <input id="pfQty" required placeholder="e.g. 40 lb or 20 kg" />
+            <div id="errQty" class="field-error"></div>
+          </div>
+          <div class="field">
+            <label for="pfPrice">Price per unit</label>
+            <input id="pfPrice" required placeholder="e.g. 2.50" />
+            <div id="errPrice" class="field-error"></div>
+          </div>
+          <div class="field">
+            <label for="pfMode">Mode</label>
+            <select id="pfMode">
+              <option value="sale">For Sale</option>
+              <option value="trade">Trade</option>
+              <option value="both">Both</option>
+            </select>
+          </div>
+          <div id="postErrors" class="field-error" style="margin-top:6px"></div>
+          <div class="modal-actions">
+            <button type="submit" class="btn">Save Listing</button>
+            <button type="button" id="postCancel" class="btn secondary">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
     <!-- FOOTER -->
     <footer class="footer-note" id="footer-text">© Harvest Q — Connecting Farms & Communities</footer>
   </main>
 
   <script src="./js/app.js" defer></script>
 </body>
-  </html>
+</html>
