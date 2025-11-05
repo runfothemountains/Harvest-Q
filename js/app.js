@@ -79,7 +79,10 @@ const LANG = {
     'home-what-content':'देश/राज्य/शहर फ़िल्टर • किसान/उपभोक्ता • मानचित्र • PWA',
     'refresh':'ताज़ा करें','all-cities':'सभी शहर',
     'farmer-search-placeholder':'उत्पाद या खेत खोजें…','consumer-search-placeholder':'खरीदार खोजें…',
-    'mode-all':'सभी','mode-sale':'बिक्री के लिए','mode-trेड':'विनिमय के लिए','mode-both':'दोनों',
+    'mode-all':'सभी',
+    'mode-sale':'बिक्री के लिए',
+    'mode-trade':'विनिमय के लिए',  // ✅ fixed key
+    'mode-both':'दोनों',
     'sort-name':'नाम','sort-price':'कीमत (कम→अधिक)',
     'ai-price-btn':'एआई से पूछें','ai-match-btn':'मिलान खोजें',
     'post-errors':'कृपया फ़ील्ड सुधारें',
