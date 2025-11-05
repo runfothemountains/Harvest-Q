@@ -91,6 +91,15 @@
               Choose your country below to explore markets and community initiatives.
             </p>
           </div>
+
+          <!-- i18n-backed “what this beta shows” card -->
+          <div class="card">
+            <h3 id="home-what-title">What this beta shows</h3>
+            <p id="home-what-content">
+              Country/state/city filters • Farmers & Consumers • Map markers • PWA scaffold.
+            </p>
+          </div>
+
           <div class="card">
             <h3>Quick Filters</h3>
             <div class="toolbar">
@@ -151,7 +160,7 @@
       </div>
       <div id="consumerGrid" class="grid"></div>
 
-      <!-- Consumer Map (wired in JS similarly to farmers map) -->
+      <!-- Consumer Map -->
       <div id="consumerMapArea" class="card" style="margin-top:12px">
         <h4>Consumer Map</h4>
         <div id="consumer-map" style="height:360px;border-radius:8px;"></div>
@@ -190,8 +199,15 @@
       <div class="card">
         <h3>Farmer Health & Safety</h3>
         <p>Healthy farmers sustain healthy communities. Harvest Q encourages good agricultural and medical practices.</p>
+        <ul class="muted">
+          <li>🚰 Always use clean water when washing or irrigating produce.</li>
+          <li>🧤 Wear gloves and protective gear when using fertilizers or pesticides.</li>
+          <li>💧 Stay hydrated and take shade breaks during long harvest days.</li>
+          <li>🏥 Visit your local clinic for annual health checks and vaccinations.</li>
+        </ul>
       </div>
-      <!-- JS will fill this grid from MED_TIPS -->
+
+      <!-- JS-populated tips grid -->
       <div id="medGrid" class="grid"></div>
     </section>
 
@@ -301,27 +317,27 @@
       </div>
     </section>
 
-    <!-- POST LISTING MODAL -->
-    <div id="postModal" class="modal" hidden aria-hidden="true">
-      <div class="modal-content">
-        <h3>Post a Listing</h3>
+    <!-- POST LISTING MODAL (wired to app.js) -->
+    <div id="postModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="postTitle" hidden>
+      <div class="modal-content card">
+        <h3 id="postTitle">Post a Listing</h3>
         <form id="postForm">
           <div class="field">
             <label for="pfFarm">Farm name</label>
-            <input id="pfFarm" required placeholder="e.g. Green Valley Farm" />
+            <input id="pfFarm" type="text" placeholder="e.g. Green Valley Farm" required />
           </div>
           <div class="field">
             <label for="pfProduct">Product</label>
-            <input id="pfProduct" required placeholder="e.g. Tomatoes" />
+            <input id="pfProduct" type="text" placeholder="e.g. Tomatoes" required />
           </div>
           <div class="field">
             <label for="pfQty">Quantity</label>
-            <input id="pfQty" required placeholder="e.g. 40 lb or 20 kg" />
+            <input id="pfQty" type="text" placeholder="e.g. 40 lb or 20 kg" />
             <div id="errQty" class="field-error"></div>
           </div>
           <div class="field">
             <label for="pfPrice">Price per unit</label>
-            <input id="pfPrice" required placeholder="e.g. 2.50" />
+            <input id="pfPrice" type="text" placeholder="e.g. 2.50" />
             <div id="errPrice" class="field-error"></div>
           </div>
           <div class="field">
@@ -332,12 +348,23 @@
               <option value="both">Both</option>
             </select>
           </div>
-          <div id="postErrors" class="field-error" style="margin-top:6px"></div>
-          <div class="modal-actions">
+          <div id="postErrors" class="field-error" style="margin-top:4px"></div>
+          <div class="actions" style="margin-top:10px;display:flex;gap:8px;justify-content:flex-end">
+            <button type="button" class="btn secondary" id="postCancel">Cancel</button>
             <button type="submit" class="btn">Save Listing</button>
-            <button type="button" id="postCancel" class="btn secondary">Cancel</button>
           </div>
         </form>
+      </div>
+    </div>
+
+    <!-- ERROR OVERLAY (used by showErrorOverlay in app.js) -->
+    <div id="hq-error" class="error-overlay" hidden>
+      <div class="error-box card">
+        <h3>Error</h3>
+        <p id="hq-error-text">Something went wrong.</p>
+        <button type="button" class="btn" onclick="document.getElementById('hq-error').hidden=true">
+          Close
+        </button>
       </div>
     </div>
 
