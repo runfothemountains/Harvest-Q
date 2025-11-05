@@ -219,12 +219,14 @@ section[role="tabpanel"] {
 
 input,
 select,
-button {
+button,
+textarea {
   font: inherit;
 }
 
 input,
-select {
+select,
+textarea {
   border-radius: 8px;
   border: 1px solid var(--border-subtle);
   padding: 6px 8px;
@@ -232,8 +234,13 @@ select {
   min-width: 140px;
 }
 
+textarea {
+  resize: vertical;
+}
+
 input:focus,
-select:focus {
+select:focus,
+textarea:focus {
   outline: 2px solid rgba(16, 185, 129, 0.4);
   outline-offset: 1px;
   border-color: var(--accent);
@@ -290,7 +297,8 @@ select:focus {
   margin-bottom: 8px;
 }
 
-#map {
+#map,
+#consumer-map {
   width: 100%;
   border-radius: 10px;
   border: 1px solid var(--border-subtle);
@@ -319,13 +327,6 @@ select:focus {
   border-radius: 999px;
 }
 
-/* these colors are read in JS but we set them here too */
-:root {
-  --sale: #10b981;
-  --trade: #f97316;
-  --both: #3b82f6;
-}
-
 /* ------------------------------
    Utility classes
 ---------------------------------*/
@@ -337,6 +338,116 @@ select:focus {
   margin-top: 12px;
   font-size: 0.8rem;
   color: var(--text-muted);
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+}
+
+/* ------------------------------
+   API badge / AI result
+---------------------------------*/
+.api-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid #e5e7eb;
+  background: #f9fafb;
+  color: #111827;
+}
+
+.api-badge.offline {
+  background: #fee2e2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
+.ai-result {
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: #f9fafb;
+  border-radius: 8px;
+  border: 1px dashed #e5e7eb;
+  font-size: 0.85rem;
+  color: #111827;
+  max-height: 200px;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+/* ------------------------------
+   Modal (Post Listing)
+---------------------------------*/
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 50;
+}
+
+.modal[hidden] {
+  display: none !important;
+}
+
+.modal-content {
+  max-width: 420px;
+  width: 100%;
+  padding: 16px;
+}
+
+.field {
+  margin-top: 8px;
+}
+
+.field label {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+}
+
+.field-error {
+  margin-top: 2px;
+  min-height: 1em;
+  font-size: 0.75rem;
+  color: #b91c1c;
+}
+
+/* ------------------------------
+   Error overlay
+---------------------------------*/
+.error-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 60;
+}
+
+.error-overlay[hidden] {
+  display: none !important;
+}
+
+.error-box {
+  max-width: 360px;
+  width: 100%;
 }
 
 /* ------------------------------
