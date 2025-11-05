@@ -1,10 +1,10 @@
 /* Harvest Q – Stage 2/3/4 front-end controller (consolidated & fixed)
- * - Tabs, i18n, grids, map
- * - Post modal with inline validation
+ * - Tabs, i18n, grids, map (farmers + consumers)
+ * - Post modal with safe guards
  * - AI stubs + /api/agent bridge
  * - IBM “Connect Agent” button + status
  * - Barter Agent client helpers (find/evaluate/initiate) with safe fallbacks
- * - Medical / Laws / Trade sections
+ * - Laws / Trade / Medical sections
  */
 
 /* --------------------------------
@@ -13,7 +13,7 @@
 const $  = (s, r=document)=>r.querySelector(s);
 const $$ = (s, r=document)=>[...r.querySelectorAll(s)];
 const on = (el, ev, fn)=>el && el.addEventListener(ev, fn);
-const toNumber = (s)=>Number(String(s??'').replace(/[^0-9.\-]/g,''))||0;
+const toNumber = (s)=>Number(String(s ?? '').replace(/[^0-9.\-]/g, '')) || 0;
 
 const CURRENCY = {
   US:{symbol:'$', unit:'lb', code:'USD'},
@@ -41,7 +41,10 @@ const LS = {
 const slug = (s='')=>String(s).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
 const cropImageSrc = name => `./img/crops/${slug(name)}.jpg`;
 
-function toMoney(n, unitSym='$'){ const v=Number(n); return Number.isNaN(v)?String(n):`${unitSym}${v.toFixed(2)}`; }
+function toMoney(n, unitSym='$'){
+  const v = Number(n);
+  return Number.isNaN(v) ? String(n) : `${unitSym}${v.toFixed(2)}`;
+}
 
 function showErrorOverlay(msg){
   const box = $('#hq-error');
@@ -61,7 +64,7 @@ const LANG = {
     'home-what-title':'What this beta shows',
     'home-what-content':'Country/state/city filters • Farmers & Consumers • Map markers • PWA scaffold',
     'refresh':'Refresh','all-cities':'All Cities',
-    'farmer-search-placeholder':'Search product or farm…','consumer-search-placeholder':'Search buyer…',
+    'farmer-search-placeholder':'Search farmers or products…','consumer-search-placeholder':'Search buyers or requests…',
     'mode-all':'All','mode-sale':'For Sale','mode-trade':'Willing to Trade','mode-both':'Both',
     'sort-name':'Name','sort-price':'Price (low→high)',
     'ai-price-btn':'Ask AI','ai-match-btn':'Find Match',
@@ -72,17 +75,14 @@ const LANG = {
     'trade-disclaimer':'Examples only. Agree on quality, weights, and timing before you trade.'
   },
   hi: {
-    'tab-home':'होम','tab-farmers':'किसान','tab-consumers':'উপभोक्ता','tab-laws':'कानून',
+    'tab-home':'होम','tab-farmers':'किसान','tab-consumers':'उपभोक्ता','tab-laws':'कानून',
     'tab-medical':'स्वास्थ्य','tab-trade':'विनिमय','tab-ai':'एआई','tab-grants':'अनुदान',
     'header-sub':'ताज़ा • स्थानीय • विश्वसनीय',
     'home-what-title':'यह बीटा क्या दिखाता है',
     'home-what-content':'देश/राज्य/शहर फ़िल्टर • किसान/उपभोक्ता • मानचित्र • PWA',
     'refresh':'ताज़ा करें','all-cities':'सभी शहर',
     'farmer-search-placeholder':'उत्पाद या खेत खोजें…','consumer-search-placeholder':'खरीदार खोजें…',
-    'mode-all':'सभी',
-    'mode-sale':'बिक्री के लिए',
-    'mode-trade':'विनिमय के लिए',  // ✅ fixed key
-    'mode-both':'दोनों',
+    'mode-all':'सभी','mode-sale':'बिक्री के लिए','mode-trade':'विनिमय के लिए','mode-both':'दोनों',
     'sort-name':'नाम','sort-price':'कीमत (कम→अधिक)',
     'ai-price-btn':'एआई से पूछें','ai-match-btn':'मिलान खोजें',
     'post-errors':'कृपया फ़ील्ड सुधारें',
@@ -102,6 +102,7 @@ const E = (id)=>document.getElementById(id);
 const els = {
   tabs: E('tabs'), panels: {},
   country: E('countrySelect'), state: E('stateSelect'), city: E('citySelect'),
+  refreshBtn: E('refreshBtn'),
   farmerGrid: E('farmerGrid'), consumerGrid: E('consumerGrid'),
   farmerSearch: E('farmerSearch'), consumerSearch: E('consumerSearch'),
   modeFilter: E('modeFilter'), sortBy: E('sortBy'),
@@ -115,7 +116,8 @@ const els = {
   tradePanel: E('panel-trade'), tradeDisclaimer: E('trade-disclaimer'),
   footerText: E('footer-text'), homeWarning: E('home-warning')
 };
-['home','farmers','consumers','laws','medical','trade','ai','grants'].forEach(k=>els.panels[k]=E(`panel-${k}`));
+['home','farmers','consumers','laws','medical','trade','ai','grants']
+  .forEach(k=>els.panels[k]=E(`panel-${k}`));
 
 /* --------------------------------
    Tabs
@@ -132,7 +134,6 @@ function renderTabs(){
   let buttons = els.tabs.querySelectorAll('button[data-panel]');
   if (buttons.length) {
     buttons.forEach(btn => {
-      // Fix old values like "panel-grants" → "grants"
       let id = btn.dataset.panel || '';
       id = id.replace(/^panel-/, '');
       btn.dataset.panel = id;
@@ -144,27 +145,35 @@ function renderTabs(){
     // Fallback: create buttons programmatically
     TABS.forEach(ti=>{
       const b=document.createElement('button');
-      b.className='tab'; b.dataset.panel=ti.id; b.setAttribute('role','tab');
-      b.textContent=t(`tab-${ti.id}`); 
+      b.className='tab';
+      b.dataset.panel=ti.id;
+      b.setAttribute('role','tab');
+      b.textContent=t(`tab-${ti.id}`);
       els.tabs.appendChild(b);
     });
   }
 
   on(els.tabs,'click',(e)=>{
-    const btn=e.target.closest('button[data-panel]'); if(!btn) return;
+    const btn=e.target.closest('button[data-panel]');
+    if(!btn) return;
     switchPanel(btn.dataset.panel,true);
   });
 }
+
 function switchPanel(id,push){
-  TABS.forEach(t=>{ const p=els.panels[t.id]; if(p) p.hidden = (t.id!==id); });
+  TABS.forEach(ti=>{
+    const p=els.panels[ti.id];
+    if(p) p.hidden = (ti.id!==id);
+  });
   $$('#tabs .tab').forEach(b=>b.classList.toggle('active', b.dataset.panel===id));
   if(push) location.hash = `#${id}`;
   localStorage.setItem('hq:tab', id);
 }
+
 function startTab(){
   const fromHash = location.hash.replace('#','');
-  const saved = localStorage.getItem('hq:tab')||'home';
-  const target = TABS.some(t=>t.id===fromHash)?fromHash:saved;
+  const saved = localStorage.getItem('hq:tab') || 'home';
+  const target = TABS.some(t=>t.id===fromHash) ? fromHash : saved;
   switchPanel(target,false);
 }
 
@@ -172,19 +181,27 @@ function startTab(){
    Language apply
 ----------------------------------- */
 function setLanguage(lang){
-  currentLang=lang; localStorage.setItem('hq:lang', lang);
+  currentLang=lang;
+  localStorage.setItem('hq:lang', lang);
   E('header-sub') && (E('header-sub').textContent = t('header-sub'));
+  // These IDs are optional; safe if missing
   E('home-what-title') && (E('home-what-title').textContent = t('home-what-title'));
   E('home-what-content') && (E('home-what-content').textContent = t('home-what-content'));
   els.farmerSearch && (els.farmerSearch.placeholder = t('farmer-search-placeholder'));
   els.consumerSearch && (els.consumerSearch.placeholder = t('consumer-search-placeholder'));
-  const mops = els.modeFilter?.querySelectorAll('option'); 
+
+  const mops = els.modeFilter?.querySelectorAll('option');
   if(mops && mops.length>=4){
-    mops[0].textContent=t('mode-all'); mops[1].textContent=t('mode-sale');
-    mops[2].textContent=t('mode-trade'); mops[3].textContent=t('mode-both');
+    mops[0].textContent=t('mode-all');
+    mops[1].textContent=t('mode-sale');
+    mops[2].textContent=t('mode-trade');
+    mops[3].textContent=t('mode-both');
   }
   const sops = els.sortBy?.querySelectorAll('option');
-  if(sops && sops.length>=2){ sops[0].textContent=t('sort-name'); sops[1].textContent=t('sort-price'); }
+  if(sops && sops.length>=2){
+    sops[0].textContent=t('sort-name');
+    sops[1].textContent=t('sort-price');
+  }
   E('laws-disclaimer') && (E('laws-disclaimer').textContent = t('laws-disclaimer'));
   E('trade-disclaimer') && (E('trade-disclaimer').textContent = t('trade-disclaimer'));
 }
@@ -194,13 +211,17 @@ function setLanguage(lang){
 ----------------------------------- */
 let DATA_FARMERS = [];
 let DATA_CONSUMERS = [];
+
 async function loadJSON(path, fallback=null){
   try{
     const r = await fetch(path,{cache:'no-store'});
     if(!r.ok) throw new Error(r.status);
     return await r.json();
-  }catch{ return fallback; }
+  }catch{
+    return fallback;
+  }
 }
+
 async function loadData(){
   DATA_FARMERS   = await loadJSON('./data/farmers.json',   []);
   DATA_CONSUMERS = await loadJSON('./data/consumers.json', []);
@@ -232,7 +253,10 @@ function populateCountrySelect(){
   const countries = Object.keys(GEO);
   els.country.innerHTML='';
   countries.forEach(c=>{
-    const o=document.createElement('option'); o.value=c; o.textContent=c; els.country.appendChild(o);
+    const o=document.createElement('option');
+    o.value=c;
+    o.textContent=c;
+    els.country.appendChild(o);
   });
   if (!countries.includes(els.country.value)) els.country.value='US';
 }
@@ -242,21 +266,34 @@ function populateStateCities(){
   const country = els.country.value;
   const states = Object.keys(GEO[country] || {});
   els.state.innerHTML='';
-  states.forEach(s=>{ const o=document.createElement('option'); o.value=s; o.textContent=s; els.state.appendChild(o); });
+  states.forEach(s=>{
+    const o=document.createElement('option');
+    o.value=s;
+    o.textContent=s;
+    els.state.appendChild(o);
+  });
   if (!states.includes(els.state.value)) els.state.value = states[0] || '';
   function updateCity(){
     const cities = (GEO[country] && GEO[country][els.state.value]) || [];
     els.city.innerHTML='';
-    const any=document.createElement('option'); any.value=''; any.textContent = t('all-cities'); els.city.appendChild(any);
-    cities.forEach(ct=>{ const o=document.createElement('option'); o.value=ct; o.textContent=ct; els.city.appendChild(o); });
+    const any=document.createElement('option');
+    any.value='';
+    any.textContent = t('all-cities');
+    els.city.appendChild(any);
+    cities.forEach(ct=>{
+      const o=document.createElement('option');
+      o.value=ct;
+      o.textContent=ct;
+      els.city.appendChild(o);
+    });
     els.city.value='';
   }
-  els.state.onchange = ()=>{ 
-    updateCity(); 
-    renderFarmers(); 
-    renderConsumers(); 
-    renderLaws(); 
-    renderTrade(); 
+  els.state.onchange = ()=>{
+    updateCity();
+    renderFarmers();
+    renderConsumers();
+    renderLaws();
+    renderTrade();
     loadMarkets();
     loadConsumerMarkets();
   };
@@ -267,20 +304,31 @@ function populateStateCities(){
    Filtering helpers & renderers
 ----------------------------------- */
 function emptyState(el, txt){
-  const card=document.createElement('div'); card.className='card'; card.style.textAlign='center'; card.style.color='var(--muted)';
-  card.textContent = txt; el.innerHTML=''; el.appendChild(card);
+  const card=document.createElement('div');
+  card.className='card';
+  card.style.textAlign='center';
+  card.style.color='var(--text-muted)';
+  card.textContent = txt;
+  el.innerHTML='';
+  el.appendChild(card);
 }
+
 function filterByGeo(arr){
   if (!els.country) return arr;
   const country = els.country.value || 'US';
   const state   = els.state?.value || '';
   const city    = els.city?.value || '';
-  return arr.filter(x => x.country===country && x.state===state && (!city || x.city===city));
+  return arr.filter(x =>
+    x.country===country &&
+    x.state===state &&
+    (!city || x.city===city)
+  );
 }
+
 function renderFarmers(){
   if (!els.farmerGrid) return;
   const src = filterByGeo(DATA_FARMERS);
-  const q = (els.farmerSearch?.value||'').toLowerCase();
+  const q = (els.farmerSearch?.value || '').toLowerCase();
   const mode = els.modeFilter?.value || 'all';
   const sortBy = els.sortBy?.value || 'name';
 
@@ -303,15 +351,16 @@ function renderFarmers(){
   list.forEach(f=>{
     (f.products||[]).forEach(p=>{
       const imgSrc = cropImageSrc(p.name);
-      const card=document.createElement('div'); card.className='card';
+      const card=document.createElement('div');
+      card.className='card';
       card.innerHTML = `
         <img class="thumb" src="${imgSrc}" alt="${p.name}"
              style="width:100%;height:150px;object-fit:cover;border-radius:8px"
              onerror="this.onerror=null; this.src='./img/placeholder.png';">
-        <h3>${p.name} — ${p.qty||''}</h3>
-        <p><strong>Price:</strong> ${p.price||'—'}</p>
-        <p><strong>Farm:</strong> ${f.farm} · <span class="muted">${f.city||''}, ${f.state||''}</span></p>
-        <p><strong>Pickup:</strong> ${f.pickup||''}</p>
+        <h3>${p.name} — ${p.qty || ''}</h3>
+        <p><strong>Price:</strong> ${p.price || '—'}</p>
+        <p><strong>Farm:</strong> ${f.farm} · <span class="muted">${f.city || ''}, ${f.state || ''}</span></p>
+        <p><strong>Pickup:</strong> ${f.pickup || ''}</p>
         <div class="flex" style="gap:6px;margin-top:8px">
           <a class="btn secondary" target="_blank" rel="noopener"
              href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((f.city||'')+','+(f.state||''))}">Open in Maps</a>
@@ -320,14 +369,26 @@ function renderFarmers(){
     });
   });
 }
+
 function renderConsumers(){
   if (!els.consumerGrid) return;
-  const list = filterByGeo(DATA_CONSUMERS);
+  const src = filterByGeo(DATA_CONSUMERS);
+  const q = (els.consumerSearch?.value || '').toLowerCase();
+
+  let list = src.filter(c=>{
+    const hay = (c.name+' '+(c.want||'')+' '+(c.city||'')+' '+(c.state||'')).toLowerCase();
+    return !q || hay.includes(q);
+  });
+
   if(!list.length) return emptyState(els.consumerGrid, t('no-consumers'));
   els.consumerGrid.innerHTML='';
   list.forEach(c=>{
-    const card=document.createElement('div'); card.className='card';
-    card.innerHTML = `<h3>${c.name}</h3><p>${c.city||''}, ${c.state||''}</p><p><strong>Wants:</strong> ${c.want||''}</p>`;
+    const card=document.createElement('div');
+    card.className='card';
+    card.innerHTML = `
+      <h3>${c.name}</h3>
+      <p>${c.city || ''}, ${c.state || ''}</p>
+      <p><strong>Wants:</strong> ${c.want || ''}</p>`;
     els.consumerGrid.appendChild(card);
   });
 }
@@ -412,7 +473,7 @@ function renderLaws(){
     card.className = 'card';
     card.innerHTML = `
       <h3>${c.title}</h3>
-      <ul>${(c.points||[]).map(p=>`<li>${p}</li>`).join('')}</ul>
+      <ul>${(c.points || []).map(p=>`<li>${p}</li>`).join('')}</ul>
     `;
     els.lawGrid.appendChild(card);
   });
@@ -420,6 +481,7 @@ function renderLaws(){
 
 /* --------------------------------
    Medical panel (farmer wellbeing)
+   (HTML is static; this is optional and only runs if #medGrid exists)
 ----------------------------------- */
 const MED_TIPS = [
   {
@@ -441,7 +503,7 @@ const MED_TIPS = [
 ];
 
 function renderMedical(){
-  if (!els.medGrid) return;
+  if (!els.medGrid) return; // current HTML does not define medGrid, so this safely no-ops
   els.medGrid.innerHTML = '';
   MED_TIPS.forEach(tip=>{
     const card = document.createElement('div');
@@ -456,61 +518,18 @@ function renderMedical(){
 
 /* --------------------------------
    Trade / Barter panel
+   (keep HTML static, just update disclaimer text via i18n)
 ----------------------------------- */
-const TRADE_EXAMPLES = [
-  {
-    title: 'Crop-for-crop swaps',
-    items: [
-      '50 kg onions ↔ 30 kg rice between neighboring farms.',
-      '2 crates of tomatoes ↔ 1 crate of peppers to balance mixed orders.'
-    ]
-  },
-  {
-    title: 'Crop ↔ services',
-    items: [
-      'Maize or cassava in exchange for tractor ploughing or transport to town.',
-      'Vegetable boxes in exchange for cold-room storage space.'
-    ]
-  },
-  {
-    title: 'Community trades',
-    items: [
-      'Surplus produce swapped for help with weeding or harvest.',
-      'Fruit or grain given to schools, churches, or elder homes in return for future labor or small cash top-ups.'
-    ]
-  }
-];
-
 function renderTrade(){
   const panel = els.tradePanel;
   if (!panel) return;
-
   els.tradeDisclaimer && (els.tradeDisclaimer.textContent = t('trade-disclaimer'));
-
-  let grid = panel.querySelector('#tradeGrid');
-  if (!grid){
-    grid = document.createElement('div');
-    grid.id = 'tradeGrid';
-    grid.className = 'grid';
-    panel.appendChild(grid);
-  }
-  grid.innerHTML = '';
-
-  TRADE_EXAMPLES.forEach(ex=>{
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <h3>${ex.title}</h3>
-      <ul>${ex.items.map(i=>`<li>${i}</li>`).join('')}</ul>
-    `;
-    grid.appendChild(card);
-  });
 }
 
 /* --------------------------------
-   Map (Leaflet) + markets
+   Map (Leaflet) + markets: Farmers + Consumers
 ----------------------------------- */
-let map=null, consumerMap=null;
+let map = null, consumerMap = null;
 
 function initMap(){
   if (!els.mapEl || map) return;
@@ -527,7 +546,9 @@ function initMap(){
         mk(cs.getPropertyValue('--both'),'Both');
     }
     loadMarkets();
-  }catch(e){ console.warn('map init failed', e); }
+  }catch(e){
+    console.warn('map init failed', e);
+  }
 }
 
 function initConsumerMap(){
@@ -543,7 +564,9 @@ function initConsumerMap(){
       els.consumerMapLegend.innerHTML = mk(color,'Consumer demand hubs');
     }
     loadConsumerMarkets();
-  }catch(e){ console.warn('consumer map init failed', e); }
+  }catch(e){
+    console.warn('consumer map init failed', e);
+  }
 }
 
 async function loadMarkets(){
@@ -552,13 +575,16 @@ async function loadMarkets(){
   const candidates = [`./data/markets/${country}.json`, './data/us_markets.json'];
   let list=null;
   for (const url of candidates){
-    try{ const r=await fetch(url,{cache:'no-store'}); if(r.ok){ list=await r.json(); break; } }catch{}
+    try{
+      const r=await fetch(url,{cache:'no-store'});
+      if(r.ok){ list=await r.json(); break; }
+    }catch{}
   }
+
   map.eachLayer(l=>{ if (l instanceof L.CircleMarker) map.removeLayer(l); });
 
-  if (!Array.isArray(list) || !list.length){
-    return;
-  }
+  if (!Array.isArray(list) || !list.length) return;
+
   const cs = getComputedStyle(document.documentElement);
   list.forEach(m=>{
     if (typeof m.lat!=='number' || typeof m.lng!=='number') return;
@@ -567,7 +593,7 @@ async function loadMarkets(){
                  : cs.getPropertyValue('--both').trim();
     L.circleMarker([m.lat,m.lng],{radius:6,color})
       .addTo(map)
-      .bindPopup(`<strong>${m.market}</strong><br>${m.city||''}, ${m.state||''}${m.type?`<br>${m.type}`:''}`);
+      .bindPopup(`<strong>${m.market}</strong><br>${m.city || ''}, ${m.state || ''}${m.type?`<br>${m.type}`:''}`);
   });
 }
 
@@ -577,28 +603,33 @@ async function loadConsumerMarkets(){
   const candidates = [`./data/markets/${country}.json`, './data/us_markets.json'];
   let list=null;
   for (const url of candidates){
-    try{ const r=await fetch(url,{cache:'no-store'}); if(r.ok){ list=await r.json(); break; } }catch{}
+    try{
+      const r=await fetch(url,{cache:'no-store'});
+      if(r.ok){ list=await r.json(); break; }
+    }catch{}
   }
+
   consumerMap.eachLayer(l=>{ if (l instanceof L.CircleMarker) consumerMap.removeLayer(l); });
 
-  if (!Array.isArray(list) || !list.length){
-    return;
-  }
+  if (!Array.isArray(list) || !list.length) return;
+
   const cs = getComputedStyle(document.documentElement);
   const color = (cs.getPropertyValue('--both') || '#0f766e').trim();
   list.forEach(m=>{
     if (typeof m.lat!=='number' || typeof m.lng!=='number') return;
     L.circleMarker([m.lat,m.lng],{radius:6,color})
       .addTo(consumerMap)
-      .bindPopup(`<strong>Consumer hub: ${m.market}</strong><br>${m.city||''}, ${m.state||''}${m.type?`<br>${m.type}`:''}`);
+      .bindPopup(`<strong>Consumer hub: ${m.market}</strong><br>${m.city || ''}, ${m.state || ''}${m.type?`<br>${m.type}`:''}`);
   });
 }
 
 /* --------------------------------
-   Post modal + validation
+   Post modal + validation (guarded so it doesn't crash if markup missing)
 ----------------------------------- */
 let postOpenerBtn=null;
+
 function trapFocus(modal){
+  if (!modal) return;
   const q='button,[href],input,select,textarea,[tabindex]:not([tabindex="-1"])';
   const f=Array.from(modal.querySelectorAll(q)).filter(el=>!el.disabled);
   if(!f.length) return;
@@ -614,54 +645,97 @@ function trapFocus(modal){
   modal._focusTrapCleanup = ()=>modal.removeEventListener('keydown', onKey);
   first.focus();
 }
-function openPostModal(btn){ postOpenerBtn=btn||null; els.postModal.hidden=false; els.postModal.setAttribute('aria-hidden','false'); trapFocus(els.postModal); els.pfFarm?.focus(); }
-function closePostModal(){ els.postModal.hidden=true; els.postModal.setAttribute('aria-hidden','true'); els.postModal._focusTrapCleanup?.(); postOpenerBtn?.focus(); }
+
+function openPostModal(btn){
+  if (!els.postModal){
+    alert('Posting listings is disabled in this demo build.');
+    return;
+  }
+  postOpenerBtn=btn || null;
+  els.postModal.hidden=false;
+  els.postModal.setAttribute('aria-hidden','false');
+  trapFocus(els.postModal);
+  els.pfFarm?.focus();
+}
+
+function closePostModal(){
+  if (!els.postModal) return;
+  els.postModal.hidden=true;
+  els.postModal.setAttribute('aria-hidden','true');
+  els.postModal._focusTrapCleanup?.();
+  postOpenerBtn?.focus();
+}
+
 on(els.postOpenBtn,'click',()=>openPostModal(els.postOpenBtn));
 on(E('postCancel'),'click',closePostModal);
 
-const errQty = E('errQty'); const errPrice=E('errPrice');
-function sanitizeNumberInput(str){ return String(str||'').replace(/,/g,'').trim(); }
+const errQty = E('errQty');
+const errPrice=E('errPrice');
+
+function sanitizeNumberInput(str){ return String(str || '').replace(/,/g,'').trim(); }
+
 function requirePositiveNumber(str){
-  const clean = sanitizeNumberInput(str); const n=Number(clean);
-  if(!clean) return {ok:false, msg:'Required'}; if(!isFinite(n) || n<=0) return {ok:false, msg:'Enter a positive number'};
+  const clean = sanitizeNumberInput(str);
+  const n=Number(clean);
+  if(!clean) return {ok:false, msg:'Required'};
+  if(!isFinite(n) || n<=0) return {ok:false, msg:'Enter a positive number'};
   return {ok:true, value:n};
 }
+
 on(els.postForm,'submit', (ev)=>{
   ev.preventDefault();
-  els.postErrors && (els.postErrors.textContent=''); errQty && (errQty.textContent=''); errPrice && (errPrice.textContent='');
+  if (!els.postForm) return;
 
-  const rQty=requirePositiveNumber(els.pfQty.value);
-  const rPrice=requirePositiveNumber(els.pfPrice.value);
+  els.postErrors && (els.postErrors.textContent='');
+  errQty && (errQty.textContent='');
+  errPrice && (errPrice.textContent='');
+
+  const rQty=requirePositiveNumber(els.pfQty?.value);
+  const rPrice=requirePositiveNumber(els.pfPrice?.value);
   let bad=false;
   if(!rQty.ok){ errQty && (errQty.textContent=rQty.msg); bad=true; }
   if(!rPrice.ok){ errPrice && (errPrice.textContent=rPrice.msg); bad=true; }
-  if(bad){ els.postErrors && (els.postErrors.textContent = t('post-errors')); return; }
+  if(bad){
+    els.postErrors && (els.postErrors.textContent = t('post-errors'));
+    return;
+  }
 
   const country=els.country?.value || 'US';
   const rec={
-    country, state: els.state?.value || '', city: els.city?.value || '',
-    farmer:'You', farm: els.pfFarm.value,
-    products:[{name: els.pfProduct.value, qty: `${rQty.value}`, price: `${rPrice.value}`}],
-    pickup:'', mode: els.pfMode.value
+    country,
+    state: els.state?.value || '',
+    city: els.city?.value || '',
+    farmer:'You',
+    farm: els.pfFarm?.value,
+    products:[{name: els.pfProduct?.value, qty: `${rQty.value}`, price: `${rPrice.value}`}],
+    pickup:'',
+    mode: els.pfMode?.value
   };
   DATA_FARMERS.unshift(rec);
-  closePostModal(); renderFarmers();
+  closePostModal();
+  renderFarmers();
 });
 
 /* --------------------------------
    AI bridge (/api/agent) + stubs
 ----------------------------------- */
 function trace(step, payload){
-  const el = $('#agentTrace'); if(!el) return;
+  const el = $('#agentTrace');
+  if(!el) return;
   const row = document.createElement('pre');
   row.textContent = `[${new Date().toLocaleTimeString()}] ${step}: ` + JSON.stringify(payload, null, 2);
   el.prepend(row);
 }
+
 async function callAgent(tool, args){
   trace('CALL',{tool,args});
   const t0=performance.now();
   try{
-    const r = await fetch('/api/agent',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({tool,args})});
+    const r = await fetch('/api/agent',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({tool,args})
+    });
     const out = await r.json();
     trace('RESULT',{tool, ms:Math.round(performance.now()-t0), ...out});
     if(out?.ok) return out;
@@ -674,8 +748,8 @@ async function callAgent(tool, args){
 async function callTool(tool, args={}){ return callAgent(tool, args); }
 
 const BASE_RATES = {
-  US: {Tomatoes:2.5, Corn:1.2, "Bell peppers":2.2},
-  India: {Tomatoes:30, "Basmati rice":90, Okra:30},
+  US: {Tomatoes:2.5, Corn:1.2, 'Bell peppers':2.2},
+  India: {Tomatoes:30, 'Basmati rice':90, Okra:30},
   Nigeria: {Cassava:180, Millet:120, Groundnuts:220},
   Russia: {Potatoes:35, Wheat:25, Carrots:28},
   Canada: {Wheat:2.1, Canola:2.4, Blueberries:4.0},
@@ -692,19 +766,31 @@ const BASE_RATES = {
 };
 
 on(els.aiPriceBtn,'click', ()=>{
-  const crop=els.aiCrop?.value, qty=els.aiQty?.value;
-  if(!crop || !qty){ els.aiPriceOut && (els.aiPriceOut.textContent='Enter crop and quantity (e.g., Tomatoes, 40 lb).'); return; }
+  const crop=els.aiCrop?.value;
+  const qty=els.aiQty?.value;
+  if(!crop || !qty){
+    els.aiPriceOut && (els.aiPriceOut.textContent='Enter crop and quantity (e.g., Tomatoes, 40 lb).');
+    return;
+  }
   const country=els.country?.value || 'US';
   const base = (BASE_RATES[country] && BASE_RATES[country][crop]) || 2.0;
   const lo=(base*0.9).toFixed(2), hi=(base*1.1).toFixed(2);
-  els.aiPriceOut && (els.aiPriceOut.textContent = `Suggested range: ${CURRENCY[country]?.symbol||'$'}${lo} - ${CURRENCY[country]?.symbol||'$'}${hi} per ${CURRENCY[country]?.unit||'unit'}`);
+  els.aiPriceOut && (els.aiPriceOut.textContent =
+    `Suggested range: ${CURRENCY[country]?.symbol || '$'}${lo} - ${CURRENCY[country]?.symbol || '$'}${hi} per ${CURRENCY[country]?.unit || 'unit'}`);
 });
 
 on(els.aiMatchBtn,'click', async ()=>{
-  const want=(els.aiWant?.value||'').trim();
-  if(!want){ els.aiMatchOut && (els.aiMatchOut.textContent='Describe what you want (e.g., Peaches 20 lb).'); return; }
+  const want=(els.aiWant?.value || '').trim();
+  if(!want){
+    els.aiMatchOut && (els.aiMatchOut.textContent='Describe what you want (e.g., Peaches 20 lb).');
+    return;
+  }
   try{
-    const res = await callAgent('findBarterMatch', { itemOffered: want, itemWanted: want, location: els.country?.value || 'US' });
+    const res = await callAgent('findBarterMatch', {
+      itemOffered: want,
+      itemWanted: want,
+      location: els.country?.value || 'US'
+    });
     els.aiMatchOut && (els.aiMatchOut.textContent = JSON.stringify(res?.result || res, null, 2));
   }catch(e){
     els.aiMatchOut && (els.aiMatchOut.textContent = 'No matches found in current filters.');
@@ -720,7 +806,11 @@ async function watsonxOrchestrate(){
   const statusEl = $('#agentStatus');
   if(statusEl) statusEl.textContent = 'Connecting to IBM watsonx…';
   try{
-    const r = await fetch('/api/agent',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'Initialize Harvest Q agents'})});
+    const r = await fetch('/api/agent',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({message:'Initialize Harvest Q agents'})
+    });
     await r.json().catch(()=>({}));
     window.ORCH_CONNECTED = true;
     if(statusEl) statusEl.innerHTML = '✅ Connected. Agents are ready.';
@@ -731,9 +821,12 @@ async function watsonxOrchestrate(){
     setAIButtonsEnabled(false);
   }
 }
+
 function setAIButtonsEnabled(enabled){
-  $$('.ai-suggest-farmers, .ai-suggest-buyers, .ai-grant-triage').forEach(b=> b.disabled = !enabled);
+  $$('.ai-suggest-farmers, .ai-suggest-buyers, .ai-grant-triage')
+    .forEach(b=> b.disabled = !enabled);
 }
+
 on($('#connectAgentBtn'),'click', watsonxOrchestrate);
 
 /* --------------------------------
@@ -743,6 +836,7 @@ function renderAI(btn, html){
   const box = btn.parentElement.querySelector('.ai-result') || btn.nextElementSibling;
   if (box) box.innerHTML = html;
 }
+
 async function aiSuggestFarmersFlow(btn){
   if (!window.ORCH_CONNECTED) return alert('Connect IBM Agent first.');
   const crop = btn.dataset.crop;
@@ -771,6 +865,7 @@ async function aiSuggestFarmersFlow(btn){
     <br>Route: ${plan.distanceKm ?? '?'}km — ${plan.window ?? 'ETA TBD'}
   `);
 }
+
 async function aiSuggestBuyersFlow(btn){
   if (!window.ORCH_CONNECTED) return alert('Connect IBM Agent first.');
   const crop = btn.dataset.crop;
@@ -788,6 +883,7 @@ async function aiSuggestBuyersFlow(btn){
     <br>${plan.window ?? 'ETA TBD'} • Est. distance: ${plan.distanceKm ?? '?'}km
   `);
 }
+
 async function aiGrantTriageFlow(btn){
   if (!window.ORCH_CONNECTED) return alert('Connect IBM Agent first.');
   const applicant = btn.dataset.applicant;
@@ -800,6 +896,7 @@ async function aiGrantTriageFlow(btn){
     <br>${r.rationale || 'Triage complete.'}
   `);
 }
+
 document.addEventListener('click', (e)=>{
   if (e.target.matches('.ai-suggest-farmers')) aiSuggestFarmersFlow(e.target);
   if (e.target.matches('.ai-suggest-buyers'))  aiSuggestBuyersFlow(e.target);
@@ -810,25 +907,30 @@ document.addEventListener('click', (e)=>{
    Barter Agent client-side helpers
 ----------------------------------- */
 function listBarterables(farmer){
-  return (farmer?.products||[])
-    .filter(p=>p.barter===true || /trade|barter/i.test(p.notes||''))
+  return (farmer?.products || [])
+    .filter(p=>p.barter===true || /trade|barter/i.test(p.notes || ''))
     .map(p=>({
       farmerId: farmer.id || farmer.farm || farmer.name,
       farmerName: farmer.name || farmer.farm || 'Farmer',
-      location: `${farmer.city||''}, ${farmer.state||''}`,
-      name: p.name, qty: p.qty || p.quantity || '', price: p.price || null
+      location: `${farmer.city || ''}, ${farmer.state || ''}`,
+      name: p.name,
+      qty: p.qty || p.quantity || '',
+      price: p.price || null
     }));
 }
+
 function pseudoDistance(a='', b=''){
-  const s = (String(a)+String(b));
-  let h=0; for(let i=0;i<s.length;i++) h = (h*31 + s.charCodeAt(i))|0;
+  const s = (String(a) + String(b));
+  let h=0;
+  for(let i=0;i<s.length;i++) h = (h*31 + s.charCodeAt(i))|0;
   return Math.abs(h%200)+10;
 }
+
 async function findBarterMatch({ itemOffered, itemWanted, location, maxDistanceKm = 100 }){
-  const data = await loadJSON('data/farmers.json', []);
+  const data = await loadJSON('./data/farmers.json', []);
   const items = data.flatMap(listBarterables);
-  const suppliers   = items.filter(i=> i.name.toLowerCase().includes((itemWanted||'').toLowerCase()));
-  const counterparts= items.filter(i=> i.name.toLowerCase().includes((itemOffered||'').toLowerCase()));
+  const suppliers   = items.filter(i=> i.name.toLowerCase().includes((itemWanted || '').toLowerCase()));
+  const counterparts= items.filter(i=> i.name.toLowerCase().includes((itemOffered || '').toLowerCase()));
   const pairs=[];
   for(const s of suppliers){
     for(const c of counterparts){
@@ -836,8 +938,11 @@ async function findBarterMatch({ itemOffered, itemWanted, location, maxDistanceK
       const dist = pseudoDistance(s.location, location || c.location);
       if (dist<=maxDistanceKm){
         pairs.push({
-          partnerId: s.farmerId, partnerName: s.farmerName, distanceKm: dist,
-          theyOffer:{name:s.name, qty:s.qty}, youOffer:{name:c.name, qty:c.qty},
+          partnerId: s.farmerId,
+          partnerName: s.farmerName,
+          distanceKm: dist,
+          theyOffer:{name:s.name, qty:s.qty},
+          youOffer:{name:c.name, qty:c.qty},
           rationale:`Close proximity and reciprocal goods (${itemOffered}↔${itemWanted}).`
         });
       }
@@ -846,19 +951,34 @@ async function findBarterMatch({ itemOffered, itemWanted, location, maxDistanceK
   pairs.sort((a,b)=>a.distanceKm-b.distanceKm);
   return { matches: pairs.slice(0,3), note: pairs.length?'Top barter candidates.':'No compatible partners found.' };
 }
+
 async function evaluateTradeValue({ itemsA=[], itemsB=[] }){
   const ref = { tomato:0.5, onion:0.6, corn:0.22, rice:0.9, avocado:2.1, dates:4.0 };
-  const parseQty = (q)=>{ const m=String(q||'').match(/[\d.]+/); return m?Number(m[0]):0; };
+  const parseQty = (q)=>{ const m=String(q || '').match(/[\d.]+/); return m?Number(m[0]):0; };
   const u = (n,f=1)=> (ref[n?.toLowerCase()] ?? f);
   const val = (arr)=>arr.reduce((s,it)=> s + parseQty(it.qty) * (it.refPricePerUnit ?? u(it.name)), 0);
   const A = val(itemsA), B=val(itemsB), R = B?A/B:0, fair = R>0.9 && R<1.1;
-  return { valueA:+A.toFixed(2), valueB:+B.toFixed(2), proposedRatioAtoB:+R.toFixed(2),
-           fairness: fair?'balanced':(R<0.9?'A owes more':'B owes more'),
-           note:'Naive valuation using reference prices; replace with live feed when available.' };
+  return {
+    valueA:+A.toFixed(2),
+    valueB:+B.toFixed(2),
+    proposedRatioAtoB:+R.toFixed(2),
+    fairness: fair ? 'balanced' : (R<0.9 ? 'A owes more' : 'B owes more'),
+    note:'Naive valuation using reference prices; replace with live feed when available.'
+  };
 }
+
 async function initiateExchange({ partnerId, terms }){
   const contractId = `BAR-${Date.now()}`;
-  return { ok:true, summary:{ contractId, partnerId, terms, status:'pending-confirmation', createdAt:new Date().toISOString() } };
+  return {
+    ok:true,
+    summary:{
+      contractId,
+      partnerId,
+      terms,
+      status:'pending-confirmation',
+      createdAt:new Date().toISOString()
+    }
+  };
 }
 
 /* --------------------------------
@@ -867,9 +987,11 @@ async function initiateExchange({ partnerId, terms }){
 function setStaticWarning(){
   if(!els.homeWarning) return;
   els.homeWarning.textContent='';
-  const strong=document.createElement('strong'); strong.textContent='Note: ';
+  const strong=document.createElement('strong');
+  strong.textContent='Note: ';
   const rest=document.createTextNode('Demo data for judging. Compliance cards are non-legal summaries; pair with legal counsel.');
-  els.homeWarning.appendChild(strong); els.homeWarning.appendChild(rest);
+  els.homeWarning.appendChild(strong);
+  els.homeWarning.appendChild(rest);
 }
 
 /* --------------------------------
@@ -877,15 +999,22 @@ function setStaticWarning(){
 ----------------------------------- */
 document.addEventListener('DOMContentLoaded', async ()=>{
   renderTabs();
-  const langSel = E('langSelect'); 
-  if (langSel){ 
-    langSel.value=currentLang; 
-    on(langSel,'change', e=>{ setLanguage(e.target.value); renderLaws(); renderMedical(); renderTrade(); }); 
+
+  const langSel = E('langSelect');
+  if (langSel){
+    langSel.value=currentLang;
+    on(langSel,'change', e=>{
+      setLanguage(e.target.value);
+      renderLaws();
+      renderMedical();
+      renderTrade();
+    });
   }
   setLanguage(langSel?.value || currentLang);
 
   populateCountrySelect();
   populateStateCities();
+
   on(els.country,'change', ()=>{ 
     populateStateCities(); 
     renderFarmers(); 
@@ -896,8 +1025,20 @@ document.addEventListener('DOMContentLoaded', async ()=>{
     loadConsumerMarkets();
   });
 
-  const savedMode = LS.get('hq:mode','all'); if(els.modeFilter) els.modeFilter.value=savedMode;
-  const savedSort = LS.get('hq:sort','name'); if(els.sortBy)    els.sortBy.value=savedSort;
+  // Refresh button on Home panel
+  on(els.refreshBtn, ()=>{
+    renderFarmers();
+    renderConsumers();
+    renderLaws();
+    renderTrade();
+    loadMarkets();
+    loadConsumerMarkets();
+  });
+
+  const savedMode = LS.get('hq:mode','all');
+  if(els.modeFilter) els.modeFilter.value=savedMode;
+  const savedSort = LS.get('hq:sort','name');
+  if(els.sortBy) els.sortBy.value=savedSort;
 
   on(els.farmerSearch,'input', debounce(renderFarmers,200));
   on(els.consumerSearch,'input', debounce(renderConsumers,200));
@@ -920,7 +1061,8 @@ document.addEventListener('DOMContentLoaded', async ()=>{
 
   setAIButtonsEnabled(false);
 
-  els.footerText && (els.footerText.textContent = `© Harvest Q — Stage 3 • ${new Date().toLocaleString()}`);
+  els.footerText && (els.footerText.textContent =
+    `© Harvest Q — Stage 3 • ${new Date().toLocaleString()}`);
   setStaticWarning();
 
   startTab();
