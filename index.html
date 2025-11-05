@@ -12,7 +12,8 @@
   <link rel="icon" href="./logo.png" />
   <link rel="apple-touch-icon" href="./logo.png" />
 
-  <link rel="stylesheet" href="./css/style.css" />
+  <!-- NOTE: add ?v=3 to break cached CSS -->
+  <link rel="stylesheet" href="./css/style.css?v=3" />
 
   <!-- Leaflet Map -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
@@ -317,7 +318,7 @@
       </div>
     </section>
 
-    <!-- POST LISTING MODAL (wired to app.js) -->
+    <!-- POST LISTING MODAL -->
     <div id="postModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="postTitle" hidden>
       <div class="modal-content card">
         <h3 id="postTitle">Post a Listing</h3>
@@ -357,7 +358,7 @@
       </div>
     </div>
 
-    <!-- ERROR OVERLAY (used by showErrorOverlay in app.js) -->
+    <!-- ERROR OVERLAY -->
     <div id="hq-error" class="error-overlay" hidden>
       <div class="error-box card">
         <h3>Error</h3>
