@@ -2,7 +2,7 @@
   "name": "Harvest Q",
   "short_name": "HarvestQ",
   "id": "com.harvestq.app",
-  "start_url": "./index.html",
+  "start_url": "./index.html?utm_source=pwa",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
@@ -28,5 +28,14 @@
       "type": "image/png",
       "purpose": "maskable any"
     }
-  ]
-} 
+  ],
+  "screenshots": [
+    {
+      "src": "./img/screenshot-home.png",
+      "sizes": "1080x1920",
+      "type": "image/png"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}
