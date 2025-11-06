@@ -20,9 +20,14 @@ try {
       serviceUrl: process.env.WATSONX_URL,
       version: '2024-10-01'
     });
+    // Optional: simple console trace
+    console.log('[orchestrate] IBM watsonx.ai client initialized');
+  } else {
+    console.log('[orchestrate] IBM env vars missing; running in demo mode');
   }
-} catch {
+} catch (err) {
   wx = null; // keep running without IBM
+  console.warn('[orchestrate] Failed to init IBM watsonx.ai client:', err?.message || err);
 }
 
 // ------------------------------------------------------------
@@ -111,7 +116,7 @@ app.get('/api/health', (_, res) => {
 // ------------------------------------------------------------
 // Tool Specs (optional for IBM model tool-calls)
 // ------------------------------------------------------------
-const tools = [
+export const TOOL_SPECS = [
   // Buyer/Farmer matching
   {
     type: 'function',
@@ -540,14 +545,20 @@ app.post('/api/agent', async (req, res) => {
     const { tool, args = {}, message } = req.body || {};
 
     // Direct tool invocation (what your front-end does)
-    if (tool && toolImpl[tool]) {
+    if (tool) {
+      if (!toolImpl[tool]) {
+        console.warn('[orchestrate] Unknown tool requested:', tool);
+        return res.status(400).json({ ok: false, error: `Unknown tool: ${tool}` });
+      }
+      console.log('[orchestrate] Tool call:', tool, 'args:', args);
       const result = await toolImpl[tool](args);
       return res.json({ ok: true, tool, result });
     }
 
     // If IBM is configured and you want to use model tool-calls in future:
     if (wx && message) {
-      return res.json({ ok: true, text: 'IBM session initialized.', model: true, tools });
+      console.log('[orchestrate] IBM init message received');
+      return res.json({ ok: true, text: 'IBM session initialized.', model: true, tools: TOOL_SPECS });
     }
 
     // Fallback: simple ping
