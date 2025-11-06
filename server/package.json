@@ -8,7 +8,8 @@
   "scripts": {
     "dev": "nodemon server/orchestrate.js",
     "start": "node server/orchestrate.js",
-    "build": "echo 'No build step required for server.'"
+    "build": "echo \"No build step required for server.\"",
+    "health": "node -e \"import './server/orchestrate.js';\""
   },
   "engines": {
     "node": ">=18.17"
