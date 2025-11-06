@@ -1,10 +1,12 @@
 image: gitpod/workspace-full
 
 tasks:
-  - name: Start Harvest Q Server
+  - name: Start Harvest Q Orchestrate API
     init: |
+      cd server
       npm install
     command: |
+      cd server
       npm run dev
 
 ports:
