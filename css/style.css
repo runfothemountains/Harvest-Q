@@ -3,12 +3,11 @@
    Updated: Nov 03, 2025
    ======================================== */
 
-/* ---------- Theme Variables ---------- */
+/* ---------- Theme Tokens ---------- */
 :root {
-  --sale: #10b981;   /* map: sale marker */
-  --trade: #f97316;  /* map: trade marker */
-  --both: #3b82f6;   /* map: both marker */
-  --muted: #6b7280;  /* matches .muted text color */
+  --sale: #10b981;
+  --trade: #f97316;
+  --both: #3b82f6;
 }
 
 /* ---------- Reset & Base ---------- */
@@ -258,25 +257,49 @@ body {
   outline-offset: 2px;
 }
 
-/* ---------- Map & Spinner ---------- */
+/* ---------- Map, Spinner & Legend ---------- */
 #mapArea,
 #consumerMapArea {
   position: relative;
 }
+
 .spinner {
   text-align: center;
   padding: 2rem;
   color: #0f766e;
   font-weight: 500;
-  display: block;           /* visible by default; JS hides it */
+  display: none;
   background: white;
   border-radius: 0.5rem;
 }
+
 #map,
 #consumer-map {
   border-radius: 0.5rem;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* Legend used for maps */
+.legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  background: #f3f4f6;
+  font-size: 0.8rem;
+}
+.legend .item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.legend .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
 }
 
 /* ---------- AI Panel ---------- */
@@ -352,12 +375,6 @@ body {
 .muted {
   color: #6b7280;
   font-size: 0.875rem;
-}
-
-/* ---------- Flex Utility ---------- */
-.flex {
-  display: flex;
-  align-items: center;
 }
 
 /* ---------- Responsive ---------- */
