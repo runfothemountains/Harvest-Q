@@ -1,5 +1,5 @@
 // sw.js — Harvest Q Stages 2, 3 and 4
-const VERSION = 'hq-stage4-v1';
+const VERSION = 'hq-stage3-v2';
 const CACHE_SHELL = `hq-shell-${VERSION}`;
 const CACHE_RUNTIME = `hq-rt-${VERSION}`;
 
@@ -8,10 +8,11 @@ const APP_SHELL = [
   './',
   './index.html',
   './css/style.css',
-  './js/app.js',        // main front-end controller
+  './css/style.css?v=3',       // explicit cache entry for versioned CSS
+  './js/app.js',               // main front-end controller
   './logo.png',
   './manifest.webmanifest',
-  './img/placeholder.png' // used when crop image fails
+  './img/placeholder.png'      // used when crop image fails
 ];
 
 // Delete old caches with our prefixes on activate
