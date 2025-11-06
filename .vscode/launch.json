@@ -12,7 +12,6 @@
         "--auto-open-devtools-for-tabs"
       ],
       "sourceMaps": true,
-      "preLaunchTask": "npm: build",
       "internalConsoleOptions": "neverOpen"
     },
     {
